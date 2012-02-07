@@ -66,7 +66,7 @@ Copyright 2011 Newcastle University
 		<link rel="stylesheet" type="text/css" href="resources/exam.css" />
 	</head>
 	
-	<body style="font-size:1em;">
+	<body style="font-size:1em;" role="application">
 
 		<div id="loading">
 			<div id="progressbar">
@@ -81,42 +81,36 @@ Copyright 2011 Newcastle University
 			<div class="logo">
 				<img src="resources/numbas-logo.gif"/>
 			</div>
-			<div id="examBanner">exam name</div>
+			<h1 id="examBanner" role="banner" tabindex="-1" title="Exam Name">exam name</h1>
 		</div>
 
 		<!-- main content area - info pages or questions go in here -->
 		<div class="mainDisplay">
-			<div id="infoDisplay">
+			<div id="infoDisplay" tabindex="2" role="main" title="Info Display">
 			</div>
 
 			<div id="questionContainer">
 				<!-- top navigation bar - prv/nxt, and question name -->
-				<div class="mainDiv navBar">
-					<input class="btn leftNav" type="button" value="Previous" id="prevBtn">
-					<input class="btn rightNav" type="button" value="Next" id="nextBtn">
+				<div class="mainDiv navBar" role="menu" title="Top Menu">
+					<input role="menuitem" title="Previous Question" class="btn leftNav" type="button" value="Previous" id="prevBtn">
+					<input role="menuitem" title="Next Question" class="btn rightNav" type="button" value="Next" id="nextBtn">
 					<div class="titleBits">
-						<span id="questionNameDisplay">Question Name</span>
+						<h2 id="questionNameDisplay">Question Name</h2>
 						<span class="adviceNav">
-							<input class="btn" type="button" value="Advice" id="adviceBtn">
-							<input class="btn" type="button" value="Reveal" id="revealBtn">
+							<input role="menuitem" title="Show Advice" class="btn" type="button" value="Advice" id="adviceBtn">
+							<input role="menuitem" title="Reveal Answers" class="btn" type="button" value="Reveal" id="revealBtn">
 						</span>
 					</div>
 				</div>
 
 				<div class="colwrap">
 
-					<!-- question and advice go in here -->
-					<div class="col1wrap">
-						<div id="questionDisplay">
-						</div>
-					</div>
-
 					<!-- menu for navigating questions and displaying scores/feedback -->
 					<!-- also timing controls -->
-					<div class="questionMenu">
+					<div role="navigation" class="questionMenu">
 						<div class="carouselBtn prev"><img src="resources/arrow-up.png" /></div>
 						<div class="questionList">
-							<ul id="questionList">
+							<ul id="questionList" tabindex="1" role="listbox" title="Questions">
 							</ul>
 						</div>
 						<div class="carouselBtn next"><img src="resources/arrow-down.png" /></div>
@@ -137,6 +131,12 @@ Copyright 2011 Newcastle University
 							<input class="btn" type="button" value="End Exam" id="endBtn">
 						</div>
 					</div>
+					<!-- question and advice go in here -->
+					<div class="col1wrap">
+						<div id="questionDisplay" tabindex="2" role="main" title="Question">
+						</div>
+					</div>
+
 				</div>
 				<!-- bottom nav bar - prv/nxt, plus submit/advice/reveal buttons -->
 				<div class="mainDiv navBar">
@@ -172,7 +172,7 @@ Copyright 2011 Newcastle University
 		<ul style="display:hidden;">
 			<!-- empty question selector thing - will be copied into question list for each question -->
 			<li id="questionSelector" class="questionSelector-hidden">
-				<a href="#">
+				<a role="option" title="a question" href="#">
 					<span id="name"></span>
 					<div id="marks">
 						<div id="feedback"></div>

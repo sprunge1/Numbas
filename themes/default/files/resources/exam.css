@@ -113,6 +113,7 @@ body {
 
 #questionNameDisplay{
 	font-size:2em;
+	display: inline;
 }
 
 .mainDisplay {
