@@ -313,9 +313,10 @@ display.QuestionDisplay = function(q)
 	//make question selector for menu
 	var qs = $('#questionSelector').clone();
 
+	var nameDescription = (q.number+1)+'. '+q.name;
 	qs
 		.attr('id','questionSelector-'+q.number)
-		.find('#name').html((q.number+1)+'. '+q.name);
+		.find('#name').html(nameDescription);
 
 	$('#questionList').append(qs);
 	
@@ -391,6 +392,8 @@ display.QuestionDisplay.prototype =
 
 		//update question name box in nav bar
 		$('#questionNameDisplay').html((q.number+1)+'. '+q.name);
+
+		$('#questionDisplay .question').attr('aria-label',this.name);
 
 		//display advice if appropriate
 		this.showAdvice();

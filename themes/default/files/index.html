@@ -86,14 +86,16 @@ Copyright 2011 Newcastle University
 
 		<!-- main content area - info pages or questions go in here -->
 		<div class="mainDisplay">
-			<div id="infoDisplay" tabindex="2" role="main" title="Info Display">
+			<div id="infoDisplay" role="main" title="Info Display">
 			</div>
 
 			<div id="questionContainer">
 				<!-- top navigation bar - prv/nxt, and question name -->
-				<div class="mainDiv navBar" role="menu" title="Top Menu">
-					<input role="menuitem" title="Previous Question" class="btn leftNav" type="button" value="Previous" id="prevBtn">
-					<input role="menuitem" title="Next Question" class="btn rightNav" type="button" value="Next" id="nextBtn">
+				<div class="mainDiv navBar">
+					<div role="navigation" title="Move between questions">
+						<input role="menuitem" title="Previous Question" class="btn leftNav" type="button" value="Previous" id="prevBtn">
+						<input role="menuitem" title="Next Question" class="btn rightNav" type="button" value="Next" id="nextBtn">
+					</div>
 					<div class="titleBits">
 						<h2 id="questionNameDisplay">Question Name</h2>
 						<span class="adviceNav">
@@ -107,10 +109,10 @@ Copyright 2011 Newcastle University
 
 					<!-- menu for navigating questions and displaying scores/feedback -->
 					<!-- also timing controls -->
-					<div role="navigation" class="questionMenu">
+					<div class="questionMenu">
 						<div class="carouselBtn prev"><img src="resources/arrow-up.png" /></div>
-						<div class="questionList">
-							<ul id="questionList" tabindex="1" role="listbox" title="Questions">
+						<div role="navigation" title="Links to questions" class="questionList">
+							<ul id="questionList">
 							</ul>
 						</div>
 						<div class="carouselBtn next"><img src="resources/arrow-down.png" /></div>
@@ -133,17 +135,17 @@ Copyright 2011 Newcastle University
 					</div>
 					<!-- question and advice go in here -->
 					<div class="col1wrap">
-						<div id="questionDisplay" tabindex="2" role="main" title="Question">
+						<div id="questionDisplay">
 						</div>
 					</div>
 
 				</div>
 				<!-- bottom nav bar - prv/nxt, plus submit/advice/reveal buttons -->
 				<div class="mainDiv navBar">
-					<input class="btn leftNav" type="button" value="Previous" id="prevBtn">
-					<input class="btn rightNav" type="button" value="Next" id="nextBtn">
+					<input class="btn leftNav" tabindex="-1" type="button" value="Previous" id="prevBtn">
+					<input class="btn rightNav" tabindex="-1" type="button" value="Next" id="nextBtn">
 					<div class="submitDiv">
-						<input class="btn" type="button" value="Submit all parts" id="submitBtn">
+						<input class="btn" type="button" value="Submit all parts" id="submitBtn" aria-controls="feedbackMessage">
 						<div id="marks">	
 							<span id="score"></span>
 							<span id="feedback"><img src="resources/cross.png"/></span>
@@ -172,7 +174,7 @@ Copyright 2011 Newcastle University
 		<ul style="display:hidden;">
 			<!-- empty question selector thing - will be copied into question list for each question -->
 			<li id="questionSelector" class="questionSelector-hidden">
-				<a role="option" title="a question" href="#">
+				<a href="#">
 					<span id="name"></span>
 					<div id="marks">
 						<div id="feedback"></div>

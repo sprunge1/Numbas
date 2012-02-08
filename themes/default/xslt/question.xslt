@@ -30,7 +30,7 @@ Copyright 2011 Newcastle University
 <!-- this is the thing that gets used by SCORM -->
 <xsl:template match="question">
 	<xsl:variable name="questionnum" select="count(preceding-sibling::question)"/>
-	<div class="question" id="question-{$questionnum}">
+	<div class="question" id="question-{$questionnum}" role="main" title="Question Content">
 		<xsl:apply-templates />
 	</div>
 </xsl:template>
@@ -38,7 +38,7 @@ Copyright 2011 Newcastle University
 <xsl:template match="properties|feedbacksettings|preview|notes|variables|preprocessing" />
 
 <xsl:template match="statement">
-	<div class="statement">
+	<div class="statement" role="region" aria-label="Question Statement">
 		<xsl:apply-templates />
 	</div>
 </xsl:template>
@@ -109,7 +109,7 @@ Copyright 2011 Newcastle University
 					<span id="feedback"><img src="resources/cross.png"/></span>
 				</div>
 			</div>
-			<div id="feedbackMessage"></div>
+			<div id="feedbackMessage" aria-live="polite"></div>
 		</xsl:if>
 	</xsl:element>
 </xsl:template>
