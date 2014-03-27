@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Namespace: storage - Numbas API documentation</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+	<div id="header">
+		<span>This is the <a target="_blank" href="http://www.ncl.ac.uk/maths/numbas">Numbas</a> API Documentation</a>.</span>
+		<span>The documentation for users is at <a href="http://numbas-editor.readthedocs.org">Read the Docs</a>.</span>
+	</div>
+
+	<div id="main">
+
+		<h1 class="page-title">Namespace: storage</h1>
+
+		
+
+
+
+<section>
+
+<header>
+    <h3>
+		
+        	<span class="ancestors"><a href="Numbas.html">Numbas</a>.</span>
+	    
+    	storage
+	    
+	</h3>
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+
+    
+        
+
+        
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="storage.js.html">runtime/scripts/storage.js</a>, <a href="storage.js.html#line20">line 20</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+
+	
+	<nav class="toc">
+		<h3>Table of contents</h3>
+		
+			<div class="toc-section">
+				<h4 class="subsection-title">Classes</h4>
+
+				<dl>
+					<dt class="name"><a href="Numbas.storage.BlankStorage.html">BlankStorage</a></dt>
+					<dd></dd>
+				
+					<dt class="name"><a href="Numbas.storage.SCORMStorage.html">SCORMStorage</a></dt>
+					<dd></dd>
+				</dl>
+			</div>
+		
+
+		
+
+		
+
+		
+
+		
+			<div class="toc-section">
+				<h4>Typedefs</h4>
+				<ul>
+				
+					<li class="name"><a href="Numbas.storage.html#exam_suspend_data">exam_suspend_data</a></li>
+				
+					<li class="name"><a href="Numbas.storage.html#part_suspend_data">part_suspend_data</a></li>
+				
+					<li class="name"><a href="Numbas.storage.html#question_suspend_data">question_suspend_data</a></li>
+				
+				</ul>
+			</div>
+		
+
+		
+	</nav>
+	
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Type Definitions</h3>
+
+        <dl>
+                
+<dt>
+    <h4 class="name" id="exam_suspend_data">exam_suspend_data</h4>
+
+    
+</dt>
+<dd>
+    
+
+    
+
+    
+<dl class="details">
+    
+
+        <h5 class="subsection-title">Properties:</h5>
+
+        <dl>
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>timeRemaining</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>seconds until exam timer runs out</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>questionSubset</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number[]</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>order of questions</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>start</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>time the exam started</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>score</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>student's current score</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>currentQuestion</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>number of the question the student was looking at before suspending</p></td>
+        </tr>
+
+    
+    </tbody>
+</table></dl>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="storage.js.html">runtime/scripts/storage.js</a>, <a href="storage.js.html#line22">line 22</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+            
+                
+<dt>
+    <h4 class="name" id="part_suspend_data">part_suspend_data</h4>
+
+    
+</dt>
+<dd>
+    
+
+    
+
+    
+<dl class="details">
+    
+
+        <h5 class="subsection-title">Properties:</h5>
+
+        <dl>
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>answer</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>student's answer to the part, as encoded for saving</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>answered</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>has the student answered this part? (<a href="Numbas.parts.Part.html#answered">Numbas.parts.Part#answered</a>)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>stepsShown</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>have the steps been shown? (<a href="Numbas.parts.Part.html#stepsShown">Numbas.parts.Part#stepsShown</a>)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>stepsOpen</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>are the steps currently visible? (<a href="Numbas.parts.Part.html#stepsOpen">Numbas.parts.Part#stepsOpen</a>)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>gaps</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">part_suspend_data[]</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>data for gaps, if this is a gapfill part</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>steps</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">part_suspend_data[]</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>data for steps, if this part has steps</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>studentAnswer</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>student's answer, for <a href="Numbas.parts.JMEPart.html">Numbas.parts.JMEPart</a>, <a href="Numbas.parts.NumberEntryPart.html">Numbas.parts.NumberEntryPart</a> or <a href="Numbas.parts.PatternMatchPart.html">Numbas.parts.PatternMatchPart</a> parts</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>shuffleChoices</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number[]</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>order of choices, if this is a <a href="Numbas.parts.MultipleResponsePart.html">Numbas.parts.MultipleResponsePart</a></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>shuffleAnswers</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number[]</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>order of answers, if this is a <a href="Numbas.parts.MultipleResponsePart.html">Numbas.parts.MultipleResponsePart</a></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ticks</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.Array.&lt;number></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>student's choices, for <a href="Numbas.parts.MultipleResponsePart.html">Numbas.parts.MultipleResponsePart</a> parts</p></td>
+        </tr>
+
+    
+    </tbody>
+</table></dl>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="storage.js.html">runtime/scripts/storage.js</a>, <a href="storage.js.html#line42">line 42</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+            
+                
+<dt>
+    <h4 class="name" id="question_suspend_data">question_suspend_data</h4>
+
+    
+</dt>
+<dd>
+    
+
+    
+
+    
+<dl class="details">
+    
+
+        <h5 class="subsection-title">Properties:</h5>
+
+        <dl>
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>score</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>student's current score on this question (<a href="Numbas.Question.html#score">Numbas.Question#score</a>)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>visited</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>has the student looked at this question? (<a href="Numbas.Question.html#visited">Numbas.Question#visited</a>)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>answered</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>has the student answered this question? (<a href="Numbas.Question.html#answered">Numbas.Question#answered</a>)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>submitted</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>how many times has the student submitted this question? (<a href="Numbas.Question.html#submitted">Numbas.Question#submitted</a>)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>adviceDisplayed</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>has the advice been shown to the student? (<a href="Numbas.Question.html#adviceDisplayed">Numbas.Question#adviceDisplayed</a>)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>revealed</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>have the correct answers been revealed to the student? (<a href="Numbas.Question.html#revealed">Numbas.Question#revealed</a>)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>variables</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>dictionary mapping variable names to values, in <a href="global.html#JME">JME</a> format.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table></dl>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="storage.js.html">runtime/scripts/storage.js</a>, <a href="storage.js.html#line31">line 31</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+            </dl>
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+	</div>
+
+	<nav class="main-nav">
+		<h2><a href="index.html">Index</a></h2>
+
+
+
+
+
+	<h3>Classes</h3>
+	<ul>
+	
+		<li><a href="Numbas.display.ExamDisplay.html">ExamDisplay</a></li>
+	
+		<li><a href="Numbas.display.GapFillPartDisplay.html">GapFillPartDisplay</a></li>
+	
+		<li><a href="Numbas.display.InformationPartDisplay.html">InformationPartDisplay</a></li>
+	
+		<li><a href="Numbas.display.JMEPartDisplay.html">JMEPartDisplay</a></li>
+	
+		<li><a href="Numbas.display.MultipleResponsePartDisplay.html">MultipleResponsePartDisplay</a></li>
+	
+		<li><a href="Numbas.display.NumberEntryPartDisplay.html">NumberEntryPartDisplay</a></li>
+	
+		<li><a href="Numbas.display.PartDisplay.html">PartDisplay</a></li>
+	
+		<li><a href="Numbas.display.PatternMatchPartDisplay.html">PatternMatchPartDisplay</a></li>
+	
+		<li><a href="Numbas.display.QuestionDisplay.html">QuestionDisplay</a></li>
+	
+		<li><a href="Numbas.Error.html">Error</a></li>
+	
+		<li><a href="Numbas.Exam.html">Exam</a></li>
+	
+		<li><a href="Numbas.ExamEvent.html">ExamEvent</a></li>
+	
+		<li><a href="Numbas.jme.display.Rule.html">Rule</a></li>
+	
+		<li><a href="Numbas.jme.funcObj.html">funcObj</a></li>
+	
+		<li><a href="Numbas.jme.Ruleset.html">Ruleset</a></li>
+	
+		<li><a href="Numbas.jme.Scope.html">Scope</a></li>
+	
+		<li><a href="Numbas.jme.types.TBool.html">TBool</a></li>
+	
+		<li><a href="Numbas.jme.types.TFunc.html">TFunc</a></li>
+	
+		<li><a href="Numbas.jme.types.THTML.html">THTML</a></li>
+	
+		<li><a href="Numbas.jme.types.TList.html">TList</a></li>
+	
+		<li><a href="Numbas.jme.types.TMatrix.html">TMatrix</a></li>
+	
+		<li><a href="Numbas.jme.types.TName.html">TName</a></li>
+	
+		<li><a href="Numbas.jme.types.TNum.html">TNum</a></li>
+	
+		<li><a href="Numbas.jme.types.TOp.html">TOp</a></li>
+	
+		<li><a href="Numbas.jme.types.TPunc.html">TPunc</a></li>
+	
+		<li><a href="Numbas.jme.types.TRange.html">TRange</a></li>
+	
+		<li><a href="Numbas.jme.types.TString.html">TString</a></li>
+	
+		<li><a href="Numbas.jme.types.TVector.html">TVector</a></li>
+	
+		<li><a href="Numbas.parts.GapFillPart.html">GapFillPart</a></li>
+	
+		<li><a href="Numbas.parts.InformationPart.html">InformationPart</a></li>
+	
+		<li><a href="Numbas.parts.JMEPart.html">JMEPart</a></li>
+	
+		<li><a href="Numbas.parts.MultipleResponsePart.html">MultipleResponsePart</a></li>
+	
+		<li><a href="Numbas.parts.NumberEntryPart.html">NumberEntryPart</a></li>
+	
+		<li><a href="Numbas.parts.Part.html">Part</a></li>
+	
+		<li><a href="Numbas.parts.PatternMatchPart.html">PatternMatchPart</a></li>
+	
+		<li><a href="Numbas.Question.html">Question</a></li>
+	
+		<li><a href="Numbas.storage.BlankStorage.html">BlankStorage</a></li>
+	
+		<li><a href="Numbas.storage.SCORMStorage.html">SCORMStorage</a></li>
+	
+		<li><a href="RequireScript.html">RequireScript</a></li>
+	
+	</ul>
+
+
+
+
+
+	<h3>Namespaces</h3>
+	<ul>
+	
+		<li><a href="Numbas.html">Numbas</a></li>
+	
+		<li><a href="Numbas.controls.html">controls</a></li>
+	
+		<li><a href="Numbas.display.html">display</a></li>
+	
+		<li><a href="Numbas.jme.html">jme</a></li>
+	
+		<li><a href="Numbas.jme.display.html">display</a></li>
+	
+		<li><a href="Numbas.jme.types.html">types</a></li>
+	
+		<li><a href="Numbas.jme.variables.html">variables</a></li>
+	
+		<li><a href="Numbas.math.html">math</a></li>
+	
+		<li><a href="Numbas.matrixmath.html">matrixmath</a></li>
+	
+		<li><a href="Numbas.parts.html">parts</a></li>
+	
+		<li><a href="Numbas.schedule.html">schedule</a></li>
+	
+		<li><a href="Numbas.storage.html">storage</a></li>
+	
+		<li><a href="Numbas.timing.html">timing</a></li>
+	
+		<li><a href="Numbas.util.html">util</a></li>
+	
+		<li><a href="Numbas.vectormath.html">vectormath</a></li>
+	
+		<li><a href="Numbas.xml.html">xml</a></li>
+	
+	</ul>
+
+
+
+
+
+
+
+	<h3><a href="global.html">Globals</a></h3>
+	<ul>
+	
+		<li><a href="global.html#complex">complex</a></li>
+	
+		<li><a href="global.html#func_data">func_data</a></li>
+	
+		<li><a href="global.html#JME">JME</a></li>
+	
+		<li><a href="global.html#matrix">matrix</a></li>
+	
+		<li><a href="global.html#partpath">partpath</a></li>
+	
+		<li><a href="global.html#range">range</a></li>
+	
+		<li><a href="global.html#TeX">TeX</a></li>
+	
+		<li><a href="global.html#variable_data_dict">variable_data_dict</a></li>
+	
+		<li><a href="global.html#vector">vector</a></li>
+	
+	</ul>
+
+
+	</nav>
+
+	<br clear="both">
+
+	<footer>
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Thu Mar 27 2014 14:20:52 GMT-0000 (GMT)
+	</footer>
+
+	<script> prettyPrint(); </script>
+	<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

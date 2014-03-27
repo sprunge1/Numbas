@@ -1,0 +1,3379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Class: PatternMatchPart - Numbas API documentation</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+	<div id="header">
+		<span>This is the <a target="_blank" href="http://www.ncl.ac.uk/maths/numbas">Numbas</a> API Documentation</a>.</span>
+		<span>The documentation for users is at <a href="http://numbas-editor.readthedocs.org">Read the Docs</a>.</span>
+	</div>
+
+	<div id="main">
+
+		<h1 class="page-title">Class: PatternMatchPart</h1>
+
+		
+
+
+
+<section>
+
+<header>
+    <h3>
+		
+        	<span class="ancestors"><a href="Numbas.html">Numbas</a><a href="Numbas.parts.html">.parts</a>.</span>
+	    
+    	PatternMatchPart
+	    
+	</h3>
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+
+    
+        
+<dt>
+    <h4 class="name" id="PatternMatchPart"><span class="type-signature"></span>new PatternMatchPart<span class="signature">()</span><span class="type-signature"></span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Text-entry part - student's answer must match the given regular expression</p>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line1300">line 1300</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+    
+    </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        <ul>
+            <li><a href="Numbas.parts.Part.html">Numbas.parts.Part</a></li>
+        </ul>
+    
+
+    
+
+    
+
+    
+
+
+	
+	<nav class="toc">
+		<h3>Table of contents</h3>
+		
+
+		
+
+		
+			<div class="toc-section">
+				<h4>Members</h4>
+				<ul>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#answered">answered</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#answerList">answerList</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#credit">credit</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#display">display</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#gaps">gaps</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#isDirty">isDirty</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#markingFeedback">markingFeedback</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#marks">marks</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#parentPart">parentPart</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#path">path</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#question">question</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#score">score</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#settings">settings</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#stagedAnswer">stagedAnswer</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#steps">steps</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#stepsMarks">stepsMarks</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#stepsOpen">stepsOpen</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#stepsShown">stepsShown</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#type">type</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#xml">xml</a></li>
+				
+				</ul>
+			</div>
+		
+
+		
+			<div class="toc-section">
+				<h4>Methods</h4>
+				<ul>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#addCredit">addCredit</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#calculateScore">calculateScore</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#giveWarning">giveWarning</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#hideSteps">hideSteps</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#markingComment">markingComment</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#multCredit">multCredit</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#revealAnswer">revealAnswer</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#setCredit">setCredit</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#setDirty">setDirty</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#showSteps">showSteps</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#storeAnswer">storeAnswer</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#submit">submit</a></li>
+				
+					<li class="name"><a href="Numbas.parts.PatternMatchPart.html#validate">validate</a></li>
+				
+				</ul>
+			</div>
+		
+
+		
+
+		
+	</nav>
+	
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        <dl>
+            
+<dt>
+    <h4 class="name" id="answered"><span class="type-signature"></span>answered<span class="type-signature"> :boolean</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Has this part been answered?</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">boolean</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#answered">Numbas.parts.Part#answered</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line623">line 623</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="answerList"><span class="type-signature"></span>answerList<span class="type-signature"> :string[]</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Student's last submitted answer - a copy of Numbas.parts.Part.stagedAnswer taken when they submitted.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string[]</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#answerList">Numbas.parts.Part#answerList</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line618">line 618</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="credit"><span class="type-signature"></span>credit<span class="type-signature"> :number</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Proportion of available marks awarded to the student - i.e. <code>score/marks</code>. Penalties will affect this instead of the raw score, because of things like the steps marking algorithm.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">number</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#credit">Numbas.parts.Part#credit</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line593">line 593</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="display"><span class="type-signature"></span>display<span class="type-signature"> :<a href="Numbas.display.PartDisplay.html">Numbas.display.PartDisplay</a></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Associated display object</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type"><a href="Numbas.display.PartDisplay.html">Numbas.display.PartDisplay</a></span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#display">Numbas.parts.Part#display</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line661">line 661</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="gaps"><span class="type-signature"></span>gaps<span class="type-signature"> :Numbas.parts.Part[]</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Child gapfill parts</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">Numbas.parts.Part[]</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#gaps">Numbas.parts.Part#gaps</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line628">line 628</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="isDirty"><span class="type-signature"></span>isDirty<span class="type-signature"> :boolean</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Has the student changed their answer since last submitting?</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">boolean</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#isDirty">Numbas.parts.Part#isDirty</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line608">line 608</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="markingFeedback"><span class="type-signature"></span>markingFeedback<span class="type-signature"> :feedbackmessage</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Messages explaining how marks were awarded</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">feedbackmessage</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#markingFeedback">Numbas.parts.Part#markingFeedback</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line603">line 603</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="marks"><span class="type-signature"></span>marks<span class="type-signature"> :number</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Maximum marks available for this part</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">number</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#marks">Numbas.parts.Part#marks</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line583">line 583</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="parentPart"><span class="type-signature"></span>parentPart<span class="type-signature"> :<a href="Numbas.parts.Part.html">Numbas.parts.Part</a></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Reference to parent of this part, if this is a gap or a step</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type"><a href="Numbas.parts.Part.html">Numbas.parts.Part</a></span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#parentPart">Numbas.parts.Part#parentPart</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line568">line 568</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="path"><span class="type-signature"></span>path<span class="type-signature"> :<a href="global.html#partpath">partpath</a></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>A question-wide unique 'address' for this part.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type"><a href="global.html#partpath">partpath</a></span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#path">Numbas.parts.Part#path</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line573">line 573</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="question"><span class="type-signature"></span>question<span class="type-signature"> :<a href="Numbas.Question.html">Numbas.Question</a></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>The question this part belongs to</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type"><a href="Numbas.Question.html">Numbas.Question</a></span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#question">Numbas.parts.Part#question</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line563">line 563</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="score"><span class="type-signature"></span>score<span class="type-signature"> :number</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Student's score on this part</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">number</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#score">Numbas.parts.Part#score</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line598">line 598</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="settings"><span class="type-signature"></span>settings<span class="type-signature"> :object</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Properties set when the part is generated</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">object</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+        <h5 class="subsection-title">Properties:</h5>
+
+        <dl>
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>stepsPenalty</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Number of marks to deduct when the steps are shown</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>enableMinimumMarks</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Is there a lower limit on the score the student can be awarded for this part?</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>minimumMarks</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Lower limit on the score the student can be awarded for this part</p></td>
+        </tr>
+
+    
+    </tbody>
+</table></dl>
+
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#settings">Numbas.parts.Part#settings</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line651">line 651</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="stagedAnswer"><span class="type-signature"></span>stagedAnswer<span class="type-signature"> :string[]</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Student's answers as visible on the screen (not necessarily yet submitted)</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string[]</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#stagedAnswer">Numbas.parts.Part#stagedAnswer</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line613">line 613</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="steps"><span class="type-signature"></span>steps<span class="type-signature"> :Numbas.parts.Part[]</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Child step parts</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">Numbas.parts.Part[]</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#steps">Numbas.parts.Part#steps</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line633">line 633</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="stepsMarks"><span class="type-signature"></span>stepsMarks<span class="type-signature"> :number</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Marks available for the steps, if any</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">number</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#stepsMarks">Numbas.parts.Part#stepsMarks</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line588">line 588</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="stepsOpen"><span class="type-signature"></span>stepsOpen<span class="type-signature"> :boolean</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Is the steps display open? (Students can toggle it, but that doesn't affect whether they get the penalty)</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">boolean</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#stepsOpen">Numbas.parts.Part#stepsOpen</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line643">line 643</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="stepsShown"><span class="type-signature"></span>stepsShown<span class="type-signature"> :boolean</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Have the steps been show for this part?</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">boolean</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#stepsShown">Numbas.parts.Part#stepsShown</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line638">line 638</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="type"><span class="type-signature"></span>type<span class="type-signature"> :string</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>This part's type, e.g. &quot;jme&quot;, &quot;numberentry&quot;, ...</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#type">Numbas.parts.Part#type</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line578">line 578</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="xml"><span class="type-signature"></span>xml<span class="type-signature"> :Element</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>XML defining this part</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">Element</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#xml">Numbas.parts.Part#xml</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line558">line 558</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        </dl>
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+            
+<dt>
+    <h4 class="name" id="addCredit"><span class="type-signature"></span>addCredit<span class="signature">(credit, message)</span><span class="type-signature"></span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Add an absolute value to <code>credit</code></p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>credit</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>amount to add</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>message to show in feedback to explain this action</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#addCredit">Numbas.parts.Part#addCredit</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line838">line 838</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="calculateScore"><span class="type-signature"></span>calculateScore<span class="signature">()</span><span class="type-signature"></span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Calculate the student's score based on their submitted answers</p>
+<p>Calls the parent part's <code>calculateScore</code> method at the end.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#calculateScore">Numbas.parts.Part#calculateScore</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line675">line 675</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="giveWarning"><span class="type-signature"></span>giveWarning<span class="signature">()</span><span class="type-signature"></span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Give the student a warning about this part.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#giveWarning">Numbas.parts.Part#giveWarning</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line666">line 666</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>{Numbas.display.PartDisplay.warning}</li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="hideSteps"><span class="type-signature"></span>hideSteps<span class="signature">()</span><span class="type-signature"></span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Close the steps box. This doesn't affect the steps penalty.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#hideSteps">Numbas.parts.Part#hideSteps</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line903">line 903</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="markingComment"><span class="type-signature"></span>markingComment<span class="signature">(message)</span><span class="type-signature"></span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Add a comment to the marking feedback</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#markingComment">Numbas.parts.Part#markingComment</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line866">line 866</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="multCredit"><span class="type-signature"></span>multCredit<span class="signature">(factor, message)</span><span class="type-signature"></span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Multiply <code>credit</code> by the given amount - use to apply penalties</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>factor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>message to show in feedback to explain this action</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#multCredit">Numbas.parts.Part#multCredit</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line852">line 852</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="revealAnswer"><span class="type-signature"></span>revealAnswer<span class="signature">(dontStore)</span><span class="type-signature"></span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Reveal the correct answer to this part</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>dontStore</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>don't tell the storage that this is happening - use when loading from storage to avoid callback loops</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#revealAnswer">Numbas.parts.Part#revealAnswer</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line913">line 913</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setCredit"><span class="type-signature"></span>setCredit<span class="signature">(credit, message)</span><span class="type-signature"></span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Set the <code>credit</code> to an absolute value</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>credit</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>message to show in feedback to explain this action</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#setCredit">Numbas.parts.Part#setCredit</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line823">line 823</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setDirty"><span class="type-signature"></span>setDirty<span class="signature">(dirty)</span><span class="type-signature"></span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Call when the student changes their answer, or submits - update Numbas.parts.Part.isDirty</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>dirty</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#setDirty">Numbas.parts.Part#setDirty</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line736">line 736</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="showSteps"><span class="type-signature"></span>showSteps<span class="signature">(dontStore)</span><span class="type-signature"></span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Show the steps</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>dontStore</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>don't tell the storage that this is happening - use when loading from storage to avoid callback loops</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#showSteps">Numbas.parts.Part#showSteps</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line883">line 883</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="storeAnswer"><span class="type-signature"></span>storeAnswer<span class="signature">()</span><span class="type-signature"></span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Update the stored answer from the student (called when the student changes their answer, but before submitting)</p>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#storeAnswer">Numbas.parts.Part#storeAnswer</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line727">line 727</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="submit"><span class="type-signature"></span>submit<span class="signature">()</span><span class="type-signature"></span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Submit the student's answers to this part - remove warnings. save answer, calculate marks, update scores</p>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#submit">Numbas.parts.Part#submit</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line750">line 750</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="validate"><span class="type-signature">&lt;abstract> </span>validate<span class="signature">()</span><span class="type-signature">&rarr; {boolean}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Is the student's answer acceptable?</p>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#validate">Numbas.parts.Part#validate</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line878">line 878</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        </dl>
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+	</div>
+
+	<nav class="main-nav">
+		<h2><a href="index.html">Index</a></h2>
+
+
+
+
+
+	<h3>Classes</h3>
+	<ul>
+	
+		<li><a href="Numbas.display.ExamDisplay.html">ExamDisplay</a></li>
+	
+		<li><a href="Numbas.display.GapFillPartDisplay.html">GapFillPartDisplay</a></li>
+	
+		<li><a href="Numbas.display.InformationPartDisplay.html">InformationPartDisplay</a></li>
+	
+		<li><a href="Numbas.display.JMEPartDisplay.html">JMEPartDisplay</a></li>
+	
+		<li><a href="Numbas.display.MultipleResponsePartDisplay.html">MultipleResponsePartDisplay</a></li>
+	
+		<li><a href="Numbas.display.NumberEntryPartDisplay.html">NumberEntryPartDisplay</a></li>
+	
+		<li><a href="Numbas.display.PartDisplay.html">PartDisplay</a></li>
+	
+		<li><a href="Numbas.display.PatternMatchPartDisplay.html">PatternMatchPartDisplay</a></li>
+	
+		<li><a href="Numbas.display.QuestionDisplay.html">QuestionDisplay</a></li>
+	
+		<li><a href="Numbas.Error.html">Error</a></li>
+	
+		<li><a href="Numbas.Exam.html">Exam</a></li>
+	
+		<li><a href="Numbas.ExamEvent.html">ExamEvent</a></li>
+	
+		<li><a href="Numbas.jme.display.Rule.html">Rule</a></li>
+	
+		<li><a href="Numbas.jme.funcObj.html">funcObj</a></li>
+	
+		<li><a href="Numbas.jme.Ruleset.html">Ruleset</a></li>
+	
+		<li><a href="Numbas.jme.Scope.html">Scope</a></li>
+	
+		<li><a href="Numbas.jme.types.TBool.html">TBool</a></li>
+	
+		<li><a href="Numbas.jme.types.TFunc.html">TFunc</a></li>
+	
+		<li><a href="Numbas.jme.types.THTML.html">THTML</a></li>
+	
+		<li><a href="Numbas.jme.types.TList.html">TList</a></li>
+	
+		<li><a href="Numbas.jme.types.TMatrix.html">TMatrix</a></li>
+	
+		<li><a href="Numbas.jme.types.TName.html">TName</a></li>
+	
+		<li><a href="Numbas.jme.types.TNum.html">TNum</a></li>
+	
+		<li><a href="Numbas.jme.types.TOp.html">TOp</a></li>
+	
+		<li><a href="Numbas.jme.types.TPunc.html">TPunc</a></li>
+	
+		<li><a href="Numbas.jme.types.TRange.html">TRange</a></li>
+	
+		<li><a href="Numbas.jme.types.TString.html">TString</a></li>
+	
+		<li><a href="Numbas.jme.types.TVector.html">TVector</a></li>
+	
+		<li><a href="Numbas.parts.GapFillPart.html">GapFillPart</a></li>
+	
+		<li><a href="Numbas.parts.InformationPart.html">InformationPart</a></li>
+	
+		<li><a href="Numbas.parts.JMEPart.html">JMEPart</a></li>
+	
+		<li><a href="Numbas.parts.MultipleResponsePart.html">MultipleResponsePart</a></li>
+	
+		<li><a href="Numbas.parts.NumberEntryPart.html">NumberEntryPart</a></li>
+	
+		<li><a href="Numbas.parts.Part.html">Part</a></li>
+	
+		<li><a href="Numbas.parts.PatternMatchPart.html">PatternMatchPart</a></li>
+	
+		<li><a href="Numbas.Question.html">Question</a></li>
+	
+		<li><a href="Numbas.storage.BlankStorage.html">BlankStorage</a></li>
+	
+		<li><a href="Numbas.storage.SCORMStorage.html">SCORMStorage</a></li>
+	
+		<li><a href="RequireScript.html">RequireScript</a></li>
+	
+	</ul>
+
+
+
+
+
+	<h3>Namespaces</h3>
+	<ul>
+	
+		<li><a href="Numbas.html">Numbas</a></li>
+	
+		<li><a href="Numbas.controls.html">controls</a></li>
+	
+		<li><a href="Numbas.display.html">display</a></li>
+	
+		<li><a href="Numbas.jme.html">jme</a></li>
+	
+		<li><a href="Numbas.jme.display.html">display</a></li>
+	
+		<li><a href="Numbas.jme.types.html">types</a></li>
+	
+		<li><a href="Numbas.jme.variables.html">variables</a></li>
+	
+		<li><a href="Numbas.math.html">math</a></li>
+	
+		<li><a href="Numbas.matrixmath.html">matrixmath</a></li>
+	
+		<li><a href="Numbas.parts.html">parts</a></li>
+	
+		<li><a href="Numbas.schedule.html">schedule</a></li>
+	
+		<li><a href="Numbas.storage.html">storage</a></li>
+	
+		<li><a href="Numbas.timing.html">timing</a></li>
+	
+		<li><a href="Numbas.util.html">util</a></li>
+	
+		<li><a href="Numbas.vectormath.html">vectormath</a></li>
+	
+		<li><a href="Numbas.xml.html">xml</a></li>
+	
+	</ul>
+
+
+
+
+
+
+
+	<h3><a href="global.html">Globals</a></h3>
+	<ul>
+	
+		<li><a href="global.html#complex">complex</a></li>
+	
+		<li><a href="global.html#func_data">func_data</a></li>
+	
+		<li><a href="global.html#JME">JME</a></li>
+	
+		<li><a href="global.html#matrix">matrix</a></li>
+	
+		<li><a href="global.html#partpath">partpath</a></li>
+	
+		<li><a href="global.html#range">range</a></li>
+	
+		<li><a href="global.html#TeX">TeX</a></li>
+	
+		<li><a href="global.html#variable_data_dict">variable_data_dict</a></li>
+	
+		<li><a href="global.html#vector">vector</a></li>
+	
+	</ul>
+
+
+	</nav>
+
+	<br clear="both">
+
+	<footer>
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Thu Mar 27 2014 14:20:51 GMT-0000 (GMT)
+	</footer>
+
+	<script> prettyPrint(); </script>
+	<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

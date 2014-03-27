@@ -1,0 +1,3733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Namespace: util - Numbas API documentation</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+	<div id="header">
+		<span>This is the <a target="_blank" href="http://www.ncl.ac.uk/maths/numbas">Numbas</a> API Documentation</a>.</span>
+		<span>The documentation for users is at <a href="http://numbas-editor.readthedocs.org">Read the Docs</a>.</span>
+	</div>
+
+	<div id="main">
+
+		<h1 class="page-title">Namespace: util</h1>
+
+		
+
+
+
+<section>
+
+<header>
+    <h3>
+		
+        	<span class="ancestors"><a href="Numbas.html">Numbas</a>.</span>
+	    
+    	util
+	    
+	</h3>
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+
+    
+        
+
+        
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line21">line 21</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+
+	
+	<nav class="toc">
+		<h3>Table of contents</h3>
+		
+
+		
+
+		
+
+		
+			<div class="toc-section">
+				<h4>Methods</h4>
+				<ul>
+				
+					<li class="name"><a href="Numbas.util.html#capitalise">capitalise</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#contentsplitbrackets">contentsplitbrackets</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#copyarray">copyarray</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#copyinto">copyinto</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#copyobj">copyobj</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#eq">eq</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#escapeHTML">escapeHTML</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#except">except</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#extend">extend</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#formatString">formatString</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#hashCode">hashCode</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#isBool">isBool</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#isFloat">isFloat</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#isInt">isInt</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#isNonemptyHTML">isNonemptyHTML</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#lpad">lpad</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#neq">neq</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#parseBool">parseBool</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#pluralise">pluralise</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#sortBy">sortBy</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#splitbrackets">splitbrackets</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#unPercent">unPercent</a></li>
+				
+				</ul>
+			</div>
+		
+
+		
+
+		
+	</nav>
+	
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+            
+<dt>
+    <h4 class="name" id="capitalise"><span class="type-signature">&lt;static> </span>capitalise<span class="signature">(str)</span><span class="type-signature">&rarr; {string}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Make the first letter in the string a capital</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>str</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line301">line 301</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="contentsplitbrackets"><span class="type-signature">&lt;static> </span>contentsplitbrackets<span class="signature">(txt, re_end)</span><span class="type-signature">&rarr; {string[]}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Split a string up by TeX delimiters (<code>$</code>, <code>\[</code>, <code>\]</code>)</p>
+<p><code>bits.re_end</code> stores the delimiter if the returned array has unfinished maths at the end</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>txt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>string to split up</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>re_end</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">RegExp</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>If tex is split across several strings (e.g. text nodes with <br> in the middle), this can be used to give the end delimiter for unfinished maths</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line417">line 417</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>bits - stuff outside TeX, left delimiter, TeX, right delimiter, stuff outside TeX, ...</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string[]</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>contentsplitbrackets('hello $x+y$ and \[this\] etc') => ['hello ','$','x+y','$',' and ','\[','this','\]']</code></pre>
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="copyarray"><span class="type-signature">&lt;static> </span>copyarray<span class="signature">(arr, deep)</span><span class="type-signature">&rarr; {Array}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Clone an array, with array elements copied too.
+Array.splice() will create a copy of an array, but the elements are the same objects, which can cause fruity bugs.
+This function clones the array elements as well, so there should be no side-effects when operating on the cloned array.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>arr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>deep</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>if true, do a deep copy of each element</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line70">line 70</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="Numbas.util.html#copyobj">Numbas.util.copyobj</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="copyinto"><span class="type-signature">&lt;static> </span>copyinto<span class="signature">(src, dest)</span><span class="type-signature"></span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Shallow copy an object into an already existing object
+(add all src's properties to dest)</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>src</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>dest</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line121">line 121</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="copyobj"><span class="type-signature">&lt;static> </span>copyobj<span class="signature">(obj, deep)</span><span class="type-signature">&rarr; {object}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Clone an object.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>deep</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>if true, each property is cloned as well (recursively) so there should be no side-effects when operating on the cloned object.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line88">line 88</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">object</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="eq"><span class="type-signature">&lt;static> </span>eq<span class="signature">(a, b)</span><span class="type-signature">&rarr; {boolean}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Generic equality test on <a href="Numbas.jme.html#token">Numbas.jme.token</a>s</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>a</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Numbas.jme.html#token">Numbas.jme.token</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>b</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Numbas.jme.html#token">Numbas.jme.token</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line135">line 135</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="escapeHTML"><span class="type-signature">&lt;static> </span>escapeHTML<span class="signature">(str)</span><span class="type-signature">&rarr; {string}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Because XML doesn't like having ampersands hanging about, replace them with escape codes</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>str</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>XML string</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line360">line 360</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="except"><span class="type-signature">&lt;static> </span>except<span class="signature">(list, exclude)</span><span class="type-signature">&rarr; {Array}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Filter out values in <code>exclude</code> from <code>list</code></p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>list</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Numbas.jme.types.TList.html">Numbas.jme.types.TList</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>exclude</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Numbas.jme.types.TList.html">Numbas.jme.types.TList</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line175">line 175</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="extend"><span class="type-signature">&lt;static> </span>extend<span class="signature">(a, b)</span><span class="type-signature">&rarr; {function}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Derive type B from A (class inheritance, really)</p>
+<p>B's prototype supercedes A's.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>a</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>the constructor for the parent class</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>b</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>a constructor to be called after <code>a</code>'s constructor is done.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line32">line 32</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>a constructor for the derived class</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">function</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="formatString"><span class="type-signature">&lt;static> </span>formatString<span class="signature">(str, value)</span><span class="type-signature">&rarr; {string}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Replace occurences of <code>%s</code> with the extra arguments of the function</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Argument</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>str</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                    &lt;repeatable><br>
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>string to substitute</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line258">line 258</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>formatString('hello %s %s','Mr.','Perfect') => 'hello Mr. Perfect'</code></pre>
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="hashCode"><span class="type-signature">&lt;static> </span>hashCode<span class="signature">()</span><span class="type-signature"></span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Hash a string into a string of digits</p>
+<p>From <a href="http://werxltd.com/wp/2010/05/13/javascript-implementation-of-javas-string-hashcode-method/">http://werxltd.com/wp/2010/05/13/javascript-implementation-of-javas-string-hashcode-method/</a></p>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line384">line 384</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="isBool"><span class="type-signature">&lt;static> </span>isBool<span class="signature">(b)</span><span class="type-signature">&rarr; {boolean}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Test if parameter is a boolean - that is: a boolean literal, or any of the strings 'false','true','yes','no', case-insensitive.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>b</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line207">line 207</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="isFloat"><span class="type-signature">&lt;static> </span>isFloat<span class="signature">(f)</span><span class="type-signature">&rarr; {boolean}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Test if parameter is a float</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>f</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line198">line 198</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="isInt"><span class="type-signature">&lt;static> </span>isInt<span class="signature">(i)</span><span class="type-signature">&rarr; {boolean}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Test if parameter is an integer</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>i</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line189">line 189</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="isNonemptyHTML"><span class="type-signature">&lt;static> </span>isNonemptyHTML<span class="signature">(html)</span><span class="type-signature">&rarr; {boolean}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Parse a string as HTML, and return true only if it contains non-whitespace text</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>html</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line220">line 220</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="lpad"><span class="type-signature">&lt;static> </span>lpad<span class="signature">(s, n, p)</span><span class="type-signature">&rarr; {string}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Pad string <code>s</code> on the left with a character <code>p</code> until it is <code>n</code> characters long.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>s</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>n</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>p</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line244">line 244</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="neq"><span class="type-signature">&lt;static> </span>neq<span class="signature">(a, b)</span><span class="type-signature">&rarr; {boolean}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Generic inequality test on <a href="Numbas.jme.html#token">Numbas.jme.token</a>s</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>a</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Numbas.jme.html#token">Numbas.jme.token</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>b</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Numbas.jme.html#token">Numbas.jme.token</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line166">line 166</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="Numbas.util.html#eq">Numbas.util.eq</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="parseBool"><span class="type-signature">&lt;static> </span>parseBool<span class="signature">(b)</span><span class="type-signature">&rarr; {boolean}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Parse parameter as a boolean. The boolean value <code>true</code> and the strings 'true' and 'yes' are parsed as the value <code>true</code>, everything else is <code>false</code>.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>b</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line230">line 230</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="pluralise"><span class="type-signature">&lt;static> </span>pluralise<span class="signature">(n, singular, plural)</span><span class="type-signature">&rarr; {string}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Pluralise a word</p>
+<p>If <code>n</code> is not unity, return <code>plural</code>, else return <code>singular</code></p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>n</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>singular</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>string to return if <code>n</code> is +1 or -1</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>plural</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>string to returns if <code>n</code> is not +1 or -1</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line288">line 288</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="sortBy"><span class="type-signature">&lt;static> </span>sortBy<span class="signature">(prop)</span><span class="type-signature">&rarr; {function}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Create a comparison function which sorts objects by a particular property</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>prop</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>name of the property to sort by</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line369">line 369</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">function</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="splitbrackets"><span class="type-signature">&lt;static> </span>splitbrackets<span class="signature">(t, lb, rb)</span><span class="type-signature">&rarr; {string[]}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Split a string up according to brackets</p>
+<p>Strips out nested brackets</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>t</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>string to split</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>lb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>left bracket character</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>rb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>right bracket character</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line314">line 314</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <ul>
+<li>alternating strings in brackets and strings outside: odd-numbered indices are inside brackets.</li>
+</ul>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string[]</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>splitbrackets('a{{b}}c','{','}') => ['a','b','c']</code></pre>
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="unPercent"><span class="type-signature">&lt;static> </span>unPercent<span class="signature">(s)</span><span class="type-signature">&rarr; {number}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Get rid of the % on the end of percentages and parse as float, then divide by 100</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>s</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line274">line 274</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+        <h5>Examples</h5>
+        
+    <pre class="prettyprint"><code>unPercent('50%') => 0.5</code></pre>
+
+    <pre class="prettyprint"><code>unPercent('50') => 0.5</code></pre>
+
+    
+</dd>
+
+        </dl>
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+	</div>
+
+	<nav class="main-nav">
+		<h2><a href="index.html">Index</a></h2>
+
+
+
+
+
+	<h3>Classes</h3>
+	<ul>
+	
+		<li><a href="Numbas.display.ExamDisplay.html">ExamDisplay</a></li>
+	
+		<li><a href="Numbas.display.GapFillPartDisplay.html">GapFillPartDisplay</a></li>
+	
+		<li><a href="Numbas.display.InformationPartDisplay.html">InformationPartDisplay</a></li>
+	
+		<li><a href="Numbas.display.JMEPartDisplay.html">JMEPartDisplay</a></li>
+	
+		<li><a href="Numbas.display.MultipleResponsePartDisplay.html">MultipleResponsePartDisplay</a></li>
+	
+		<li><a href="Numbas.display.NumberEntryPartDisplay.html">NumberEntryPartDisplay</a></li>
+	
+		<li><a href="Numbas.display.PartDisplay.html">PartDisplay</a></li>
+	
+		<li><a href="Numbas.display.PatternMatchPartDisplay.html">PatternMatchPartDisplay</a></li>
+	
+		<li><a href="Numbas.display.QuestionDisplay.html">QuestionDisplay</a></li>
+	
+		<li><a href="Numbas.Error.html">Error</a></li>
+	
+		<li><a href="Numbas.Exam.html">Exam</a></li>
+	
+		<li><a href="Numbas.ExamEvent.html">ExamEvent</a></li>
+	
+		<li><a href="Numbas.jme.display.Rule.html">Rule</a></li>
+	
+		<li><a href="Numbas.jme.funcObj.html">funcObj</a></li>
+	
+		<li><a href="Numbas.jme.Ruleset.html">Ruleset</a></li>
+	
+		<li><a href="Numbas.jme.Scope.html">Scope</a></li>
+	
+		<li><a href="Numbas.jme.types.TBool.html">TBool</a></li>
+	
+		<li><a href="Numbas.jme.types.TFunc.html">TFunc</a></li>
+	
+		<li><a href="Numbas.jme.types.THTML.html">THTML</a></li>
+	
+		<li><a href="Numbas.jme.types.TList.html">TList</a></li>
+	
+		<li><a href="Numbas.jme.types.TMatrix.html">TMatrix</a></li>
+	
+		<li><a href="Numbas.jme.types.TName.html">TName</a></li>
+	
+		<li><a href="Numbas.jme.types.TNum.html">TNum</a></li>
+	
+		<li><a href="Numbas.jme.types.TOp.html">TOp</a></li>
+	
+		<li><a href="Numbas.jme.types.TPunc.html">TPunc</a></li>
+	
+		<li><a href="Numbas.jme.types.TRange.html">TRange</a></li>
+	
+		<li><a href="Numbas.jme.types.TString.html">TString</a></li>
+	
+		<li><a href="Numbas.jme.types.TVector.html">TVector</a></li>
+	
+		<li><a href="Numbas.parts.GapFillPart.html">GapFillPart</a></li>
+	
+		<li><a href="Numbas.parts.InformationPart.html">InformationPart</a></li>
+	
+		<li><a href="Numbas.parts.JMEPart.html">JMEPart</a></li>
+	
+		<li><a href="Numbas.parts.MultipleResponsePart.html">MultipleResponsePart</a></li>
+	
+		<li><a href="Numbas.parts.NumberEntryPart.html">NumberEntryPart</a></li>
+	
+		<li><a href="Numbas.parts.Part.html">Part</a></li>
+	
+		<li><a href="Numbas.parts.PatternMatchPart.html">PatternMatchPart</a></li>
+	
+		<li><a href="Numbas.Question.html">Question</a></li>
+	
+		<li><a href="Numbas.storage.BlankStorage.html">BlankStorage</a></li>
+	
+		<li><a href="Numbas.storage.SCORMStorage.html">SCORMStorage</a></li>
+	
+		<li><a href="RequireScript.html">RequireScript</a></li>
+	
+	</ul>
+
+
+
+
+
+	<h3>Namespaces</h3>
+	<ul>
+	
+		<li><a href="Numbas.html">Numbas</a></li>
+	
+		<li><a href="Numbas.controls.html">controls</a></li>
+	
+		<li><a href="Numbas.display.html">display</a></li>
+	
+		<li><a href="Numbas.jme.html">jme</a></li>
+	
+		<li><a href="Numbas.jme.display.html">display</a></li>
+	
+		<li><a href="Numbas.jme.types.html">types</a></li>
+	
+		<li><a href="Numbas.jme.variables.html">variables</a></li>
+	
+		<li><a href="Numbas.math.html">math</a></li>
+	
+		<li><a href="Numbas.matrixmath.html">matrixmath</a></li>
+	
+		<li><a href="Numbas.parts.html">parts</a></li>
+	
+		<li><a href="Numbas.schedule.html">schedule</a></li>
+	
+		<li><a href="Numbas.storage.html">storage</a></li>
+	
+		<li><a href="Numbas.timing.html">timing</a></li>
+	
+		<li><a href="Numbas.util.html">util</a></li>
+	
+		<li><a href="Numbas.vectormath.html">vectormath</a></li>
+	
+		<li><a href="Numbas.xml.html">xml</a></li>
+	
+	</ul>
+
+
+
+
+
+
+
+	<h3><a href="global.html">Globals</a></h3>
+	<ul>
+	
+		<li><a href="global.html#complex">complex</a></li>
+	
+		<li><a href="global.html#func_data">func_data</a></li>
+	
+		<li><a href="global.html#JME">JME</a></li>
+	
+		<li><a href="global.html#matrix">matrix</a></li>
+	
+		<li><a href="global.html#partpath">partpath</a></li>
+	
+		<li><a href="global.html#range">range</a></li>
+	
+		<li><a href="global.html#TeX">TeX</a></li>
+	
+		<li><a href="global.html#variable_data_dict">variable_data_dict</a></li>
+	
+		<li><a href="global.html#vector">vector</a></li>
+	
+	</ul>
+
+
+	</nav>
+
+	<br clear="both">
+
+	<footer>
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Thu Mar 27 2014 14:20:52 GMT-0000 (GMT)
+	</footer>
+
+	<script> prettyPrint(); </script>
+	<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
