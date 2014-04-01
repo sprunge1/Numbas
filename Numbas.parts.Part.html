@@ -354,6 +354,8 @@
 				
 					<li class="name"><a href="Numbas.parts.Part.html#setDirty">setDirty</a></li>
 				
+					<li class="name"><a href="Numbas.parts.Part.html#setStudentAnswer">setStudentAnswer</a></li>
+				
 					<li class="name"><a href="Numbas.parts.Part.html#showSteps">showSteps</a></li>
 				
 					<li class="name"><a href="Numbas.parts.Part.html#storeAnswer">storeAnswer</a></li>
@@ -622,7 +624,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line661">line 661</a>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line663">line 663</a>
     </li></ul></dd>
     
 
@@ -1289,6 +1291,29 @@
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>showCorrectAnswer</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Show the correct answer on reveal?</p></td>
+        </tr>
+
+    
     </tbody>
 </table></dl>
 
@@ -1313,7 +1338,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line651">line 651</a>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line652">line 652</a>
     </li></ul></dd>
     
 
@@ -1914,7 +1939,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line838">line 838</a>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line847">line 847</a>
     </li></ul></dd>
     
 
@@ -1987,7 +2012,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line675">line 675</a>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line677">line 677</a>
     </li></ul></dd>
     
 
@@ -2059,7 +2084,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line666">line 666</a>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line668">line 668</a>
     </li></ul></dd>
     
 
@@ -2138,7 +2163,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line903">line 903</a>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line912">line 912</a>
     </li></ul></dd>
     
 
@@ -2258,7 +2283,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line866">line 866</a>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line875">line 875</a>
     </li></ul></dd>
     
 
@@ -2401,7 +2426,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line852">line 852</a>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line861">line 861</a>
     </li></ul></dd>
     
 
@@ -2521,7 +2546,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line913">line 913</a>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line922">line 922</a>
     </li></ul></dd>
     
 
@@ -2664,7 +2689,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line823">line 823</a>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line832">line 832</a>
     </li></ul></dd>
     
 
@@ -2784,7 +2809,79 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line736">line 736</a>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line738">line 738</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setStudentAnswer"><span class="type-signature">&lt;abstract> </span>setStudentAnswer<span class="signature">()</span><span class="type-signature"></span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Save a copy of the student's answer as entered on the page, for use in marking.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line821">line 821</a>
     </li></ul></dd>
     
 
@@ -2904,7 +3001,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line883">line 883</a>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line892">line 892</a>
     </li></ul></dd>
     
 
@@ -2976,7 +3073,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line727">line 727</a>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line729">line 729</a>
     </li></ul></dd>
     
 
@@ -3048,7 +3145,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line750">line 750</a>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line752">line 752</a>
     </li></ul></dd>
     
 
@@ -3120,7 +3217,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line878">line 878</a>
+        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line887">line 887</a>
     </li></ul></dd>
     
 
@@ -3346,7 +3443,7 @@
 	<br clear="both">
 
 	<footer>
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Thu Mar 27 2014 16:22:08 GMT-0000 (GMT)
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Tue Apr 01 2014 09:14:38 GMT+0100 (BST)
 	</footer>
 
 	<script> prettyPrint(); </script>
