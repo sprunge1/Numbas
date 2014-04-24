@@ -119,6 +119,8 @@
 				
 					<li class="name"><a href="Numbas.util.html#copyobj">copyobj</a></li>
 				
+					<li class="name"><a href="Numbas.util.html#currency">currency</a></li>
+				
 					<li class="name"><a href="Numbas.util.html#eq">eq</a></li>
 				
 					<li class="name"><a href="Numbas.util.html#escapeHTML">escapeHTML</a></li>
@@ -261,7 +263,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line301">line 301</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line323">line 323</a>
     </li></ul></dd>
     
 
@@ -423,7 +425,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line417">line 417</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line439">line 439</a>
     </li></ul></dd>
     
 
@@ -955,6 +957,177 @@ This function clones the array elements as well, so there should be no side-effe
         
             
 <dt>
+    <h4 class="name" id="currency"><span class="type-signature">&lt;static> </span>currency<span class="signature">(n, prefix, suffix)</span><span class="type-signature"></span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Format an amount of currency</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>n</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>prefix</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>symbol to use in front of currency if abs(n) &gt;= 1</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>suffix</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>symbol to use in front of currency if abs(n) &lt;= 1</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line274">line 274</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>currecny(5.3,'£','p') => £5.30</code></pre>
+
+    
+</dd>
+
+        
+            
+<dt>
     <h4 class="name" id="eq"><span class="type-signature">&lt;static> </span>eq<span class="signature">(a, b)</span><span class="type-signature">&rarr; {boolean}</span>
 </h4>
 
@@ -1206,7 +1379,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line360">line 360</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line382">line 382</a>
     </li></ul></dd>
     
 
@@ -1810,7 +1983,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line384">line 384</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line406">line 406</a>
     </li></ul></dd>
     
 
@@ -3019,7 +3192,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line288">line 288</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line310">line 310</a>
     </li></ul></dd>
     
 
@@ -3157,7 +3330,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line369">line 369</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line391">line 391</a>
     </li></ul></dd>
     
 
@@ -3342,7 +3515,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line314">line 314</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line336">line 336</a>
     </li></ul></dd>
     
 
@@ -3491,7 +3664,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line274">line 274</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line296">line 296</a>
     </li></ul></dd>
     
 
@@ -3724,7 +3897,7 @@ This function clones the array elements as well, so there should be no side-effe
 	<br clear="both">
 
 	<footer>
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Tue Apr 01 2014 09:14:39 GMT+0100 (BST)
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Thu Apr 24 2014 15:07:48 GMT+0100 (BST)
 	</footer>
 
 	<script> prettyPrint(); </script>
