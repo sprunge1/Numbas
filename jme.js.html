@@ -79,11 +79,10 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 	re: {
 		re_bool: /^true|^false/i,
 		re_number: /^[0-9]+(?:\x2E[0-9]+)?/,
-		re_name: /^{?((?:(?:[a-zA-Z]+):)*)((?:\$?[a-zA-Z_][a-zA-Z0-9_]*'*)|\?)}?/i,
-		re_op: /^(\.\.|#|&lt;=|>=|&lt;>|&amp;&amp;|\|\||[\|*+\-\/\^&lt;>=!&amp;]|(?:(not|and|or|xor|isa|except)([^a-zA-Z0-9]|$)))/i,
+		re_name: /^{?((?:(?:[a-zA-Z]+):)*)((?:\$?[a-zA-Z_][a-zA-Z0-9_]*'*)|\?\??)}?/i,
+		re_op: /^(\.\.|#|&lt;=|>=|&lt;>|&amp;&amp;|\|\||[\|*+\-\/\^&lt;>=!&amp;;]|(?:(not|and|or|xor|isa|except)([^a-zA-Z0-9]|$)))/i,
 		re_punctuation: /^([\(\),\[\]])/,
 		re_string: /^(['"])((?:[^\1\\]|\\.)*?)\1/,
-		re_special: /^\\\\([%!+\-\,\.\/\:;\?\[\]=\*\&amp;&lt;>\|~\(\)]|\d|([a-zA-Z]+))/,
 		re_comment: /^\/\/.*(?:\n|$)/
 	},
 
@@ -155,7 +154,7 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 			else if (result = expr.match(jme.re.re_name))
 			{
 				var name = result[2];
-				var annotation = result[1] ? result[1].split(':') : null;
+				var annotation = result[1] ? result[1].split(':').slice(0,-1) : null;
 				if(!annotation)
 				{
 					var lname = name.toLowerCase();
@@ -210,31 +209,6 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 				estr+=str;
 
 				token = new TString(estr);
-			}
-			else if (result = expr.match(jme.re.re_special))
-			{
-				var code = result[1] || result[2];
-				
-				var tex;
-				var cons = TSpecial;
-				if( varsymbols.contains(code) )	//varsymbols letters should act like variable names
-				{
-					cons = TName;
-				}
-				if(samesymbols.contains(code))	//numbers, punctuation, etc. can be left as they are
-				{
-					tex = code;
-				}
-				else if (symbols[code]!==undefined)	//is code in dictionary of things that have a particular translation?
-				{
-					tex = symbols[code];
-				}
-				else	//otherwise latex command must be the same as numbas, so stick a slash in front
-				{
-					tex = '\\'+code;
-				}
-
-				token = new cons(tex);
 			}
 			else if(expr.length)
 			{
@@ -302,13 +276,6 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 			case "number":
 			case "string":
 			case 'boolean':
-				addoutput(tok);
-				break;
-			case 'special':
-				while( stack.length &amp;&amp; stack[stack.length-1].type != "(" )
-				{
-					addoutput(stack.pop());
-				}
 				addoutput(tok);
 				break;
 			case "name":
@@ -842,6 +809,36 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 			}
 			return v;
 		}
+	},
+
+	/** Is a token a TOp?
+	 *
+	 * @param {Numbas.jme.token} 
+	 * 
+	 * @returns {boolean}
+	 */
+	isOp: function(tok,op) {
+		return tok.type=='op' &amp;&amp; tok.name==op;
+	},
+
+	/** Is a token a TName?
+	 *
+	 * @param {Numbas.jme.token} 
+	 * 
+	 * @returns {boolean}
+	 */
+	isName: function(tok,name) {
+		return tok.type=='name' &amp;&amp; tok.name==name;
+	},
+
+	/** Is a token a TFunction?
+	 *
+	 * @param {Numbas.jme.token} 
+	 * 
+	 * @returns {boolean}
+	 */
+	isFunction: function(tok,name) {
+		return tok.type=='function' &amp;&amp; tok.name==name;
 	}
 };
 
@@ -1019,32 +1016,6 @@ Scope.prototype = /** @lends Numbas.jme.Scope.prototype */ {
 			this.functions[fn.name].push(fn);
 	}
 };
-
-
-var varsymbols = ['alpha','beta','gamma','delta','epsilon','zeta','eta','theta','iota','kappa','lambda','mu','nu','xi','omicron','pi','rho','sigma','tau','upsilon','psi','chi','phi','omega','=','space'];
-var samesymbols = '!+-,./0123456789:;?[]=';
-var symbols = {
-	'space': ' ',				'&amp;': '\\&amp;',							'contains': '\\ni',
-	'*': '\\ast',				'&lt;': '\\lt',						'>': '\\gt',
-	'congruent': '\\cong',		'perpendicular': '\\perp',			'uptee': '\\perp',
-	'overscore': '\\bar',		'|': '\\mid',						'~': '\\sim',
-	'dash': '^{\\prime}',			'leftanglebracket': '\\langle',		'le': '\\leq',
-	'infinity': '\\infty',		'doublearrow': '\\leftrightarrow',	'degree': '^{\\circ}',
-	'plusorminus': '\\pm',		'doublequotes': '"',				'ge': '\\geq',
-	'proportional': '\\propto',	'filledcircle': '\\bullet',			'divide': '\\div',
-	'notequal': '\\neq',		'identical': '\\equiv',				'approximately': '\\approx',
-	'vbar': '\\mid',			'hbar': '---',						'dots': '\\ldots',
-	'imaginary': '\\mathbb{I}',	'real': '\\mathbb{R}',				'osol': '\\varnothing',
-	'subsetequal': '\\supseteq','subset': '\\supset',				'notsubset': '\\not \\subset',
-	'supersetequal': '\\subseteq','superset': '\\subset',			'notin': '\\not \\in',
-	'product': '\\prod',		'sqrt': '\\sqrt',					'dot': '\\cdot',
-	'\u00AC': '\\neg',				'logicaland': '\\wedge',			'logicalor': '\\vee',
-	'doubleimplies': '\\Leftrightarrow',							'impliesby': '\\Leftarrow',
-	'impliesup': '\\Uparrow', 	'impliesdown': '\\Downarrow',		'implies': '\\Rightarrow',
-	'rightanglebracket': '\\rangle',								'integral': '\\int',
-	'(': '\\left ( \\right .',					')': '\\left ) \\right .'
-};
-
 
 
 //a length-sorted list of all the builtin functions, for recognising stuff like xcos() as x*cos()
@@ -1354,19 +1325,6 @@ var TPunc = types.TPunc = function(kind)
 }
 
 
-//special character
-var TSpecial = jme.types.TSpecial = function(value)
-{
-	this.value = value;
-}
-TSpecial.prototype.type = 'special';
-
-//concatenation - for dealing with special characters
-var TConc = jme.types.TConc = function()
-{
-}
-TConc.prototype.type = 'conc';
-
 /** Arities of built-in operations
  * @readonly
  * @memberof Numbas.jme
@@ -1404,6 +1362,7 @@ var postfixForm = {
  * @readonly
  */
 var precedence = jme.precedence = {
+	';': 0,
 	'fact': 1,
 	'not': 1,
 	'+u': 2.5,
@@ -1469,7 +1428,8 @@ var commutative = jme.commutative =
 {
 	'*': true,
 	'+': true,
-	'and': true
+	'and': true,
+	'=': true
 };
 
 
@@ -1700,6 +1660,7 @@ newBuiltin('latex',[TString],TString,null,{
 newBuiltin('capitalise',[TString],TString,function(s) { return util.capitalise(s); }, {doc: {usage: ['capitalise(\'hello there\')'], description: 'Capitalise the first letter of a string', tags: ['upper-case','case','upper']}});
 newBuiltin('upper',[TString],TString,function(s) { return s.toUpperCase(); }, {doc: {usage: ['upper(\'hello there\')'], description: 'Change all the letters in a string to capitals.', tags: ['upper-case','case','upper','capitalise','majuscule']}});
 newBuiltin('lower',[TString],TString,function(s) { return s.toLowerCase(); }, {doc: {usage: ['lower(\'HELLO, you!\')'], description: 'Change all the letters in a string to minuscules.', tags: ['lower-case','lower','case']}});
+newBuiltin('pluralise',[TNum,TString,TString],TString,function(n,singular,plural) { return util.pluralise(n,singular,plural); });
 
 //the next three versions of the `except` operator
 //exclude numbers from a range, given either as a range, a list or a single value
@@ -1887,7 +1848,10 @@ newBuiltin('radians', [TNum], TNum, math.radians, {doc: {usage: 'radians(90)', d
 newBuiltin('round', [TNum], TNum, math.round, {doc: {usage: 'round(x)', description: 'Round to nearest integer.', tags: ['whole number']}} );
 newBuiltin('sign', [TNum], TNum, math.sign, {doc: {usage: 'sign(x)', description: 'Sign of a number. Equivalent to $\\frac{x}{|x|}$, or $0$ when $x=0$.', tags: ['positive','negative']}} );
 
-newBuiltin('factorise',[TNum],TList,math.factorise);
+newBuiltin('factorise',[TNum],TList,function(n) {
+		return math.factorise(n).map(function(n){return new TNum(n)});
+	}
+);
 
 newBuiltin('random', [TRange], TNum, math.random, {doc: {usage: 'random(1..4)', description: 'A random number in the given range.', tags: ['choose','pick']}} );
 
@@ -2896,7 +2860,7 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 	<br clear="both">
 
 	<footer>
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Thu Jun 26 2014 14:10:08 GMT+0100 (BST)
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Fri Jul 11 2014 09:12:18 GMT+0100 (BST)
 	</footer>
 
 	<script> prettyPrint(); </script>
