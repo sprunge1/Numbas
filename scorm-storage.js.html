@@ -315,7 +315,8 @@ SCORMStorage.prototype = /** @lends Numbas.storage.SCORMstorage.prototype */ {
 			return;
 		var eobj = 
 		{
-			timeRemaining: exam.timeRemaining,
+			timeRemaining: exam.timeRemaining || 0,
+			duration: exam.settings.duration || 0,
 			questionSubset: exam.questionSubset,
 			start: exam.start
 		};
@@ -404,11 +405,18 @@ SCORMStorage.prototype = /** @lends Numbas.storage.SCORMstorage.prototype */ {
 	 */
 	getSuspendData: function()
 	{
-		if(!this.suspendData)
-		{
-			var suspend_data = this.get('suspend_data');
-			if(suspend_data.length)
-				this.suspendData = JSON.parse(suspend_data);
+		try {
+			if(!this.suspendData)
+			{
+				var suspend_data = this.get('suspend_data');
+				if(suspend_data.length)
+					this.suspendData = JSON.parse(suspend_data);
+			}
+			if(!this.suspendData) {
+				throw(new Numbas.Error('scorm.no exam suspend data'));
+			}
+		} catch(e) {
+			throw(new Numbas.Error('scorm.error loading suspend data',e.message));
 		}
 		return this.suspendData;
 	},
@@ -431,7 +439,8 @@ SCORMStorage.prototype = /** @lends Numbas.storage.SCORMstorage.prototype */ {
 
 		var score = parseInt(this.get('score.raw'),10);
 
-		return {timeRemaining: eobj.timeRemaining,
+		return {timeRemaining: eobj.timeRemaining || 0,
+				duration: eobj.duration || 0 ,
 				questionSubset: eobj.questionSubset,
 				start: eobj.start,
 				score: score,
@@ -445,25 +454,32 @@ SCORMStorage.prototype = /** @lends Numbas.storage.SCORMstorage.prototype */ {
 	 */
 	loadQuestion: function(question) 
 	{
-		var eobj = this.getSuspendData();
-		var qobj = eobj.questions[question.number];
-		var id = this.getQuestionId(question);
-		var index = this.questionIndices[id];
+		try {
+			var eobj = this.getSuspendData();
+			var qobj = eobj.questions[question.number];
+			if(!qobj) {
+				throw(new Numbas.Error('scorm.no question suspend data'));
+			}
+			var id = this.getQuestionId(question);
+			var index = this.questionIndices[id];
 
-		var variables = {};
-		for(var name in qobj.variables)
-		{
-			variables[name] = Numbas.jme.evaluate(qobj.variables[name],question.scope);
+			var variables = {};
+			for(var name in qobj.variables)
+			{
+				variables[name] = Numbas.jme.evaluate(qobj.variables[name],question.scope);
+			}
+
+			return {score: parseInt(this.get('objectives.'+index+'.score.raw') || 0,10),
+					visited: qobj.visited,
+					answered: qobj.answered,
+					submitted: qobj.submitted,
+					adviceDisplayed: qobj.adviceDisplayed,
+					revealed: qobj.revealed,
+					variables: variables
+			};
+		} catch(e) {
+			throw(new Numbas.Error('scorm.error loading question',question.number,e.message));
 		}
-
-		return {score: parseInt(this.get('objectives.'+index+'.score.raw') || 0,10),
-				visited: qobj.visited,
-				answered: qobj.answered,
-				submitted: qobj.submitted,
-				adviceDisplayed: qobj.adviceDisplayed,
-				revealed: qobj.revealed,
-				variables: variables
-		};
 	},
 
 	/** Get suspended info for a part
@@ -472,34 +488,41 @@ SCORMStorage.prototype = /** @lends Numbas.storage.SCORMstorage.prototype */ {
 	 */
 	loadPart: function(part)
 	{
-		var eobj = this.getSuspendData();
-		var pobj = eobj.questions[part.question.number];
-		var re = /(p|g|s)(\d+)/g;
-		while(m = re.exec(part.path))
-		{
-			var i = parseInt(m[2]);
-			switch(m[1])
+		try {
+			var eobj = this.getSuspendData();
+			var pobj = eobj.questions[part.question.number];
+			var re = /(p|g|s)(\d+)/g;
+			while(m = re.exec(part.path))
 			{
-			case 'p':
-				pobj = pobj.parts[i];
-				break;
-			case 'g':
-				pobj = pobj.gaps[i];
-				break;
-			case 's':
-				pobj = pobj.steps[i];
-				break;
+				var i = parseInt(m[2]);
+				switch(m[1])
+				{
+				case 'p':
+					pobj = pobj.parts[i];
+					break;
+				case 'g':
+					pobj = pobj.gaps[i];
+					break;
+				case 's':
+					pobj = pobj.steps[i];
+					break;
+				}
 			}
+			if(!pobj) {
+				throw(new Numbas.Error('scorm.no part suspend data'));
+			}
+
+			var id = this.getPartId( part );
+			var index = this.partIndices[id];
+			var sc = this;
+			function get(key) { return sc.get('interactions.'+index+'.'+key); };
+
+			pobj.answer = get('learner_response');
+
+			return pobj;
+		} catch(e) {
+			throw(new Numbas.Error('scorm.error loading part',part.path,e.message));
 		}
-
-		var id = this.getPartId( part );
-		var index = this.partIndices[id];
-		var sc = this;
-		function get(key) { return sc.get('interactions.'+index+'.'+key); };
-
-		pobj.answer = get('learner_response');
-
-		return pobj;
 	},
 
 	/** Load a {@link Numbas.parts.JMEPart}
@@ -548,8 +571,10 @@ SCORMStorage.prototype = /** @lends Numbas.storage.SCORMstorage.prototype */ {
 		var ticks = [];
 		var w = part.type=='m_n_x' ? part.numAnswers : part.numChoices;
 		var h = part.type=='m_n_x' ? part.numChoices : part.numAnswers;
-		if(w==0 || h==0)
-			return;
+		if(w==0 || h==0) {
+			out.ticks = [];
+			return out;
+		}
 		for(var i=0;i&lt;w;i++)
 		{
 			ticks.push([]);
@@ -578,7 +603,7 @@ SCORMStorage.prototype = /** @lends Numbas.storage.SCORMstorage.prototype */ {
 	 */
 	setSessionTime: function()
 	{
-		var timeSpent = new Date((this.exam.duration - this.exam.timeRemaining)*1000);
+		var timeSpent = new Date((this.exam.settings.duration - this.exam.timeRemaining)*1000);
 		var sessionTime = 'PT'+timeSpent.getHours()+'H'+timeSpent.getMinutes()+'M'+timeSpent.getSeconds()+'S';
 		this.set('session_time',sessionTime);
 	},
@@ -939,7 +964,7 @@ SCORMStorage.prototype = /** @lends Numbas.storage.SCORMstorage.prototype */ {
 	<br clear="both">
 
 	<footer>
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha9</a> on Mon Jul 21 2014 11:02:36 GMT+0100 (GMT Daylight Time)
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Thu Oct 02 2014 10:28:10 GMT+0100 (BST)
 	</footer>
 
 	<script> prettyPrint(); </script>
