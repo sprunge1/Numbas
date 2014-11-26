@@ -93,8 +93,25 @@ var Question = Numbas.Question = function( exam, xml, number, loading, gscope)
 	//get question's name
 	tryGetAttribute(q,q.xml,'.','name');
 
-	job(function() {
+	job = function(fn,that) {
+		function handleError(e) {
+			e.message = R('question.error',q.number+1,e.message);
+			throw(e);
+		}
+		Numbas.schedule.add({task: fn, error: handleError},that);
+	}
 
+	if(loading)
+	{
+		// check the suspend data was for this question - if the test is updated and the question set changes, this won't be the case!
+		var qobj = Numbas.store.loadQuestion(q);
+
+		if(qobj.name &amp;&amp; qobj.name!=q.name) {
+			throw(new Numbas.Error('question.loaded name mismatch'));
+		}
+	}
+
+	job(function() {
 		var preambleNodes = q.xml.selectNodes('preambles/preamble');
 		for(var i = 0; i&lt;preambleNodes.length; i++) {
 			var lang = preambleNodes[i].getAttribute('language');
@@ -327,11 +344,12 @@ Question.prototype = /** @lends Numbas.Question.prototype */
 		with({
 			question: this
 		}) {
-			var js = '(function() {'+this.preamble.js+'})()';
+			var js = '(function() {'+this.preamble.js+'\n})()';
 			try{
 				eval(js);
 			} catch(e) {
-				Numbas.showError(new Numbas.Error('question.preamble.error',this.number+1,e.message));
+				var errorName = e.name=='SyntaxError' ? 'question.preamble.syntax error' : 'question.preamble.error';
+				throw(new Numbas.Error(errorName,this.number+1,e.message));
 			}
 		}
 	},
@@ -405,6 +423,7 @@ Question.prototype = /** @lends Numbas.Question.prototype */
 			this.parts[i].revealAnswer(dontStore);
 
 		//display revealed answers
+		this.display.end();
 		this.display.revealAnswer();
 
 		this.display.showScore();
@@ -567,7 +586,12 @@ function createPart(xml, path, question, parentPart, loading)
 	{
 		var cons = partConstructors[type];
 		var part = new cons(xml, path, question, parentPart, loading);
-		part.applyScripts();
+		if(part.customConstructor) {
+			part.customConstructor.apply(part);
+		}
+		if(loading &amp;&amp; part.answered) {
+			part.submit();
+		}
 		return part;
 	}
 	else
@@ -637,10 +661,12 @@ function Part( xml, path, question, parentPart, loading )
 			part: this
 		};
 		with(withEnv) {
-			script = eval('(function(){try{'+script+'}catch(e){Numbas.showError(new Numbas.Error(\'part.script.error\',this.path,name,e.message))}})');
+			script = eval('(function(){try{'+script+'\n}catch(e){Numbas.showError(new Numbas.Error(\'part.script.error\',this.path,name,e.message))}})');
 		}
 		this.scripts[name] = script;
 	}
+
+	this.applyScripts();
 
 	//initialise display code
 	this.display = new Numbas.display.PartDisplay(this);
@@ -769,7 +795,7 @@ Part.prototype = /** @lends Numbas.parts.Part.prototype */ {
 					this[name] = script;
 					break;
 				case 'constructor':
-					script.apply(this);
+					this.customConstructor = script;
 					break;
 			}
 		}
@@ -1166,8 +1192,6 @@ function JMEPart(xml, path, question, parentPart, loading)
 	if(loading)	{
 		var pobj = Numbas.store.loadJMEPart(this);
 		this.stagedAnswer = [pobj.studentAnswer];
-		if(this.answered)
-			this.submit();
 	}
 	else {
 		this.stagedAnswer = [''];
@@ -1453,8 +1477,6 @@ function PatternMatchPart(xml, path, question, parentPart, loading)
 	{
 		var pobj = Numbas.store.loadPatternMatchPart(this);
 		this.stagedAnswer = [pobj.studentAnswer];
-		if(this.answered)
-			this.submit();
 	}
 }
 PatternMatchPart.prototype = /** @lends Numbas.PatternMatchPart.prototype */ {
@@ -1598,8 +1620,6 @@ function NumberEntryPart(xml, path, question, parentPart, loading)
 	{
 		var pobj = Numbas.store.loadNumberEntryPart(this);
 		this.stagedAnswer = [pobj.studentAnswer+''];
-		if(this.answered)
-			this.submit();
 	}
 }
 NumberEntryPart.prototype = /** @lends Numbas.parts.NumberEntryPart.prototype */
@@ -1797,11 +1817,10 @@ function MultipleResponsePart(xml, path, question, parentPart, loading)
 	}
 
 	//get warning type and message for wrong number of choices
-	warningNode = this.xml.selectSingleNode('uiwarning');
+	warningNode = this.xml.selectSingleNode('marking/warning');
 	if(warningNode)
 	{
 		tryGetAttribute(settings,null,warningNode,'type','warningType');
-		settings.warningMessage = $.xsl.transform(Numbas.xml.templates.question,warningNode).string;
 	}
 	
 	if(loading)
@@ -2098,10 +2117,6 @@ function MultipleResponsePart(xml, path, question, parentPart, loading)
 	this.wrongNumber = settings.minAnswers > 0;
 
 	this.display = new Numbas.display.MultipleResponsePartDisplay(this);
-	if(loading) {
-		if(this.answered)
-			this.submit();
-	}
 }
 MultipleResponsePart.prototype = /** @lends Numbas.parts.MultipleResponsePart.prototype */
 {
@@ -2134,8 +2149,7 @@ MultipleResponsePart.prototype = /** @lends Numbas.parts.MultipleResponsePart.pr
 	 * @property {string} answerOrder - order in which to display answers - either `random` or `fixed`
 	 * @property {Array.Array.&lt;number>} matrix - marks for each answer/choice pair. Arranged as `matrix[answer][choice]`
 	 * @property {string} displayType - how to display the response selectors. Can be `radiogroup` or `checkbox`
-	 * @property {string} warningType - what to do if the student picks the wrong number of responses? Either `uwNone` (do nothing), `uwPrevent` (don't let the student submit), or `uwWarn` (show a warning but let them submit)
-	 * @property {string} warningMessage - warning message to display if the student picks the wrong number of responses
+	 * @property {string} warningType - what to do if the student picks the wrong number of responses? Either `none` (do nothing), `prevent` (don't let the student submit), or `warn` (show a warning but let them submit)
 	 */
 	settings:
 	{
@@ -2146,8 +2160,7 @@ MultipleResponsePart.prototype = /** @lends Numbas.parts.MultipleResponsePart.pr
 		answerOrder: '',			//order in which to display answers
 		matrix: [],					//marks matrix
 		displayType: '',			//how to display the responses? can be: radiogroup, dropdownlist, buttonimage, checkbox, choicecontent
-		warningType: '',			//what to do if wrong number of responses
-		warningMessage: ''			//message to display if wrong number of responses
+		warningType: ''				//what to do if wrong number of responses
 	},
 
 	/** Store the student's choices */
@@ -2197,8 +2210,24 @@ MultipleResponsePart.prototype = /** @lends Numbas.parts.MultipleResponsePart.pr
 			{
 				if(this.ticks[i][j])
 				{
-					partScore += this.settings.matrix[i][j];
 					this.numTicks += 1;
+				}
+			}
+		}
+
+		this.wrongNumber = (this.numTicks&lt;this.settings.minAnswers || (this.numTicks>this.settings.maxAnswers &amp;&amp; this.settings.maxAnswers>0));
+		if(this.wrongNumber) {
+			this.setCredit(0,R('part.mcq.wrong number of choices'));
+			return;
+		}
+
+		for( i=0; i&lt;this.numAnswers; i++ )
+		{
+			for(var j=0; j&lt;this.numChoices; j++ )
+			{
+				if(this.ticks[i][j])
+				{
+					partScore += this.settings.matrix[i][j];
 
 					var row = this.settings.distractors[i];
 					if(row)
@@ -2218,14 +2247,10 @@ MultipleResponsePart.prototype = /** @lends Numbas.parts.MultipleResponsePart.pr
 		if(this.credit&lt;=0)
 			this.markingComment(R('part.marking.incorrect'));
 
-		this.wrongNumber = (this.numTicks&lt;this.settings.minAnswers || (this.numTicks>this.settings.maxAnswers &amp;&amp; this.settings.maxAnswers>0));
-
-		if(this.marks>0 &amp;&amp; !this.wrongNumber)
+		if(this.marks>0)
 		{
 			this.setCredit(Math.min(partScore,this.marks)/this.marks);	//this part might have a maximum number of marks which is less then the sum of the marking matrix
 		}
-		else
-			this.setCredit(0,R('part.mcq.wrong number of choices'));
 	},
 
 	/** Are the student's answers valid? Show a warning if they've picked the wrong number */
@@ -2235,12 +2260,12 @@ MultipleResponsePart.prototype = /** @lends Numbas.parts.MultipleResponsePart.pr
 		{
 			switch(this.settings.warningType)
 			{
-			case 'uwPrevent':
-				this.giveWarning(this.settings.warningMessage);
+			case 'prevent':
+				this.giveWarning(R('part.mcq.wrong number of choices'));
 				return false;
 				break;
-			case 'uwWarn':
-				this.giveWarning(this.settings.warningMessage);
+			case 'warn':
+				this.giveWarning(R('part.mcq.wrong number of choices'));
 				break;
 			}
 		}
@@ -2292,12 +2317,6 @@ function GapFillPart(xml, path, question, parentPart, loading)
 	}
 
 	this.display = new Numbas.display.GapFillPartDisplay(this);
-
-	if(loading)
-	{
-		if(this.answered)
-			this.submit();
-	}
 }	
 GapFillPart.prototype = /** @lends Numbas.parts.GapFillPart.prototype */
 {
@@ -2604,7 +2623,7 @@ for(var pc in partConstructors)
 	<br clear="both">
 
 	<footer>
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Thu Oct 02 2014 10:28:10 GMT+0100 (BST)
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Nov 26 2014 13:55:07 GMT-0000 (GMT)
 	</footer>
 
 	<script> prettyPrint(); </script>
