@@ -103,6 +103,15 @@
 		
 
 		
+			<div class="toc-section">
+				<h4>Members</h4>
+				<ul>
+				
+					<li class="name"><a href="Numbas.util.html#re_fraction">re_fraction</a></li>
+				
+				</ul>
+			</div>
+		
 
 		
 			<div class="toc-section">
@@ -110,6 +119,12 @@
 				<ul>
 				
 					<li class="name"><a href="Numbas.util.html#capitalise">capitalise</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#combinations">combinations</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#combinations_with_replacement">combinations_with_replacement</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#contains">contains</a></li>
 				
 					<li class="name"><a href="Numbas.util.html#contentsplitbrackets">contentsplitbrackets</a></li>
 				
@@ -120,6 +135,8 @@
 					<li class="name"><a href="Numbas.util.html#copyobj">copyobj</a></li>
 				
 					<li class="name"><a href="Numbas.util.html#currency">currency</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#distinct">distinct</a></li>
 				
 					<li class="name"><a href="Numbas.util.html#eq">eq</a></li>
 				
@@ -141,19 +158,29 @@
 				
 					<li class="name"><a href="Numbas.util.html#isNonemptyHTML">isNonemptyHTML</a></li>
 				
+					<li class="name"><a href="Numbas.util.html#isNumber">isNumber</a></li>
+				
 					<li class="name"><a href="Numbas.util.html#lpad">lpad</a></li>
 				
 					<li class="name"><a href="Numbas.util.html#neq">neq</a></li>
 				
 					<li class="name"><a href="Numbas.util.html#parseBool">parseBool</a></li>
 				
+					<li class="name"><a href="Numbas.util.html#parseNumber">parseNumber</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#permutations">permutations</a></li>
+				
 					<li class="name"><a href="Numbas.util.html#pluralise">pluralise</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#product">product</a></li>
 				
 					<li class="name"><a href="Numbas.util.html#sortBy">sortBy</a></li>
 				
 					<li class="name"><a href="Numbas.util.html#splitbrackets">splitbrackets</a></li>
 				
 					<li class="name"><a href="Numbas.util.html#unPercent">unPercent</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#wrapListIndex">wrapListIndex</a></li>
 				
 				</ul>
 			</div>
@@ -165,6 +192,66 @@
 	</nav>
 	
 
+    
+        <h3 class="subsection-title">Members</h3>
+
+        <dl>
+            
+<dt>
+    <h4 class="name" id="re_fraction"><span class="type-signature">&lt;static> </span>re_fraction<span class="type-signature"></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Regular expression recognising a fraction</p>
+    </div>
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line325">line 325</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        </dl>
     
 
     
@@ -263,7 +350,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line338">line 338</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line435">line 435</a>
     </li></ul></dd>
     
 
@@ -298,6 +385,453 @@
     <dd>
         
 <span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="combinations"><span class="type-signature">&lt;static> </span>combinations<span class="signature">(list, r)</span><span class="type-signature"></span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>All combinations of r items from given array, without replacement</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>list</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>r</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line558">line 558</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="combinations_with_replacement"><span class="type-signature">&lt;static> </span>combinations_with_replacement<span class="signature">(list, r)</span><span class="type-signature"></span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>All combinations of r items from given array, with replacement</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>list</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>r</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line592">line 592</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="contains"><span class="type-signature">&lt;static> </span>contains<span class="signature">(list, value)</span><span class="type-signature">&rarr; {boolean}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Is value in the list?</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>list</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Numbas.jme.html#token">Numbas.jme.token</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line231">line 231</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
 
 
     </dd>
@@ -425,7 +959,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line454">line 454</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line682">line 682</a>
     </li></ul></dd>
     
 
@@ -1093,7 +1627,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line287">line 287</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line384">line 384</a>
     </li></ul></dd>
     
 
@@ -1121,6 +1655,151 @@ This function clones the array elements as well, so there should be no side-effe
         <h5>Example</h5>
         
     <pre class="prettyprint"><code>currency(5.3,'£','p') => £5.30</code></pre>
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="distinct"><span class="type-signature">&lt;static> </span>distinct<span class="signature">(list)</span><span class="type-signature">&rarr; {list}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Return a copy of the input list with duplicates removed</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>list</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line206">line 206</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="Numbas.util.html#eq">Numbas.util.eq</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">list</span>
+
+
+    </dd>
+</dl>
+
+        
 
     
 </dd>
@@ -1379,7 +2058,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line397">line 397</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line494">line 494</a>
     </li></ul></dd>
     
 
@@ -1540,7 +2219,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line188">line 188</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line191">line 191</a>
     </li></ul></dd>
     
 
@@ -1887,7 +2566,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line271">line 271</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line368">line 368</a>
     </li></ul></dd>
     
 
@@ -1983,7 +2662,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line421">line 421</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line518">line 518</a>
     </li></ul></dd>
     
 
@@ -2103,7 +2782,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line220">line 220</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line293">line 293</a>
     </li></ul></dd>
     
 
@@ -2241,7 +2920,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line211">line 211</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line253">line 253</a>
     </li></ul></dd>
     
 
@@ -2379,7 +3058,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line202">line 202</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line244">line 244</a>
     </li></ul></dd>
     
 
@@ -2517,7 +3196,168 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line233">line 233</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line306">line 306</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="isNumber"><span class="type-signature">&lt;static> </span>isNumber<span class="signature">(n, allowFractions)</span><span class="type-signature">&rarr; {boolean}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Is <code>n</code> a number? i.e. <code>!isNaN(n)</code>, or is <code>n</code> &quot;infinity&quot;, or if <code>allowFractions</code> is true, is <code>n</code> a fraction?</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>n</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>allowFractions</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line263">line 263</a>
     </li></ul></dd>
     
 
@@ -2701,7 +3541,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line257">line 257</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line354">line 354</a>
     </li></ul></dd>
     
 
@@ -2862,7 +3702,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line179">line 179</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line182">line 182</a>
     </li></ul></dd>
     
 
@@ -3007,7 +3847,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line243">line 243</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line316">line 316</a>
     </li></ul></dd>
     
 
@@ -3048,6 +3888,288 @@ This function clones the array elements as well, so there should be no side-effe
 </dl>
 
         
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="parseNumber"><span class="type-signature">&lt;static> </span>parseNumber<span class="signature">(s)</span><span class="type-signature">&rarr; {number}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Parse a number - either parseFloat, or parse a fraction</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>s</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line331">line 331</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="permutations"><span class="type-signature">&lt;static> </span>permutations<span class="signature">(list, r)</span><span class="type-signature"></span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>All permutations of all choices of r elements from list</p>
+<p>Inspired by the algorithm in Python's itertools library</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>list</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>elements to choose and permute</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>r</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>number of elements to choose</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line625">line 625</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 
     
 </dd>
@@ -3192,7 +4314,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line325">line 325</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line422">line 422</a>
     </li></ul></dd>
     
 
@@ -3227,6 +4349,144 @@ This function clones the array elements as well, so there should be no side-effe
     <dd>
         
 <span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="product"><span class="type-signature">&lt;static> </span>product<span class="signature">(lists)</span><span class="type-signature">&rarr; {array}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Cartesian product of one or more lists</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>lists</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>list of arrays</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line535">line 535</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">array</span>
 
 
     </dd>
@@ -3330,7 +4590,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line406">line 406</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line503">line 503</a>
     </li></ul></dd>
     
 
@@ -3515,7 +4775,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line351">line 351</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line448">line 448</a>
     </li></ul></dd>
     
 
@@ -3664,7 +4924,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line311">line 311</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line408">line 408</a>
     </li></ul></dd>
     
 
@@ -3716,6 +4976,167 @@ This function clones the array elements as well, so there should be no side-effe
     
 </dd>
 
+        
+            
+<dt>
+    <h4 class="name" id="wrapListIndex"><span class="type-signature">&lt;static> </span>wrapListIndex<span class="signature">(n, size)</span><span class="type-signature">&rarr; {number}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Wrap a list index so -1 maps to length-1</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>n</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>size</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line282">line 282</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
         </dl>
     
 
@@ -3748,6 +5169,8 @@ This function clones the array elements as well, so there should be no side-effe
 		<li><a href="Numbas.display.InformationPartDisplay.html">InformationPartDisplay</a></li>
 	
 		<li><a href="Numbas.display.JMEPartDisplay.html">JMEPartDisplay</a></li>
+	
+		<li><a href="Numbas.display.MatrixEntryPartDisplay.html">MatrixEntryPartDisplay</a></li>
 	
 		<li><a href="Numbas.display.MultipleResponsePartDisplay.html">MultipleResponsePartDisplay</a></li>
 	
@@ -3793,6 +5216,8 @@ This function clones the array elements as well, so there should be no side-effe
 	
 		<li><a href="Numbas.jme.types.TRange.html">TRange</a></li>
 	
+		<li><a href="Numbas.jme.types.TSet.html">TSet</a></li>
+	
 		<li><a href="Numbas.jme.types.TString.html">TString</a></li>
 	
 		<li><a href="Numbas.jme.types.TVector.html">TVector</a></li>
@@ -3802,6 +5227,8 @@ This function clones the array elements as well, so there should be no side-effe
 		<li><a href="Numbas.parts.InformationPart.html">InformationPart</a></li>
 	
 		<li><a href="Numbas.parts.JMEPart.html">JMEPart</a></li>
+	
+		<li><a href="Numbas.parts.MatrixEntryPart.html">MatrixEntryPart</a></li>
 	
 		<li><a href="Numbas.parts.MultipleResponsePart.html">MultipleResponsePart</a></li>
 	
@@ -3850,6 +5277,8 @@ This function clones the array elements as well, so there should be no side-effe
 	
 		<li><a href="Numbas.schedule.html">schedule</a></li>
 	
+		<li><a href="Numbas.setmath.html">setmath</a></li>
+	
 		<li><a href="Numbas.storage.html">storage</a></li>
 	
 		<li><a href="Numbas.timing.html">timing</a></li>
@@ -3897,7 +5326,7 @@ This function clones the array elements as well, so there should be no side-effe
 	<br clear="both">
 
 	<footer>
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Nov 26 2014 13:55:12 GMT-0000 (GMT)
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Thu Feb 05 2015 14:14:19 GMT-0000 (GMT)
 	</footer>
 
 	<script> prettyPrint(); </script>

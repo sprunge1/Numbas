@@ -53,6 +53,10 @@ Numbas.queueScript('display',['controls','math','xml','util','timing','jme','jme
 
 	var MathJaxQueue = MathJax.Callback.Queue(MathJax.Hub.Register.StartupHook('End',{}));
 
+MathJax.Hub.Register.MessageHook("Math Processing Error",function(message){
+	throw(new Numbas.Error(message[2].message));
+});
+
 	MathJax.Hub.Register.StartupHook("TeX Jax Ready",function () {
 
 		var TEX = MathJax.InputJax.TeX;
@@ -72,9 +76,13 @@ Numbas.queueScript('display',['controls','math','xml','util','timing','jme','jme
 				var expr = this.GetArgument(name);
 				var scope = currentScope;
 
-				var v = jme.evaluate(jme.compile(expr,scope),scope);
+				try {
+					var v = jme.evaluate(jme.compile(expr,scope),scope);
 
-				var tex = jme.display.texify({tok: v});
+					var tex = jme.display.texify({tok: v});
+				}catch(e) {
+					throw(new Numbas.Error('mathjax.math processing error',e.message,expr));
+				}
 				var mml = TEX.Parse(tex,this.stack.env).mml();
 
 				this.Push(mml);
@@ -277,6 +285,105 @@ ko.bindingHandlers.stopbinding = {
 		return {controlsDescendantBindings: true};
 	}
 }
+
+ko.components.register('matrix-input',{
+	viewModel: function(params) {
+		this.allowResize = params.allowResize ? params.allowResize : ko.observable(false);
+		if(typeof params.rows=='function') {
+			this.numRows = params.rows;
+		} else {
+			this.numRows = ko.observable(params.rows || 2);
+		}
+		if(typeof params.columns=='function') {
+			this.numColumns = params.columns;
+		} else {
+			this.numColumns = ko.observable(params.columns || 2);
+		}
+		this.value = ko.observableArray([]);
+
+		this.disable = params.disable || false;
+		
+		this.update = function() {
+			// update value when number of rows or columns changes
+			var numRows = parseInt(this.numRows());
+			var numColumns = parseInt(this.numColumns());
+			
+			var value = this.value();
+			value.splice(numRows,value.length-numRows);
+			for(var i=0;i&lt;numRows;i++) {
+				var row;
+				if(value.length&lt;=i) {
+					row = [];
+					value.push(ko.observableArray(row));
+				} else {
+					row = value[i]();
+				}
+				row.splice(numColumns,row.length-numColumns);
+				
+				for(var j=0;j&lt;numColumns;j++) {
+					var cell;
+					if(row.length&lt;=j) {
+						cell = ko.observable('');
+						row.push({cell:cell});
+					} else {
+						cell = row[j];
+					}
+				}
+				value[i](row);
+			}
+			this.value(value);
+		}
+
+		ko.computed(this.update,this);
+		
+		// update model with value
+		ko.computed(function() {
+			var v = params.value();
+			var ov = this.value();
+			this.numRows(v.length);
+			this.numColumns(v[0] ? v[0].length : 0);
+			for(var i=0;i&lt;v.length;i++) {
+				var row = v[i];
+				for(var j=0;j&lt;row.length;j++) {
+					var cell = row[j];
+					if(i&lt;ov.length &amp;&amp; j&lt;ov[i]().length) {
+						ov[i]()[j].cell(cell);
+					}
+				}
+			}
+		},this);
+		
+		var firstGo = true;
+		//update value with model
+		ko.computed(function() {
+			var v = this.value().map(function(row,i){
+				return row().map(function(cell,j){return cell.cell()})
+			})
+			if(firstGo) {
+				firstGo = false;
+				return;
+			}
+			params.value(v);
+		},this)
+	},
+	template: 
+	 '&lt;div class="matrix-input">'
+	+'	&lt;!-- ko if: allowResize -->&lt;div class="matrix-size">'
+	+'		&lt;label class="num-rows">Rows: &lt;input type="number" min="1" data-bind="value: numRows, autosize: true, disable: disable"/>&lt;/label>'
+	+'		&lt;label class="num-columns">Columns: &lt;input type="number" min="1" data-bind="value: numColumns, autosize: true, disable: disable"/>&lt;/label>'
+	+'	&lt;/div>&lt;!-- /ko -->'
+	+'	&lt;div class="matrix-wrapper">'
+	+'		&lt;span class="left-bracket">&lt;/span>'
+	+'		&lt;table class="matrix" data-bind="foreach: value">'
+	+'			&lt;tr data-bind="foreach: $data">'
+	+'				&lt;td class="cell">&lt;input data-bind="value: cell, valueUpdate: \'afterkeydown\', autosize: true, disable: $parents[1].disable">&lt;/td>'
+	+'			&lt;/tr>'
+	+'		&lt;/table>'
+	+'		&lt;span class="right-bracket">&lt;/span>'
+	+'	&lt;/div>'
+	+'&lt;/div>'
+	}
+)
 
 /** @namespace Numbas.display */
 
@@ -1505,7 +1612,7 @@ display.NumberEntryPartDisplay = function()
 			if(dp>0)
 				this.warning(R('part.numberentry.answer not integer'));
 		}
-		if(!/^[\-+]?[0-9]+(?:\x2E[0-9]+)?$/.test(studentAnswer)) {
+		if(!util.isNumber(studentAnswer,p.settings.allowFractions)) {
 			this.warning(R('part.numberentry.answer not integer or decimal'));
 			return '';
 		}
@@ -1550,6 +1657,64 @@ display.NumberEntryPartDisplay.prototype =
 	}
 };
 display.NumberEntryPartDisplay = extend(display.PartDisplay,display.NumberEntryPartDisplay,true);
+
+/** Display code for a {@link Numbas.parts.MatrixEntryPart}
+ * @augments Numbas.display.PartDisplay
+ * @constructor
+ * @name MatrixEntryPartDisplay
+ * @memberof Numbas.display
+ */
+display.MatrixEntryPartDisplay = function()
+{
+	var p = this.part;
+
+	/** The student's current (not necessarily submitted) answer
+	 * @member {observable|string} studentAnswer
+	 * @memberof Numbas.display.MatrixEntryPartDisplay
+	 */
+	this.studentAnswer = ko.observable(p.studentAnswer);
+
+	/** The correct answer
+	 * @member {observable|number} correctAnswer
+	 * @memberof Numbas.display.MatrixEntryPartDisplay
+	 */
+	this.correctAnswer = ko.observable(p.settings.correctAnswer);
+	this.correctAnswerLaTeX = ko.computed(function() {
+		var correctAnswer = this.correctAnswer();
+		var m = new Numbas.jme.types.TMatrix(correctAnswer);
+		return Numbas.jme.display.texify({tok:m},{fractionnumbers: p.settings.correctAnswerFractions});
+	},this);
+
+	this.studentAnswerRows = ko.observable(p.settings.numRows);
+	this.studentAnswerColumns = ko.observable(p.settings.numColumns);
+	this.allowResize = ko.observable(p.settings.allowResize);
+
+	ko.computed(function() {
+		p.storeAnswer([this.studentAnswerRows(),this.studentAnswerColumns(),this.studentAnswer()]);
+	},this);
+
+	/** Show a LaTeX rendering of the answer?
+	 * @member {boolean} showPreview
+	 * @memberof Numbas.display.MatrixEntryPartDisplay
+	 */
+	this.showPreview = false;
+
+	/** TeX version of student's answer
+	 * @member {observable|TeX} studentAnswerLaTeX
+	 * @memberof Numbas.display.MatrixEntryPartDisplay
+	 */
+	this.studentAnswerLaTeX = ko.computed(function() {
+		return 'student answer latex';
+	},this);
+}
+display.MatrixEntryPartDisplay.prototype =
+{
+	restoreAnswer: function()
+	{
+		this.studentAnswer(this.part.studentAnswer);
+	}
+};
+display.MatrixEntryPartDisplay = extend(display.PartDisplay,display.MatrixEntryPartDisplay,true);
 
 /** Display code for a {@link Numbas.parts.MultipleResponsePart}
  * @augments Numbas.display.PartDisplay
@@ -2055,6 +2220,8 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 	
 		<li><a href="Numbas.display.JMEPartDisplay.html">JMEPartDisplay</a></li>
 	
+		<li><a href="Numbas.display.MatrixEntryPartDisplay.html">MatrixEntryPartDisplay</a></li>
+	
 		<li><a href="Numbas.display.MultipleResponsePartDisplay.html">MultipleResponsePartDisplay</a></li>
 	
 		<li><a href="Numbas.display.NumberEntryPartDisplay.html">NumberEntryPartDisplay</a></li>
@@ -2099,6 +2266,8 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 	
 		<li><a href="Numbas.jme.types.TRange.html">TRange</a></li>
 	
+		<li><a href="Numbas.jme.types.TSet.html">TSet</a></li>
+	
 		<li><a href="Numbas.jme.types.TString.html">TString</a></li>
 	
 		<li><a href="Numbas.jme.types.TVector.html">TVector</a></li>
@@ -2108,6 +2277,8 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 		<li><a href="Numbas.parts.InformationPart.html">InformationPart</a></li>
 	
 		<li><a href="Numbas.parts.JMEPart.html">JMEPart</a></li>
+	
+		<li><a href="Numbas.parts.MatrixEntryPart.html">MatrixEntryPart</a></li>
 	
 		<li><a href="Numbas.parts.MultipleResponsePart.html">MultipleResponsePart</a></li>
 	
@@ -2156,6 +2327,8 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 	
 		<li><a href="Numbas.schedule.html">schedule</a></li>
 	
+		<li><a href="Numbas.setmath.html">setmath</a></li>
+	
 		<li><a href="Numbas.storage.html">storage</a></li>
 	
 		<li><a href="Numbas.timing.html">timing</a></li>
@@ -2203,7 +2376,7 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 	<br clear="both">
 
 	<footer>
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Nov 26 2014 13:55:07 GMT-0000 (GMT)
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Thu Feb 05 2015 14:14:12 GMT-0000 (GMT)
 	</footer>
 
 	<script> prettyPrint(); </script>

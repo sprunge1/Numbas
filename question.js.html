@@ -178,7 +178,30 @@ var Question = Numbas.Question = function( exam, xml, number, loading, gscope)
 		else
 		{
 			var variablesTodo = Numbas.xml.loadVariables(q.xml,q.scope);
-			q.scope.variables = Numbas.jme.variables.makeVariables(variablesTodo,q.scope);
+			q.variablesTest = {
+				condition: '',
+				maxRuns: 10
+			};
+			tryGetAttribute(q.variablesTest,q.xml,'variables',['condition','maxRuns'],[]);
+			var conditionSatisfied = false;
+			var condition = jme.compile(q.variablesTest.condition);
+			var runs = 0;
+			var scope;
+			while(runs&lt;q.variablesTest.maxRuns &amp;&amp; !conditionSatisfied) {
+				runs += 1;
+				scope = new jme.Scope([q.scope]);
+				scope.variables = jme.variables.makeVariables(variablesTodo,q.scope);
+				if(condition) {
+					conditionSatisfied = jme.evaluate(condition,scope).value;
+				} else {
+					conditionSatisfied = true;
+				}
+			}
+			if(runs==q.variablesTest.maxRuns) {
+				throw(new Numbas.Error('jme.variables.question took too many runs to generate variables'));
+			} else {
+				q.scope = scope;
+			}
 		}
 	
 		q.scope = new jme.Scope([gscope,q.scope]);
@@ -1570,13 +1593,17 @@ function NumberEntryPart(xml, path, question, parentPart, loading)
 	util.copyinto(NumberEntryPart.prototype.settings,settings);
 
 	tryGetAttribute(settings,this.xml,'answer',['minvalue','maxvalue'],['minvalue','maxvalue'],{string:true});
-	tryGetAttribute(settings,this.xml,'answer','inputstep','inputStep');
+	tryGetAttribute(settings,this.xml,'answer',['correctanswerfraction','inputstep','allowfractions'],['correctAnswerFraction','inputStep','allowFractions']);
 
 	tryGetAttribute(settings,this.xml,'answer/allowonlyintegeranswers',['value','partialcredit'],['integerAnswer','integerPC']);
 	tryGetAttribute(settings,this.xml,'answer/precision',['type','partialcredit','strict'],['precisionType','precisionPC','strictPrecision']);
 	tryGetAttribute(settings,this.xml,'answer/precision','precision','precision',{'string':true});
 	settings.precision = jme.subvars(settings.precision, this.question.scope);
 	settings.precision = evaluate(settings.precision,this.question.scope).value;
+
+	if(settings.precisionType!='none') {
+		settings.allowFractions = false;
+	}
 
 	var minvalue = jme.subvars(settings.minvalue,this.question.scope);
 	minvalue = evaluate(minvalue,this.question.scope);
@@ -1612,7 +1639,11 @@ function NumberEntryPart(xml, path, question, parentPart, loading)
 		settings.precisionMessage = $.xsl.transform(Numbas.xml.templates.question,messageNode).string;
 
 	var displayAnswer = (settings.minvalue + settings.maxvalue)/2;
-	settings.displayAnswer = math.niceNumber(displayAnswer,{precisionType: settings.precisionType,precision:settings.precision});
+	if(settings.correctAnswerFraction) {
+		settings.displayAnswer = jme.display.jmeRationalNumber(displayAnswer);
+	} else {
+		settings.displayAnswer = math.niceNumber(displayAnswer,{precisionType: settings.precisionType,precision:settings.precision});
+	}
 
 	this.display = new Numbas.display.NumberEntryPartDisplay(this);
 	
@@ -1632,7 +1663,9 @@ NumberEntryPart.prototype = /** @lends Numbas.parts.NumberEntryPart.prototype */
 	 * @property {number} inputStep - step size for the number input if it's being displayed as an `&lt;input type=number>` control.
 	 * @property {number} minvalue - minimum value marked correct
 	 * @property {number} maxvalue - maximum value marked correct
+	 * @property {number} correctAnswerFraction - display the correct answer as a fraction?
 	 * @property {boolean} integerAnswer - must the answer be an integer?
+	 * @property {boolean} allowFractions - can the student enter a fraction as their answer?
 	 * @property {number} integerPC - partial credit to award if the answer is between `minvalue` and `maxvalue` but not an integer, when `integerAnswer` is true.
 	 * @property {number} displayAnswer - representative correct answer to display when revealing answers
 	 * @property {string} precisionType - type of precision restriction to apply: `none`, `dp` - decimal places, or `sigfig` - significant figures
@@ -1645,13 +1678,15 @@ NumberEntryPart.prototype = /** @lends Numbas.parts.NumberEntryPart.prototype */
 		inputStep: 1,
 		minvalue: 0,
 		maxvalue: 0,
-		integerAnswer: false,//must answer be an integer?
-		integerPC: 0,	//partial credit to award if answer is not an integer
-		displayAnswer: 0,	//number to display if revealing answer
-		precisionType: 'none',	//'none', 'dp' or 'sigfig'
+		correctAnswerFraction: false,
+		integerAnswer: false,
+		allowFractions: false,
+		integerPC: 0,
+		displayAnswer: 0,
+		precisionType: 'none',
 		precision: 0,
-		precisionPC: 0,	//fraction of credit to take away if precision wrong
-		precisionMessage: R('You have not given your answer to the correct precision.')	//message to give to student if precision wrong
+		precisionPC: 0,
+		precisionMessage: R('You have not given your answer to the correct precision.')
 	},
 
 	/** Tidy up the student's answer - remove space, and get rid of comma separators
@@ -1681,9 +1716,9 @@ NumberEntryPart.prototype = /** @lends Numbas.parts.NumberEntryPart.prototype */
 			return false;
 		}
 		
-		if( this.studentAnswer.length>0 &amp;&amp; !isNaN(this.studentAnswer) )
+		if( this.studentAnswer.length>0 &amp;&amp; util.isNumber(this.studentAnswer,this.settings.allowFractions) )
 		{
-			var answerFloat = parseFloat(this.studentAnswer);
+			var answerFloat = util.parseNumber(this.studentAnswer,this.settings.allowFractions);
 			if( answerFloat &lt;= this.settings.maxvalue &amp;&amp; answerFloat >= this.settings.minvalue )
 			{
 				if(this.settings.integerAnswer &amp;&amp; math.countDP(this.studentAnswer)>0)
@@ -1695,30 +1730,7 @@ NumberEntryPart.prototype = /** @lends Numbas.parts.NumberEntryPart.prototype */
 			}
 			this.answered = true;
 
-			var failedPrecision = false;
-			switch(this.settings.precisionType) {
-			case 'dp':
-				var studentDP = math.countDP(this.studentAnswer);
-				if(this.settings.strictPrecision)
-					failedPrecision = studentDP != this.settings.precision;
-				else
-					failedPrecision = studentDP > this.settings.precision;
-				break;
-			case 'sigfig':
-				var sigFigs = math.countSigFigs(this.studentAnswer);
-
-				if(this.settings.strictPrecision)
-					failedPrecision = sigFigs != this.settings.precision;
-				else
-					failedPrecision = sigFigs > this.settings.precision;
-
-				if(failedPrecision &amp;&amp; sigFigs &lt; this.settings.precision &amp;&amp; /[1-9]\d*0+$/.test(this.studentAnswer)) {	// in cases like 2070, which could be to either 3 or 4 sig figs
-					var trailingZeroes = this.studentAnswer.match(/0*$/)[0].length;
-					if(sigFigs + trailingZeroes >= this.settings.precision)
-						failedPrecision = false;
-				}
-				break;
-			}
+			var failedPrecision = !math.toGivenPrecision(this.studentAnswer,this.settings.precisionType,this.settings.precision,this.settings.strictPrecision);
 			
 			if(failedPrecision) {
 				this.multCredit(this.settings.precisionPC,this.settings.precisionMessage);
@@ -1740,6 +1752,212 @@ NumberEntryPart.prototype = /** @lends Numbas.parts.NumberEntryPart.prototype */
 		return this.answered;
 	}
 };
+
+/** Matrix entry part - student enters a matrix of numbers
+ * @constructor
+ * @memberof Numbas.parts
+ * @augments Numbas.parts.Part
+ */
+function MatrixEntryPart(xml, path, question, parentPart, loading) {
+	var evaluate = jme.evaluate, compile = jme.compile;
+	var settings = this.settings;
+	util.copyinto(MatrixEntryPart.prototype.settings,settings);
+
+	tryGetAttribute(settings,this.xml,'answer',['correctanswer'],['correctAnswer'],{string:true});
+	tryGetAttribute(settings,this.xml,'answer',['correctanswerfractions','rows','columns','allowresize','tolerance','markpercell','allowfractions'],['correctAnswerFractions','numRows','numColumns','allowResize','tolerance','markPerCell','allowFractions']);
+
+	var correctAnswer = jme.subvars(settings.correctAnswer,this.question.scope);
+	correctAnswer = evaluate(correctAnswer,this.question.scope);
+	if(correctAnswer &amp;&amp; correctAnswer.type=='matrix') {
+		settings.correctAnswer = correctAnswer.value;
+	} else if(correctAnswer &amp;&amp; correctAnswer.type=='vector') {
+		settings.correctAnswer = Numbas.vectormath.toMatrix(correctAnswer.value);
+	} else {
+		throw(new Numbas.Error('part.setting not present','correct answer',this.path,this.question.name));
+	}
+
+	tryGetAttribute(settings,this.xml,'answer/precision',['type','partialcredit','strict'],['precisionType','precisionPC','strictPrecision']);
+	tryGetAttribute(settings,this.xml,'answer/precision','precision','precision',{'string':true});
+	settings.precision = jme.subvars(settings.precision, this.question.scope);
+	settings.precision = evaluate(settings.precision,this.question.scope).value;
+
+	if(settings.precisionType!='none') {
+		settings.allowFractions = false;
+	}
+
+	switch(settings.precisionType) {
+	case 'dp':
+		settings.correctAnswer = Numbas.matrixmath.precround(settings.correctAnswer,settings.precision);
+		break;
+	case 'sigfig':
+		settings.correctAnswer = Numbas.matrixmath.precround(settings.correctAnswer,settings.precision);
+		break;
+	}
+
+	this.studentAnswer = [];
+	for(var i=0;i&lt;this.settings.numRows;i++) {
+		var row = [];
+		for(var j=0;j&lt;this.settings.numColumns;j++) {
+			row.push('');
+		}
+		this.studentAnswer.push(row);
+	}
+	
+	var messageNode = this.xml.selectSingleNode('answer/precision/message');
+	if(messageNode) {
+		settings.precisionMessage = $.xsl.transform(Numbas.xml.templates.question,messageNode).string;
+	}
+
+	this.display = new Numbas.display.MatrixEntryPartDisplay(this);
+
+	if(loading)
+	{
+		var pobj = Numbas.store.loadMatrixEntryPart(this);
+		if(pobj.studentAnswer) {
+			var rows = pobj.studentAnswer.length;
+			var columns = rows>0 ? pobj.studentAnswer[0].length : 0;
+			this.stagedAnswer = [rows, columns, pobj.studentAnswer];
+		}
+	}
+}
+MatrixEntryPart.prototype = /** @lends Numbas.parts.MatrixEntryPart.prototype */
+{
+	/** The student's last submitted answer */
+	studentAnswer: '',
+
+	/** Properties set when part is generated
+	 * Extends {@link Numbas.parts.Part#settings}
+	 * @property {matrix} correctAnswer - the correct answer to the part
+	 * @property {number} numRows - default number of rows in the student's answer
+	 * @property {number} numColumns - default number of columns in the student's answer
+	 * @property {boolean} allowResize - allow the student to change the dimensions of their answer?
+	 * @property {number} tolerance - allowed margin of error in each cell (if student's answer is within +/- `tolerance` of the correct answer (after rounding to , mark it as correct
+	 * @property {boolean} markPerCell - should the student gain marks for each correct cell (true), or only if they get every cell right (false)?
+	 * @property {boolean} allowFractions - can the student enter a fraction as their answer for a cell?
+	 * @property {string} precisionType - type of precision restriction to apply: `none`, `dp` - decimal places, or `sigfig` - significant figures
+	 * @property {number} precision - how many decimal places or significant figures to require
+	 * @property {number} precisionPC - partial credit to award if the answer is between `minvalue` and `maxvalue` but not given to the required precision
+	 * @property {string} precisionMessage - message to display in the marking feedback if their answer was not given to the required precision
+	 */
+	settings: {
+		correctAnswer: null,
+		correctAnswerFractions: false,
+		numRows: 3,
+		numColumns: 3,
+		allowResize: true,
+		tolerance: 0,
+		markPerCell: false,
+		allowFractions: false,
+		precisionType: 'none',	//'none', 'dp' or 'sigfig'
+		precision: 0,
+		precisionPC: 0,	//fraction of credit to take away if precision wrong
+		precisionMessage: R('You have not given your answer to the correct precision.')	//message to give to student if precision wrong
+	},
+
+	/** Save a copy of the student's answer as entered on the page, for use in marking.
+	 */
+	setStudentAnswer: function() {
+		this.studentAnswerRows = parseInt(this.stagedAnswer[0]);
+		this.studentAnswerColumns = parseInt(this.stagedAnswer[1]);
+		this.studentAnswer = this.stagedAnswer[2];
+	},
+
+	/** Mark the student's answer */
+	mark: function()
+	{
+		if(this.answerList===undefined)
+		{
+			this.setCredit(0,R('part.marking.nothing entered'));
+			return false;
+		}
+
+		var correctMatrix = this.settings.correctAnswer;
+
+		if(this.studentAnswer) {
+			var precisionOK = true;
+			var rows = this.studentAnswerRows;
+			var columns = this.studentAnswerColumns;
+
+			var studentMatrix = [];
+			this.invalidCell = false;
+			for(var i=0;i&lt;rows;i++) {
+				var row = [];
+				for(var j=0;j&lt;columns;j++) {
+					var cell = this.studentAnswer[i][j];
+					var n = util.parseNumber(cell,this.settings.allowFractions);
+					
+					if(isNaN(n)) {
+						this.setCredit(0,R('part.matrix.invalid cell'));
+						this.invalidCell = true;
+						return;
+					} else {
+						row.push(n);
+						precisionOK &amp;= math.toGivenPrecision(cell,this.settings.precisionType,this.settings.precision,this.settings.strictPrecision); 
+					}
+				}
+				studentMatrix.push(row);
+			}
+
+			studentMatrix.rows = rows;
+			studentMatrix.columns = columns;
+
+			this.wrongSize = rows!=correctMatrix.rows || columns!=correctMatrix.columns;
+			if(this.wrongSize) {
+				this.answered = true;
+				this.setCredit(0,R('part.marking.incorrect'));
+				return;
+			}
+
+			var rounders = {'dp': Numbas.matrixmath.precround, 'sigfig': Numbas.matrixmath.siground, 'none': function(x){return x}};
+			var round = rounders[this.settings.precisionType];
+			studentMatrix = round(studentMatrix,this.settings.precision);
+
+			var numIncorrect = 0;
+			for(var i=0;i&lt;rows;i++) {
+				for(var j=0;j&lt;columns;j++) {
+					var studentCell = studentMatrix[i][j];
+					var correctCell = correctMatrix[i][j];
+					if(!math.withinTolerance(studentCell,correctCell,this.settings.tolerance)) {
+						numIncorrect += 1;
+					}
+				}
+			}
+
+			var numCells = rows*columns;
+
+			if(numIncorrect==0) {
+				this.setCredit(1,R('part.marking.correct'));
+			} else if(this.settings.markPerCell &amp;&amp; numIncorrect&lt;numCells) {
+				this.setCredit( (numCells-numIncorrect)/numCells, R('part.matrix.some incorrect',numIncorrect) );
+			} else {
+				this.setCredit(0,R('part.marking.incorrect'));
+			}
+
+			if(!precisionOK) {
+				this.multCredit(this.settings.precisionPC,this.settings.precisionMessage);
+			}
+
+			this.answered = true;
+		} else {
+			this.answered = false;
+			this.setCredit(0,R('part.matrix.answer invalid'));
+		}
+	},
+
+	/** Is the student's answer valid? False if the part hasn't been submitted.
+	 * @returns {boolean}
+	 */
+	validate: function()
+	{
+		if(this.invalidCell) {
+			this.giveWarning(R('part.matrix.invalid cell'));
+		} else if(!this.answered) {
+			this.giveWarning(R('part.matrix.empty cell'));
+		}
+		
+		return this.answered;
+	}
+}
 
 
 /** Multiple choice part - either pick one from a list, pick several from a list, or match choices with answers (2d grid, either pick one from each row or tick several from each row)
@@ -2314,6 +2532,7 @@ function GapFillPart(xml, path, question, parentPart, loading)
 		gap.isGap = true;
 		this.marks += gap.marks;
 		this.gaps[i]=gap;
+		this.answered = this.answered || gap.answered;
 	}
 
 	this.display = new Numbas.display.GapFillPartDisplay(this);
@@ -2428,6 +2647,7 @@ var partConstructors = Numbas.Question.partConstructors = {
 
 	'CUEdt.NumberEntryPart': NumberEntryPart,
 	'numberentry': NumberEntryPart,
+	'matrix': MatrixEntryPart,
 
 	'CUEdt.MR1_n_2Part': MultipleResponsePart,
 	'CUEdt.MRm_n_2Part': MultipleResponsePart,
@@ -2475,6 +2695,8 @@ for(var pc in partConstructors)
 	
 		<li><a href="Numbas.display.JMEPartDisplay.html">JMEPartDisplay</a></li>
 	
+		<li><a href="Numbas.display.MatrixEntryPartDisplay.html">MatrixEntryPartDisplay</a></li>
+	
 		<li><a href="Numbas.display.MultipleResponsePartDisplay.html">MultipleResponsePartDisplay</a></li>
 	
 		<li><a href="Numbas.display.NumberEntryPartDisplay.html">NumberEntryPartDisplay</a></li>
@@ -2519,6 +2741,8 @@ for(var pc in partConstructors)
 	
 		<li><a href="Numbas.jme.types.TRange.html">TRange</a></li>
 	
+		<li><a href="Numbas.jme.types.TSet.html">TSet</a></li>
+	
 		<li><a href="Numbas.jme.types.TString.html">TString</a></li>
 	
 		<li><a href="Numbas.jme.types.TVector.html">TVector</a></li>
@@ -2528,6 +2752,8 @@ for(var pc in partConstructors)
 		<li><a href="Numbas.parts.InformationPart.html">InformationPart</a></li>
 	
 		<li><a href="Numbas.parts.JMEPart.html">JMEPart</a></li>
+	
+		<li><a href="Numbas.parts.MatrixEntryPart.html">MatrixEntryPart</a></li>
 	
 		<li><a href="Numbas.parts.MultipleResponsePart.html">MultipleResponsePart</a></li>
 	
@@ -2576,6 +2802,8 @@ for(var pc in partConstructors)
 	
 		<li><a href="Numbas.schedule.html">schedule</a></li>
 	
+		<li><a href="Numbas.setmath.html">setmath</a></li>
+	
 		<li><a href="Numbas.storage.html">storage</a></li>
 	
 		<li><a href="Numbas.timing.html">timing</a></li>
@@ -2623,7 +2851,7 @@ for(var pc in partConstructors)
 	<br clear="both">
 
 	<footer>
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Nov 26 2014 13:55:07 GMT-0000 (GMT)
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Thu Feb 05 2015 14:14:12 GMT-0000 (GMT)
 	</footer>
 
 	<script> prettyPrint(); </script>

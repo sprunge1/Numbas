@@ -186,6 +186,9 @@ var util = Numbas.util = /** @lends Numbas.util */ {
 		'list': function(a,b) {
 			return a.value.length==b.value.length &amp;&amp; a.value.filter(function(ae,i){return !util.eq(ae,b.value[i])}).length==0;
 		},
+		'set': function(a,b) {
+			return Numbas.setmath.eq(a.value,b.value);
+		},
 		'range': function(a,b) {
 			return a.value[0]==b.value[0] &amp;&amp; a.value[1]==b.value[1] &amp;&amp; a.value[2]==b.value[2];
 		},
@@ -226,6 +229,45 @@ var util = Numbas.util = /** @lends Numbas.util */ {
 		});
 	},
 
+	/** Return a copy of the input list with duplicates removed
+	 * @param {array} list
+	 * @returns {list}
+	 * @see Numbas.util.eq
+	 */
+	distinct: function(list) {
+		if(list.length==0) {
+			return [];
+		}
+		var out = [list[0]];
+		for(var i=1;i&lt;list.length;i++) {
+			var got = false;
+			for(var j=0;j&lt;out.length;j++) {
+				if(util.eq(list[i],out[j])) {
+					got = true;
+					break;
+				}
+			}
+			if(!got) {
+				out.push(list[i]);
+			}
+		}
+		return out;
+	},
+
+	/** Is value in the list?
+	 * @param {array} list
+	 * @param {Numbas.jme.token} value
+	 * @returns {boolean}
+	 */
+	contains: function(list,value) {
+		for(var i=0;i&lt;list.length;i++) {
+			if(util.eq(value,list[i])) {
+				return true;
+			}
+		}
+		return false;
+	},
+
 	/** Test if parameter is an integer
 	 * @param {object} i
 	 * @returns {boolean}
@@ -242,6 +284,37 @@ var util = Numbas.util = /** @lends Numbas.util */ {
 	isFloat: function(f)
 	{
 		return parseFloat(f)==f;
+	},
+
+	/** Is `n` a number? i.e. `!isNaN(n)`, or is `n` "infinity", or if `allowFractions` is true, is `n` a fraction?
+	 * @param {number} n
+	 * @param {boolean} allowFractions
+	 * @returns {boolean}
+	 */
+	isNumber: function(n,allowFractions) {
+		if(!isNaN(n)) {
+			return true;
+		}
+		n = n.toString().trim();
+		if(/-?infinity/i.test(n)) {
+			return true;
+		} else if(allowFractions &amp;&amp; util.re_fraction.test(n)) {
+			return true;
+		} else {
+			return false;
+		}
+	},
+
+	/** Wrap a list index so -1 maps to length-1
+	 * @param {number} n
+	 * @param {number} size
+	 * @returns {number}
+	 */
+	wrapListIndex: function(n,size) {
+		if(n&lt;0) {
+			n += size;
+		}
+		return n;
 	},
 
 	/** Test if parameter is a boolean - that is: a boolean literal, or any of the strings 'false','true','yes','no', case-insensitive.
@@ -277,6 +350,30 @@ var util = Numbas.util = /** @lends Numbas.util */ {
 			return false;
 		b = b.toString().toLowerCase();
 		return( b=='true' || b=='yes' );
+	},
+
+	/** Regular expression recognising a fraction */
+	re_fraction: /^\s*(-?)\s*(\d+)\s*\/\s*(\d+)\s*/,
+
+	/** Parse a number - either parseFloat, or parse a fraction
+	 * @param {string} s
+	 * @returns {number}
+	 */
+	parseNumber: function(s,allowFractions) {
+		s = s.toString().trim();
+		var m;
+		if(util.isFloat(s)) {
+			return parseFloat(s);
+		} else if(s.toLowerCase()=='infinity') {
+			return Infinity;
+		} else if(s.toLowerCase()=='-infinity') {
+			return -Infinity;
+		} else if(allowFractions &amp;&amp; (m = util.re_fraction.exec(s))) {
+			var n = parseInt(m[2])/parseInt(m[3]);
+			return m[1] ? -n : n;
+		} else {
+			return NaN;
+		}
 	},
 
 	/** Pad string `s` on the left with a character `p` until it is `n` characters long.
@@ -460,8 +557,139 @@ var util = Numbas.util = /** @lends Numbas.util */ {
 			return '0'+(-hash);
 		else
 			return '1'+hash;
-	}
+	},
 
+	/** Cartesian product of one or more lists
+	 * @param {array} lists - list of arrays
+	 * @returns {array}
+	 */
+	product: function(lists) {
+		var indexes = lists.map(function(){return 0});
+		var lengths = lists.map(function(l){return l.length});
+		var end = lists.length-1;
+
+		var out = [];
+		while(indexes[0]!=lengths[0]) {
+			out.push(indexes.map(function(i,n){return lists[n][i]}));
+			var k = end;
+			indexes[k] += 1;
+			while(k>0 &amp;&amp; indexes[k]==lengths[k]) {
+				indexes[k] = 0;
+				k -= 1;
+				indexes[k] += 1;
+			}
+		}
+		return out;
+	},
+
+	/** All combinations of r items from given array, without replacement
+	 * @param {array} list
+	 * @param {number} r
+	 */
+	combinations: function(list,r) {
+		var indexes = [];
+		for(var i=0;i&lt;r;i++) {
+			indexes.push(i);
+		}
+		var length = list.length;
+		var end = r-1;
+
+		var out = [];
+		var steps = 0;
+		while(steps&lt;1000 &amp;&amp; indexes[0]&lt;length+1-r) {
+			steps += 1;
+
+			out.push(indexes.map(function(i){return list[i]; }));
+			indexes[end] += 1;
+			if(indexes[end]==length) {
+				var k = end;
+				while(k>=0 &amp;&amp; indexes[k]==length+1-r+k) {
+					k -= 1;
+					indexes[k] += 1;
+				}
+				for(k=k+1;k&lt;r;k++) {
+					indexes[k] = indexes[k-1]+1;
+				}
+			}
+		}
+		return out;
+	},
+
+	
+	/** All combinations of r items from given array, with replacement
+	 * @param {array} list
+	 * @param {number} r
+	 */
+	combinations_with_replacement: function(list,r) {
+		var indexes = [];
+		for(var i=0;i&lt;r;i++) {
+			indexes.push(0);
+		}
+		var length = list.length;
+		var end = r-1;
+
+		var out = [];
+		while(indexes[0]&lt;length) {
+			out.push(indexes.map(function(i){return list[i]; }));
+			indexes[end] += 1;
+			if(indexes[end]==length) {
+				var k = end;
+				while(k>=0 &amp;&amp; indexes[k]==length) {
+					k -= 1;
+					indexes[k] += 1;
+				}
+				for(k=k+1;k&lt;r;k++) {
+					indexes[k] = indexes[k-1];
+				}
+			}
+		}
+		return out;
+	},
+
+
+	/** All permutations of all choices of r elements from list
+	 *
+	 * Inspired by the algorithm in Python's itertools library
+	 * @param {array} list - elements to choose and permute
+	 * @param {number} r - number of elements to choose
+	 */
+	permutations: function(list,r) {
+		var n = list.length;
+		if(r===undefined) {
+			r = n;
+		}
+		var indices = [];
+		var cycles = [];
+		for(var i=0;i&lt;n;i++) {
+			indices.push(i);
+		}
+		for(var i=n;i>=n-r+1;i--) {
+			cycles.push(i);
+		}
+
+		var out = [indices.slice(0,r).map(function(v){return list[v]})];
+
+		while(n) {
+			for(var i=r-1;i>=0;i--) {
+				cycles[i] -= 1
+				if(cycles[i]==0) {
+					indices.push(indices.splice(i,1)[0]);
+					cycles[i] = n-i
+				} else {
+					var j = cycles[i];
+					var t = indices[i];
+					indices[i] = indices[n-j];
+					indices[n-j] = t;
+					out.push(indices.slice(0,r).map(function(v){return list[v]}));
+					break;
+				}
+			}
+			if(i==-1) {
+				return out;
+			}
+		}
+	}
+	
 };
 
 var endDelimiters = {
@@ -1877,6 +2105,8 @@ var toObject = function (o) {
 	
 		<li><a href="Numbas.display.JMEPartDisplay.html">JMEPartDisplay</a></li>
 	
+		<li><a href="Numbas.display.MatrixEntryPartDisplay.html">MatrixEntryPartDisplay</a></li>
+	
 		<li><a href="Numbas.display.MultipleResponsePartDisplay.html">MultipleResponsePartDisplay</a></li>
 	
 		<li><a href="Numbas.display.NumberEntryPartDisplay.html">NumberEntryPartDisplay</a></li>
@@ -1921,6 +2151,8 @@ var toObject = function (o) {
 	
 		<li><a href="Numbas.jme.types.TRange.html">TRange</a></li>
 	
+		<li><a href="Numbas.jme.types.TSet.html">TSet</a></li>
+	
 		<li><a href="Numbas.jme.types.TString.html">TString</a></li>
 	
 		<li><a href="Numbas.jme.types.TVector.html">TVector</a></li>
@@ -1930,6 +2162,8 @@ var toObject = function (o) {
 		<li><a href="Numbas.parts.InformationPart.html">InformationPart</a></li>
 	
 		<li><a href="Numbas.parts.JMEPart.html">JMEPart</a></li>
+	
+		<li><a href="Numbas.parts.MatrixEntryPart.html">MatrixEntryPart</a></li>
 	
 		<li><a href="Numbas.parts.MultipleResponsePart.html">MultipleResponsePart</a></li>
 	
@@ -1978,6 +2212,8 @@ var toObject = function (o) {
 	
 		<li><a href="Numbas.schedule.html">schedule</a></li>
 	
+		<li><a href="Numbas.setmath.html">setmath</a></li>
+	
 		<li><a href="Numbas.storage.html">storage</a></li>
 	
 		<li><a href="Numbas.timing.html">timing</a></li>
@@ -2025,7 +2261,7 @@ var toObject = function (o) {
 	<br clear="both">
 
 	<footer>
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Nov 26 2014 13:55:07 GMT-0000 (GMT)
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Thu Feb 05 2015 14:14:12 GMT-0000 (GMT)
 	</footer>
 
 	<script> prettyPrint(); </script>

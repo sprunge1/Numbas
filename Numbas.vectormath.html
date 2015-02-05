@@ -73,7 +73,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1413">line 1413</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1500">line 1500</a>
     </li></ul></dd>
     
 
@@ -131,6 +131,8 @@
 					<li class="name"><a href="Numbas.vectormath.html#neq">neq</a></li>
 				
 					<li class="name"><a href="Numbas.vectormath.html#sub">sub</a></li>
+				
+					<li class="name"><a href="Numbas.vectormath.html#toMatrix">toMatrix</a></li>
 				
 					<li class="name"><a href="Numbas.vectormath.html#transpose">transpose</a></li>
 				
@@ -242,7 +244,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1549">line 1549</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1636">line 1636</a>
     </li></ul></dd>
     
 
@@ -403,7 +405,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1432">line 1432</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1519">line 1519</a>
     </li></ul></dd>
     
 
@@ -570,7 +572,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1513">line 1513</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1600">line 1600</a>
     </li></ul></dd>
     
 
@@ -789,7 +791,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1473">line 1473</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1560">line 1560</a>
     </li></ul></dd>
     
 
@@ -977,7 +979,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1558">line 1558</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1645">line 1645</a>
     </li></ul></dd>
     
 
@@ -1138,7 +1140,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1583">line 1583</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1670">line 1670</a>
     </li></ul></dd>
     
 
@@ -1299,7 +1301,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1463">line 1463</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1550">line 1550</a>
     </li></ul></dd>
     
 
@@ -1437,7 +1439,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1423">line 1423</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1510">line 1510</a>
     </li></ul></dd>
     
 
@@ -1598,7 +1600,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1574">line 1574</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1661">line 1661</a>
     </li></ul></dd>
     
 
@@ -1766,7 +1768,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1447">line 1447</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1534">line 1534</a>
     </li></ul></dd>
     
 
@@ -1801,6 +1803,144 @@
     <dd>
         
 <span class="param-type"><a href="global.html#vector">vector</a></span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="toMatrix"><span class="type-signature">&lt;static> </span>toMatrix<span class="signature">(v)</span><span class="type-signature">&rarr; {<a href="global.html#matrix">matrix</a>}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Convert a vector to a 1-column matrix</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>v</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#vector">vector</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1691">line 1691</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#matrix">matrix</a></span>
 
 
     </dd>
@@ -1904,7 +2044,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1593">line 1593</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1680">line 1680</a>
     </li></ul></dd>
     
 
@@ -1982,6 +2122,8 @@
 	
 		<li><a href="Numbas.display.JMEPartDisplay.html">JMEPartDisplay</a></li>
 	
+		<li><a href="Numbas.display.MatrixEntryPartDisplay.html">MatrixEntryPartDisplay</a></li>
+	
 		<li><a href="Numbas.display.MultipleResponsePartDisplay.html">MultipleResponsePartDisplay</a></li>
 	
 		<li><a href="Numbas.display.NumberEntryPartDisplay.html">NumberEntryPartDisplay</a></li>
@@ -2026,6 +2168,8 @@
 	
 		<li><a href="Numbas.jme.types.TRange.html">TRange</a></li>
 	
+		<li><a href="Numbas.jme.types.TSet.html">TSet</a></li>
+	
 		<li><a href="Numbas.jme.types.TString.html">TString</a></li>
 	
 		<li><a href="Numbas.jme.types.TVector.html">TVector</a></li>
@@ -2035,6 +2179,8 @@
 		<li><a href="Numbas.parts.InformationPart.html">InformationPart</a></li>
 	
 		<li><a href="Numbas.parts.JMEPart.html">JMEPart</a></li>
+	
+		<li><a href="Numbas.parts.MatrixEntryPart.html">MatrixEntryPart</a></li>
 	
 		<li><a href="Numbas.parts.MultipleResponsePart.html">MultipleResponsePart</a></li>
 	
@@ -2083,6 +2229,8 @@
 	
 		<li><a href="Numbas.schedule.html">schedule</a></li>
 	
+		<li><a href="Numbas.setmath.html">setmath</a></li>
+	
 		<li><a href="Numbas.storage.html">storage</a></li>
 	
 		<li><a href="Numbas.timing.html">timing</a></li>
@@ -2130,7 +2278,7 @@
 	<br clear="both">
 
 	<footer>
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Nov 26 2014 13:55:12 GMT-0000 (GMT)
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Thu Feb 05 2015 14:14:19 GMT-0000 (GMT)
 	</footer>
 
 	<script> prettyPrint(); </script>

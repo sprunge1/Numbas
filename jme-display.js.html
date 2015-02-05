@@ -54,6 +54,7 @@ Numbas.queueScript('jme-display',['base','math','jme','util'],function() {
 	
 var math = Numbas.math;
 var jme = Numbas.jme;
+var util = Numbas.util;
 
 /** A JME expression
  * @typedef JME
@@ -315,7 +316,7 @@ var texOps = jme.display.texOps = {
 	'^': (function(thing,texArgs) {
 		var tex0 = texArgs[0];
 		//if left operand is an operation, it needs brackets round it. Exponentiation is right-associative, so 2^3^4 won't get any brackets, but (2^3)^4 will.
-		if(thing.args[0].tok.type=='op')
+		if(thing.args[0].tok.type=='op' || (thing.args[0].tok.type=='function' &amp;&amp; thing.args[0].tok.name=='exp'))
 			tex0 = '\\left ( ' +tex0+' \\right )';	
 		return (tex0+'^{ '+texArgs[1]+' }');
 	}),
@@ -326,7 +327,11 @@ var texOps = jme.display.texOps = {
 		for(var i=1; i&lt;thing.args.length; i++ )
 		{
 			//specials or subscripts
-			if(thing.args[i-1].tok.type=='special' || thing.args[i].tok.type=='special')	
+			if(util.isInt(texArgs[i-1].charAt(texArgs[i-1].length-1)) &amp;&amp; util.isInt(texArgs[i].charAt(0)))
+			{ 
+				s+=' \\times ';
+			}
+			else if(thing.args[i-1].tok.type=='special' || thing.args[i].tok.type=='special')	
 			{
 				s+=' ';
 			}
@@ -539,7 +544,14 @@ var texOps = jme.display.texOps = {
 	}),
 	'verbatim': (function(thing,texArgs) {
 		return thing.args[0].tok.value;
-	})
+	}),
+	'set': function(thing,texArgs,settings) {
+		if(thing.args.length==1 &amp;&amp; thing.args[0].tok.type=='list') {
+			return '\\left\\{ '+texify(thing.args[0],settings)+' \\right\\}';
+		} else {
+			return '\\left\\{ '+texArgs.join(', ')+' \\right\\}';
+		}
+	}
 }
 
 /** Convert a number to TeX, displaying it as a fractionm using {@link Numbas.math.rationalApproximation}
@@ -611,9 +623,15 @@ var texRationalNumber = jme.display.texRationalNumber = function(n)
 		case 0:
 			return out;
 		case 1:
-			return out+' \\pi';
+			if(n==-1)
+				return '-\\pi';
+			else
+				return out+' \\pi';
 		default:
-			return out+' \\pi^{'+piD+'}';
+			if(n==-1)
+				return '-\\pi^{'+piD+'}';
+			else
+				return out+' \\pi^{'+piD+'}';
 		}
 	}
 }
@@ -687,11 +705,15 @@ function texRealNumber(n)
 		case 1:
 			if(n==1)
 				return '\\pi';
+			else if(n==-1)
+				return '-\\pi';
 			else
 				return out+' \\pi';
 		default:
 			if(n==1)
 				return '\\pi^{'+piD+'}';
+			else if(n==-1)
+				return '-\\pi^{'+piD+'}';
 			else
 				return out+' \\pi^{'+piD+'}';
 		}
@@ -741,9 +763,17 @@ function texMatrix(m,settings,parens)
 
 	if(m.args)
 	{
+		var all_lists = true;
 		var rows = m.args.map(function(x) {
-			return x.args.map(function(y){ return texify(y,settings); });
+			if(x.tok.type=='list') {
+				return x.args.map(function(y){ return texify(y,settings); });
+			} else {
+				all_lists = false;
+			}
 		})
+		if(!all_lists) {
+			return '\\operatorname{matrix}(' + m.args.map(function(x){return texify(x,settings);}).join(',') +')';
+		}
 	}
 	else
 	{
@@ -801,14 +831,13 @@ texNameAnnotations.m = texNameAnnotations.matrix;
 
 /** Convert a variable name to TeX
  * @memberof Numbas.jme.display
- * @private
  *
  * @param {string} name
  * @param {string[]} annotation - 
  * @returns {TeX}
  */
 
-function texName(name,annotations)
+var texName = jme.display.texName = function(name,annotations)
 {
 	var name = greek.contains(name) ? '\\'+name : name;
 	name = name.replace(/(.*)_(.*)('*)$/g,'$1_{$2}$3');	//make numbers at the end of a variable name subscripts
@@ -902,6 +931,13 @@ var typeToTeX = jme.display.typeToTeX = {
 
 			return texName(texname,tok.annotation)+' \\left ( '+texArgs.join(', ')+' \\right )';
 		}
+	},
+	set: function(thing,tok,texArgs,settings) {
+		texArgs = [];
+		for(var i=0;i&lt;tok.value.length;i++) {
+			texArgs.push(texify(tok.value[i],settings));
+		}
+		return '\\left\\{ '+texArgs.join(', ')+' \\right\\}';
 	}
 }
 /** Turn a syntax tree into a TeX string. Data types can be converted to TeX straightforwardly, but operations and functions need a bit more care.
@@ -939,7 +975,7 @@ var texify = Numbas.jme.display.texify = function(thing,settings)
 	if(tok.type in typeToTeX) {
 		return typeToTeX[tok.type](thing,tok,texArgs,settings);
 	} else {
-		throw(new Numbas.Error('jme.display.unknown token type',tok.type));
+		throw(new Numbas.Error(R('jme.display.unknown token type',tok.type)));
 	}
 }
 
@@ -1242,6 +1278,9 @@ var typeToJME = Numbas.jme.display.typeToJME = {
 			{return op+bits[0];}
 		else
 			{return bits[0]+op+bits[1];}
+	},
+	set: function(tree,tok,bits,settings) {
+		return 'set('+tok.value.map(function(thing){return treeToJME({tok:thing},settings);}).join(',')+')';
 	}
 }
 
@@ -1273,7 +1312,7 @@ var treeToJME = jme.display.treeToJME = function(tree,settings)
 	if(tok.type in typeToJME) {
 		return typeToJME[tok.type](tree,tok,bits,settings);
 	} else {
-		throw(new Numbas.Error('jme.display.unknown token type',tok.type));
+		throw(new Numbas.Error(R('jme.display.unknown token type',tok.type)));
 	}
 }
 
@@ -1383,6 +1422,14 @@ var endTermNames = {
 function isEndTerm(term) {
 	while(term.tok.type=='function' &amp;&amp; /^m_(?:all|pm|not|commute)$/.test(term.tok.name) || jme.isOp(term.tok,';')) {
 		term = term.args[0];
+	}
+	if(term.tok.type=='function' &amp;&amp; term.tok.name=='m_any') {
+		for(var i=0;i&lt;term.args.length;i++) {
+			if(isEndTerm(term.args[i])) {
+				return true;
+			}
+		}
+		return false;
 	}
 	return term.tok.type=='name' &amp;&amp; endTermNames[term.tok.name];
 }
@@ -1864,6 +1911,8 @@ Numbas.jme.builtinScope = new Numbas.jme.Scope([Numbas.jme.builtinScope,{ruleset
 	
 		<li><a href="Numbas.display.JMEPartDisplay.html">JMEPartDisplay</a></li>
 	
+		<li><a href="Numbas.display.MatrixEntryPartDisplay.html">MatrixEntryPartDisplay</a></li>
+	
 		<li><a href="Numbas.display.MultipleResponsePartDisplay.html">MultipleResponsePartDisplay</a></li>
 	
 		<li><a href="Numbas.display.NumberEntryPartDisplay.html">NumberEntryPartDisplay</a></li>
@@ -1908,6 +1957,8 @@ Numbas.jme.builtinScope = new Numbas.jme.Scope([Numbas.jme.builtinScope,{ruleset
 	
 		<li><a href="Numbas.jme.types.TRange.html">TRange</a></li>
 	
+		<li><a href="Numbas.jme.types.TSet.html">TSet</a></li>
+	
 		<li><a href="Numbas.jme.types.TString.html">TString</a></li>
 	
 		<li><a href="Numbas.jme.types.TVector.html">TVector</a></li>
@@ -1917,6 +1968,8 @@ Numbas.jme.builtinScope = new Numbas.jme.Scope([Numbas.jme.builtinScope,{ruleset
 		<li><a href="Numbas.parts.InformationPart.html">InformationPart</a></li>
 	
 		<li><a href="Numbas.parts.JMEPart.html">JMEPart</a></li>
+	
+		<li><a href="Numbas.parts.MatrixEntryPart.html">MatrixEntryPart</a></li>
 	
 		<li><a href="Numbas.parts.MultipleResponsePart.html">MultipleResponsePart</a></li>
 	
@@ -1965,6 +2018,8 @@ Numbas.jme.builtinScope = new Numbas.jme.Scope([Numbas.jme.builtinScope,{ruleset
 	
 		<li><a href="Numbas.schedule.html">schedule</a></li>
 	
+		<li><a href="Numbas.setmath.html">setmath</a></li>
+	
 		<li><a href="Numbas.storage.html">storage</a></li>
 	
 		<li><a href="Numbas.timing.html">timing</a></li>
@@ -2012,7 +2067,7 @@ Numbas.jme.builtinScope = new Numbas.jme.Scope([Numbas.jme.builtinScope,{ruleset
 	<br clear="both">
 
 	<footer>
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Nov 26 2014 13:55:07 GMT-0000 (GMT)
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Thu Feb 05 2015 14:14:12 GMT-0000 (GMT)
 	</footer>
 
 	<script> prettyPrint(); </script>
