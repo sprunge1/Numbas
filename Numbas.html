@@ -136,7 +136,7 @@
 					<dt class="name"><a href="namespaces.html#Numbas.matrixmath"><a href="Numbas.matrixmath.html">matrixmath</a></a></dt>
 					<dd></dd>
 				
-					<dt class="name"><a href="namespaces.html#Numbas.parts"><a href="Numbas.parts.html">parts</a></a></dt>
+					<dt class="name"><a href="namespaces.html#Numbas.parts"><a href="Numbas.html#parts">parts</a></a></dt>
 					<dd></dd>
 				
 					<dt class="name"><a href="namespaces.html#Numbas.schedule"><a href="Numbas.schedule.html">schedule</a></a></dt>
@@ -168,9 +168,15 @@
 				<h4>Members</h4>
 				<ul>
 				
+					<li class="name"><a href="Numbas.html#createPart">createPart</a></li>
+				
 					<li class="name"><a href="Numbas.html#extensions">extensions</a></li>
 				
 					<li class="name"><a href="Numbas.html#loadScript">loadScript</a></li>
+				
+					<li class="name"><a href="Numbas.html#partConstructors">partConstructors</a></li>
+				
+					<li class="name"><a href="Numbas.html#parts">parts</a></li>
 				
 					<li class="name"><a href="Numbas.html#store">store</a></li>
 				
@@ -184,8 +190,6 @@
 				<ul>
 				
 					<li class="name"><a href="Numbas.html#addExtension">addExtension</a></li>
-				
-					<li class="name"><a href="Numbas.html#createPart">createPart</a></li>
 				
 					<li class="name"><a href="Numbas.html#debug">debug</a></li>
 				
@@ -211,6 +215,72 @@
         <h3 class="subsection-title">Members</h3>
 
         <dl>
+            
+<dt>
+    <h4 class="name" id="createPart"><span class="type-signature">&lt;static> </span>createPart<span class="type-signature"> :NumbasError</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Create a new question part. Automatically picks the right constructor based on the type defined in the XML.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">NumbasError</span>
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line57">line 57</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
             
 <dt>
     <h4 class="name" id="extensions"><span class="type-signature">&lt;static> </span>extensions<span class="type-signature"></span></h4>
@@ -311,6 +381,128 @@
 
     
 
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="partConstructors"><span class="type-signature">&lt;static> </span>partConstructors<span class="type-signature"></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Associate part type names with their object constructors
+These constructors are called by <a href="Numbas.html#createPart">Numbas.createPart</a> - they should be finalised constructors with all the generic part methods implemented.
+Most often, you do this by extending <a href="Numbas.parts.Part.html">Numbas.parts.Part</a></p>
+    </div>
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line44">line 44</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="parts"><span class="type-signature">&lt;static> </span>parts<span class="type-signature"></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Part type constructors
+These functions aren't called directly - they're the original part constructor objects before they're extended with the generic part methods, kept for reference so their methods can be reused by other parts</p>
+    </div>
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line37">line 37</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="Numbas.html#partConstructors">Numbas.partConstructors</a></li>
+        </ul>
+    </dd>
     
 
     
@@ -523,7 +715,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="numbas.js.html">runtime/scripts/numbas.js</a>, <a href="numbas.js.html#line209">line 209</a>
+        <a href="numbas.js.html">runtime/scripts/numbas.js</a>, <a href="numbas.js.html#line211">line 211</a>
     </li></ul></dd>
     
 
@@ -546,263 +738,6 @@
     
 
     
-
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="createPart"><span class="type-signature">&lt;static> </span>createPart<span class="signature">(xml, path, question, parentPart, loading)</span><span class="type-signature">&rarr; {<a href="Numbas.parts.Part.html">Numbas.parts.Part</a>}</span>
-</h4>
-
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Create a new question part. Automatically picks the right constructor based on the type defined in the XML.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>xml</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Element</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>path</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="global.html#partpath">partpath</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>question</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="Numbas.Question.html">Numbas.Question</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>parentPart</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="Numbas.parts.Part.html">Numbas.parts.Part</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>loading</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-    
-
-    
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="question.js.html">runtime/scripts/question.js</a>, <a href="question.js.html#line571">line 571</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Throws:</h5>
-    
-            
-
-<dl>
-    <dt>
-        <div class="param-desc">
-        "part.missing type attribute" if the top node in `xml` doesn't have a "type" attribute.
-        </div>
-    </dt>
-    <dt>
-        <dl>
-            <dt>
-                Type
-            </dt>
-            <dd>
-                
-<span class="param-type">NumbasError</span>
-
-
-            </dd>
-        </dl>
-    </dt>
-</dl>
-
-
-        
-
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="Numbas.parts.Part.html">Numbas.parts.Part</a></span>
-
-
-    </dd>
-</dl>
-
-        
 
     
 </dd>
@@ -1557,7 +1492,7 @@ Each script should be wrapped in this function</p>
 	
 		<li><a href="Numbas.matrixmath.html">matrixmath</a></li>
 	
-		<li><a href="Numbas.parts.html">parts</a></li>
+		<li><a href="Numbas.html#parts">parts</a></li>
 	
 		<li><a href="Numbas.schedule.html">schedule</a></li>
 	
@@ -1610,7 +1545,7 @@ Each script should be wrapped in this function</p>
 	<br clear="both">
 
 	<footer>
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Apr 15 2015 14:15:25 GMT+0100 (BST)
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Aug 05 2015 15:07:56 GMT+0100 (BST)
 	</footer>
 
 	<script> prettyPrint(); </script>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Source: runtime/scripts/schedule.js - Numbas API documentation</title>
+    <title>Source: runtime/scripts/parts/patternmatch.js - Numbas API documentation</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -21,7 +21,7 @@
 
 	<div id="main">
 
-		<h1 class="page-title">Source: runtime/scripts/schedule.js</h1>
+		<h1 class="page-title">Source: runtime/scripts/parts/patternmatch.js</h1>
 
 		
 
@@ -30,7 +30,7 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/*
-Copyright 2011-14 Newcastle University
+Copyright 2011-15 Newcastle University
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -45,126 +45,140 @@ Copyright 2011-14 Newcastle University
    limitations under the License.
 */
 
-/** @file Provides {@link Numbas.schedule} */
+/** @file The {@link Numbas.parts.PatternMatchPart} object */
 
-Numbas.queueScript('schedule',['base'],function() {
+Numbas.queueScript('parts/patternmatch',['base','display','jme','jme-variables','xml','util','scorm-storage','part'],function() {
 
-/** Schedule functions to be called. The scheduler can put tiny timeouts in between function calls so the browser doesn't become unresponsive. It also updates the loading bar.
- * @namespace Numbas.schedule 
+var util = Numbas.util;
+var jme = Numbas.jme;
+var math = Numbas.math;
+var tryGetAttribute = Numbas.xml.tryGetAttribute;
+
+var Part = Numbas.parts.Part;
+
+/** Text-entry part - student's answer must match the given regular expression
+ * @constructor
+ * @memberof Numbas.parts
+ * @augments Numbas.parts.Part
  */
+var PatternMatchPart = Numbas.parts.PatternMatchPart = function(xml, path, question, parentPart, loading)
+{
+	var settings = this.settings;
+	util.copyinto(PatternMatchPart.prototype.settings,settings);
 
-Numbas.schedule = /** @lends Numbas.schedule */ {
+	settings.correctAnswerString = Numbas.xml.getTextContent(this.xml.selectSingleNode('correctanswer'));
 
-	/** Functions to call 
-	 * @type {function[]}
-	 */
-	calls: [],
+	var displayAnswerNode = this.xml.selectSingleNode('displayanswer');
+	if(!displayAnswerNode)
+		throw(new Numbas.Error('part.patternmatch.display answer missing',this.path));
+	settings.displayAnswerString = $.trim(Numbas.xml.getTextContent(displayAnswerNode));
 
-	/** Bits of queue that have been picked up while a task performs sub-tasks 
-	 * @type {Array.Array.&lt;function>} */
-	lifts: [],
+	this.getCorrectAnswer(this.question.scope);
 
-	/** Number of tasks completed 
-	 * @type {number}
-	 */
-	completed: 0,
+	tryGetAttribute(settings,this.xml,'case',['sensitive','partialCredit'],'caseSensitive');
 
-	/** Total number of tasks ever scheduled
-	 * @type {number}
-	 */
-	total: 0,
+	this.display = new Numbas.display.PatternMatchPartDisplay(this);
 
-	/** Should the scheduler stop running tasks?
-	 * @type {boolean}
-	 */
-	halt:false,
-
-	/** Add a task to the queue
-	 * @param {function|object} fn - the function to run, or a dictionary `{task: fn, error: fn}`, where `error` is a callback if an error is caused
-	 * @param {object} that - what `this` should be when the function is called
-	 */
-	add: function(fn,that)
+	if(loading)
 	{
-		var schedule = Numbas.schedule;
+		var pobj = Numbas.store.loadPatternMatchPart(this);
+		this.stagedAnswer = [pobj.studentAnswer];
+	}
+}
+PatternMatchPart.prototype = /** @lends Numbas.PatternMatchPart.prototype */ {
+	/** The student's last submitted answer 
+	 * @type {string}
+	 */
+	studentAnswer: '',
 
-		if(schedule.halt)
-			return;
+	/** Properties set when the part is generated.
+	 * Extends {@link Numbas.parts.Part#settings}
+	 * @property {string} correctAnswerString - the definition of the correct answer, without variables substituted in.
+	 * @property {RegExp} correctAnswer - regular expression pattern to match correct answers
+	 * @property {string} displayAnswerString - the definition of the display answer, without variables substituted in.
+	 * @property {string} displayAnswer - a representative correct answer to display when answers are revealed
+	 * @property {boolean} caseSensitive - does case matter?
+	 * @property {number} partialCredit - partial credit to award if the student's answer matches, apart from case, and `caseSensitive` is `true`.
+	 */
+	settings: 
+	{
+		correctAnswerString: '.*',
+		correctAnswer: /.*/,
+		displayAnswerString: '',
+		displayAnswer: '',
+		caseSensitive: false,
+		partialCredit: 0
+	},
 
-		var args = [],l=arguments.length;
-		for(var i=2;i&lt;l;i++)
-		{
-			args[i-2]=arguments[i];
+	/** Compute the correct answer, based on the given scope
+	 */
+	getCorrectAnswer: function(scope) {
+		var settings = this.settings;
+
+		settings.correctAnswer = '^'+jme.contentsubvars(settings.correctAnswerString, scope)+'$';
+		settings.displayAnswer = jme.contentsubvars(settings.displayAnswerString,scope);
+	},
+
+	/** Save a copy of the student's answer as entered on the page, for use in marking.
+	 */
+	setStudentAnswer: function() {
+		this.studentAnswer = this.answerList[0];
+	},
+
+	/** Get the student's answer as a JME data type, to be used in error-carried-forward calculations
+	 * @abstract
+	 * @returns {Numbas.jme.token}
+	 */
+	studentAnswerAsJME: function() {
+		return new Numbas.jme.types.TString(this.studentAnswer);
+	},
+
+	/** Mark the student's answer
+	 */
+	mark: function ()
+	{
+		var validation = this.validation;
+
+		if(this.answerList==undefined) {
+			this.setCredit(0,R('part.marking.nothing entered'));
+			return false;
 		}
+		this.answered = this.studentAnswer.length>0;
 
-		if(typeof(fn)=='function') {
-			fn = {task: fn};
-		}
-
-		var task = function()
-		{
-			try {
-				fn.task.apply(that,args);
-			} catch(e) {
-				if(fn.error) {
-					fn.error(e);
-				} else {
-					throw(e);
-				}
-			}
-		};
+		var caseInsensitiveAnswer = new RegExp( this.settings.correctAnswer, 'i' );			
+		var caseSensitiveAnswer = new RegExp( this.settings.correctAnswer );
 		
-		schedule.calls.push(task);
-		setTimeout(schedule.pop,0);
-
-		schedule.total++;
+		if( this.settings.caseSensitive ) {
+			if( caseSensitiveAnswer.test(this.studentAnswer) ) {
+				this.setCredit(1,R('part.marking.correct'));
+			} else if(caseInsensitiveAnswer.test(this.studentAnswer)) {
+				this.setCredit(this.settings.partialCredit,R('part.patternmatch.correct except case'));
+			} else {
+				this.setCredit(0,R('part.marking.incorrect'));
+			}
+		} else {
+			if(caseInsensitiveAnswer.test(this.studentAnswer)) {
+				this.setCredit(1,R('part.marking.correct'));
+			} else {
+				this.setCredit(0,R('part.marking.incorrect'));
+			}
+		}
 	},
 
-	/** Pop the first task off the queue and run it.
-	 *
-	 * If there's an error, the scheduler halts and shows the error.
+	/** Is the student's answer valid? False if the part hasn't been submitted.
+	 * @returns {boolean}
 	 */
-	pop: function()
+	validate: function()
 	{
-		var schedule = Numbas.schedule;
-
-		var calls = schedule.calls;
-		if(!calls.length || schedule.halt){return;}
-
-		var task = calls.shift();
-
-		schedule.lift();
-		try {
-			task();
+		if(!this.answered) {
+			this.giveWarning(R('part.marking.not submitted'));
 		}
-		catch(e) {
-			Numbas.display.die(e);
-			schedule.halt = true;
-		}
-		schedule.drop();
 
-		schedule.completed++;
-
-		Numbas.display.showLoadProgress();
-	},
-
-	/** 'pick up' the current queue and put stuff in front. Called before running a task, so it can queue things which must be done before the rest of the queue is called */
-	lift: function()
-	{
-		var schedule = Numbas.schedule;
-
-		schedule.lifts.push(schedule.calls);
-		schedule.calls=new Array();
-	},
-
-	/** Put the last lifted queue back on the end of the real queue */
-	drop:function()
-	{
-		var schedule = Numbas.schedule;
-
-		schedule.calls = schedule.calls.concat(schedule.lifts.pop());
+		return this.answered;
 	}
 };
 
+Numbas.partConstructors['patternmatch'] = util.extend(Part,PatternMatchPart);
 });
 </code></pre>
         </article>

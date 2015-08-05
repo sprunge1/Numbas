@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Class: TVector - Numbas API documentation</title>
+    <title>Source: runtime/scripts/parts/information.js - Numbas API documentation</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -21,248 +21,79 @@
 
 	<div id="main">
 
-		<h1 class="page-title">Class: TVector</h1>
+		<h1 class="page-title">Source: runtime/scripts/parts/information.js</h1>
 
 		
 
 
-
-<section>
-
-<header>
-    <h3>
-		
-        	<span class="ancestors"><a href="Numbas.html">Numbas</a><a href="Numbas.jme.html">.jme</a><a href="Numbas.jme.types.html">.types</a>.</span>
-	    
-    	TVector
-	    
-	</h3>
     
-</header>
-
-<article>
-    <div class="container-overview">
-    
-
-    
-        
-<dt>
-    <h4 class="name" id="TVector"><span class="type-signature"></span>new TVector<span class="signature">(value)</span><span class="type-signature"></span>
-</h4>
-
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Vector type</p>
-    </div>
-    
-
-    
-
-    
-
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>value</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number[]</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-    
-
-    
-<dl class="details">
-    
-
-        <h5 class="subsection-title">Properties:</h5>
-
-        <dl>
-
-<table class="props">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>value</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number[]</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Array of components</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>type</code></td>
-            
-
-            <td class="type">
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>&quot;vector&quot;</p></td>
-        </tr>
-
-    
-    </tbody>
-</table></dl>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="jme.js.html">runtime/scripts/jme.js</a>, <a href="jme.js.html#line1267">line 1267</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dd>
-
-    
-    </div>
-
-    
-        <h3 class="subsection-title">Extends</h3>
-
-        <ul>
-            <li><a href="Numbas.jme.html#token">Numbas.jme.token</a></li>
-        </ul>
-    
-
-    
-
-    
-
-    
-
-
-	
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
+Copyright 2011-15 Newcastle University
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
+/** @file The {@link Numbas.parts.} object */
+
+Numbas.queueScript('parts/information',['base','display','jme','jme-variables','xml','util','scorm-storage','part'],function() {
+
+var util = Numbas.util;
+var jme = Numbas.jme;
+var math = Numbas.math;
+var tryGetAttribute = Numbas.xml.tryGetAttribute;
+
+var Part = Numbas.parts.Part;
+
+/** Information only part - no input, no marking, just display some content to the student. 
+ * @constructor
+ * @memberof Numbas.parts
+ * @augments Numbas.parts.Part
+ */
+var InformationPart = Numbas.parts.InformationPart = function(xml, path, question, parentPart, loading)
+{
+	this.display = new Numbas.display.InformationPartDisplay(this);
+	this.answered = true;
+	this.isDirty = false;
+}
+InformationPart.prototype = /** @lends Numbas.parts.InformationOnlyPart.prototype */ {
+	/** This part is always valid
+	 * @returns {boolean} true
+	 */
+	validate: function() {
+		this.answered = true;
+		return true;
+	},
+
+	/** This part is never dirty
+	 */
+	setDirty: function() {
+		this.isDirty = false;
+	},
+
+	hasStagedAnswer: function() {
+		return true;
+	},
+
+	doesMarking: false
+};
+
+Numbas.partConstructors['information'] = util.extend(Part,InformationPart);
+});
+</code></pre>
+        </article>
+    </section>
 
 
 
@@ -443,7 +274,7 @@
 	<br clear="both">
 
 	<footer>
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Aug 05 2015 15:07:59 GMT+0100 (BST)
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Aug 05 2015 15:07:54 GMT+0100 (BST)
 	</footer>
 
 	<script> prettyPrint(); </script>

@@ -125,6 +125,8 @@
 				
 					<li class="name"><a href="Numbas.jme.variables.html#makeVariables">makeVariables</a></li>
 				
+					<li class="name"><a href="Numbas.jme.variables.html#variableDependants">variableDependants</a></li>
+				
 				</ul>
 			</div>
 		
@@ -302,7 +304,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="jme-variables.js.html">runtime/scripts/jme-variables.js</a>, <a href="jme-variables.js.html#line162">line 162</a>
+        <a href="jme-variables.js.html">runtime/scripts/jme-variables.js</a>, <a href="jme-variables.js.html#line169">line 169</a>
     </li></ul></dd>
     
 
@@ -464,7 +466,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="jme-variables.js.html">runtime/scripts/jme-variables.js</a>, <a href="jme-variables.js.html#line247">line 247</a>
+        <a href="jme-variables.js.html">runtime/scripts/jme-variables.js</a>, <a href="jme-variables.js.html#line294">line 294</a>
     </li></ul></dd>
     
 
@@ -630,7 +632,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="jme-variables.js.html">runtime/scripts/jme-variables.js</a>, <a href="jme-variables.js.html#line295">line 295</a>
+        <a href="jme-variables.js.html">runtime/scripts/jme-variables.js</a>, <a href="jme-variables.js.html#line343">line 343</a>
     </li></ul></dd>
     
 
@@ -684,7 +686,7 @@
         
             
 <dt>
-    <h4 class="name" id="makeFunction"><span class="type-signature">&lt;static> </span>makeFunction<span class="signature">(tmpfn, scope)</span><span class="type-signature">&rarr; {object}</span>
+    <h4 class="name" id="makeFunction"><span class="type-signature">&lt;static> </span>makeFunction<span class="signature">(tmpfn, scope, withEnv)</span><span class="type-signature">&rarr; {object}</span>
 </h4>
 
     
@@ -770,6 +772,29 @@
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>withEnv</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>dictionary of local variables for javascript functions</p></td>
+        </tr>
+
+    
     </tbody>
 </table>
     
@@ -797,7 +822,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="jme-variables.js.html">runtime/scripts/jme-variables.js</a>, <a href="jme-variables.js.html#line96">line 96</a>
+        <a href="jme-variables.js.html">runtime/scripts/jme-variables.js</a>, <a href="jme-variables.js.html#line102">line 102</a>
     </li></ul></dd>
     
 
@@ -851,7 +876,7 @@
         
             
 <dt>
-    <h4 class="name" id="makeFunctions"><span class="type-signature">&lt;static> </span>makeFunctions<span class="signature">(tmpFunctions, scope)</span><span class="type-signature">&rarr; {object[]}</span>
+    <h4 class="name" id="makeFunctions"><span class="type-signature">&lt;static> </span>makeFunctions<span class="signature">(tmpFunctions, scope, withEnv)</span><span class="type-signature">&rarr; {object[]}</span>
 </h4>
 
     
@@ -937,6 +962,29 @@
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>withEnv</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>dictionary of local variables for javascript functions</p></td>
+        </tr>
+
+    
     </tbody>
 </table>
     
@@ -964,7 +1012,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="jme-variables.js.html">runtime/scripts/jme-variables.js</a>, <a href="jme-variables.js.html#line138">line 138</a>
+        <a href="jme-variables.js.html">runtime/scripts/jme-variables.js</a>, <a href="jme-variables.js.html#line145">line 145</a>
     </li></ul></dd>
     
 
@@ -1019,7 +1067,7 @@
         
             
 <dt>
-    <h4 class="name" id="makeJavascriptFunction"><span class="type-signature">&lt;static> </span>makeJavascriptFunction<span class="signature">(fn)</span><span class="type-signature">&rarr; {function}</span>
+    <h4 class="name" id="makeJavascriptFunction"><span class="type-signature">&lt;static> </span>makeJavascriptFunction<span class="signature">(fn, withEnv)</span><span class="type-signature">&rarr; {function}</span>
 </h4>
 
     
@@ -1083,6 +1131,29 @@
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>withEnv</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>dictionary of local variables for javascript functions</p></td>
+        </tr>
+
+    
     </tbody>
 </table>
     
@@ -1110,7 +1181,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="jme-variables.js.html">runtime/scripts/jme-variables.js</a>, <a href="jme-variables.js.html#line59">line 59</a>
+        <a href="jme-variables.js.html">runtime/scripts/jme-variables.js</a>, <a href="jme-variables.js.html#line60">line 60</a>
     </li></ul></dd>
     
 
@@ -1467,7 +1538,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="jme-variables.js.html">runtime/scripts/jme-variables.js</a>, <a href="jme-variables.js.html#line219">line 219</a>
+        <a href="jme-variables.js.html">runtime/scripts/jme-variables.js</a>, <a href="jme-variables.js.html#line226">line 226</a>
     </li></ul></dd>
     
 
@@ -1496,6 +1567,173 @@
 <div class="param-desc">
     <ul>
 <li>{variables: dictionary of evaluated variables, conditionSatisfied: was the condition satisfied?}</li>
+</ul>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">object</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="variableDependants"><span class="type-signature">&lt;static> </span>variableDependants<span class="signature">(todo, variables)</span><span class="type-signature">&rarr; {object}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Given a todo dictionary of variables, return a dictionary with only the variables depending on the given list of variables</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>todo</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>dictionary of variables mapped to their definitions</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>variables</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string[]</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>list of variable names whose dependants we should find</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="jme-variables.js.html">runtime/scripts/jme-variables.js</a>, <a href="jme-variables.js.html#line253">line 253</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <ul>
+<li>a copy of the todo list, only including the dependants of the given variables</li>
 </ul>
 </div>
 
@@ -1654,7 +1892,7 @@
 	
 		<li><a href="Numbas.matrixmath.html">matrixmath</a></li>
 	
-		<li><a href="Numbas.parts.html">parts</a></li>
+		<li><a href="Numbas.html#parts">parts</a></li>
 	
 		<li><a href="Numbas.schedule.html">schedule</a></li>
 	
@@ -1707,7 +1945,7 @@
 	<br clear="both">
 
 	<footer>
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Apr 15 2015 14:15:28 GMT+0100 (BST)
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Aug 05 2015 15:07:59 GMT+0100 (BST)
 	</footer>
 
 	<script> prettyPrint(); </script>

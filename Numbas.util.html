@@ -162,9 +162,13 @@
 				
 					<li class="name"><a href="Numbas.util.html#isNumber">isNumber</a></li>
 				
+					<li class="name"><a href="Numbas.util.html#letterOrdinal">letterOrdinal</a></li>
+				
 					<li class="name"><a href="Numbas.util.html#lpad">lpad</a></li>
 				
 					<li class="name"><a href="Numbas.util.html#neq">neq</a></li>
+				
+					<li class="name"><a href="Numbas.util.html#nicePartName">nicePartName</a></li>
 				
 					<li class="name"><a href="Numbas.util.html#parseBool">parseBool</a></li>
 				
@@ -676,7 +680,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line622">line 622</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line640">line 640</a>
     </li></ul></dd>
     
 
@@ -819,7 +823,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line656">line 656</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line674">line 674</a>
     </li></ul></dd>
     
 
@@ -1124,7 +1128,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line746">line 746</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line804">line 804</a>
     </li></ul></dd>
     
 
@@ -2827,7 +2831,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line563">line 563</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line569">line 569</a>
     </li></ul></dd>
     
 
@@ -3570,6 +3574,145 @@ This function clones the array elements as well, so there should be no side-effe
         
             
 <dt>
+    <h4 class="name" id="letterOrdinal"><span class="type-signature">&lt;static> </span>letterOrdinal<span class="signature">(n)</span><span class="type-signature">&rarr; {string}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Get the letter format of an ordinal
+e.g. the Nth element in the sequence a,b,c,...z,aa,ab,..,az,ba,...</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>n</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line749">line 749</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
     <h4 class="name" id="lpad"><span class="type-signature">&lt;static> </span>lpad<span class="signature">(s, n, p)</span><span class="type-signature">&rarr; {string}</span>
 </h4>
 
@@ -3909,6 +4052,144 @@ This function clones the array elements as well, so there should be no side-effe
     <dd>
         
 <span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="nicePartName"><span class="type-signature">&lt;static> </span>nicePartName<span class="signature">(path)</span><span class="type-signature">&rarr; {string}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Get a human-sensible name of a part, given its path</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line771">line 771</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
 
 
     </dd>
@@ -4312,7 +4593,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line689">line 689</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line707">line 707</a>
     </li></ul></dd>
     
 
@@ -4617,7 +4898,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line580">line 580</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line586">line 586</a>
     </li></ul></dd>
     
 
@@ -4714,6 +4995,9 @@ This function clones the array elements as well, so there should be no side-effe
             <td class="type">
             
                 
+<span class="param-type">Array.&lt;string></span>
+|
+
 <span class="param-type">string</span>
 
 
@@ -4724,7 +5008,7 @@ This function clones the array elements as well, so there should be no side-effe
 
             
 
-            <td class="description last"><p>name of the property to sort by</p></td>
+            <td class="description last"><p>name of the property (or list of names of properties) to sort by</p></td>
         </tr>
 
     
@@ -5395,7 +5679,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line603">line 603</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line618">line 618</a>
     </li></ul></dd>
     
 
@@ -5576,7 +5860,7 @@ This function clones the array elements as well, so there should be no side-effe
 	
 		<li><a href="Numbas.matrixmath.html">matrixmath</a></li>
 	
-		<li><a href="Numbas.parts.html">parts</a></li>
+		<li><a href="Numbas.html#parts">parts</a></li>
 	
 		<li><a href="Numbas.schedule.html">schedule</a></li>
 	
@@ -5629,7 +5913,7 @@ This function clones the array elements as well, so there should be no side-effe
 	<br clear="both">
 
 	<footer>
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Apr 15 2015 14:15:30 GMT+0100 (BST)
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Aug 05 2015 15:08:01 GMT+0100 (BST)
 	</footer>
 
 	<script> prettyPrint(); </script>

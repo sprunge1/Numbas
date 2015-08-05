@@ -292,7 +292,16 @@ var texOps = jme.display.texOps = {
 	'!': infixTex('\\neg '),	
 
 	/** unary addition */
-	'+u': infixTex('+'),	
+	'+u': function(thing,texArgs,settings) {
+		var tex = texArgs[0];
+		if( thing.args[0].tok.type=='op' ) {
+			var op = thing.args[0].tok.name;
+			if( op=='-u' || op=='+u' ) {
+				tex='\\left ( '+tex+' \\right )';
+			}
+		}
+		return '+'+tex;
+	},
 
 	/** unary minus */
 	'-u': (function(thing,texArgs,settings) {
@@ -300,8 +309,10 @@ var texOps = jme.display.texOps = {
 		if( thing.args[0].tok.type=='op' )
 		{
 			var op = thing.args[0].tok.name;
-			if(!(op=='/' || op=='*') &amp;&amp; jme.precedence[op]>jme.precedence['-u'])	//brackets are needed if argument is an operation which would be evaluated after negation
-			{
+			if(
+				op=='-u' || op=='+u' || 
+				(!(op=='/' || op=='*') &amp;&amp; jme.precedence[op]>jme.precedence['-u'])	//brackets are needed if argument is an operation which would be evaluated after negation
+			) {
 				tex='\\left ( '+tex+' \\right )';
 			}
 		}
@@ -376,7 +387,15 @@ var texOps = jme.display.texOps = {
 		return s;
 	}),
 	'/': (function(thing,texArgs) { return ('\\frac{ '+texArgs[0]+' }{ '+texArgs[1]+' }'); }),
-	'+': infixTex('+'),
+	'+': (function(thing,texArgs,settings) {
+		var a = thing.args[0];
+		var b = thing.args[1];
+		if(jme.isOp(b.tok,'+u') || jme.isOp(b.tok,'-u')) {
+			return texArgs[0]+' + \\left ( '+texArgs[1]+' \\right )';
+		} else {
+			return texArgs[0]+' + '+texArgs[1];
+		}
+	}),
 	'-': (function(thing,texArgs,settings) {
 		var a = thing.args[0];
 		var b = thing.args[1];
@@ -385,8 +404,8 @@ var texOps = jme.display.texOps = {
 			return texArgs[0]+' - '+texb;
 		}
 		else{
-			if(jme.isOp(b.tok,'+') || jme.isOp(b.tok,'-'))
-				return texArgs[0]+' - \\left( '+texArgs[1]+' \\right)';
+			if(jme.isOp(b.tok,'+') || jme.isOp(b.tok,'-') || jme.isOp(b.tok,'+u') || jme.isOp(b.tok,'-u'))
+				return texArgs[0]+' - \\left ( '+texArgs[1]+' \\right )';
 			else
 				return texArgs[0]+' - '+texArgs[1];
 		}
@@ -435,7 +454,7 @@ var texOps = jme.display.texOps = {
 				}
 				else
 				{
-					return '\\left ('+texArgs[0]+' \\right)!';
+					return '\\left ('+texArgs[0]+' \\right )!';
 				}
 			}),
 	'ceil': (function(thing,texArgs) { return '\\left \\lceil '+texArgs[0]+' \\right \\rceil';}),
@@ -466,6 +485,12 @@ var texOps = jme.display.texOps = {
 					return ('\\frac{\\partial '+degree+'}{\\partial '+texArgs[1]+degree+'} \\left ('+texArgs[0]+' \\right )');
 				}
 			}),
+	'sub': (function(thing,texArgs) {
+		return texArgs[0]+'_{ '+texArgs[1]+' }';
+	}),
+	'sup': (function(thing,texArgs) {
+		return texArgs[0]+'^{ '+texArgs[1]+' }';
+	}),
 	'limit': (function(thing,texArgs) { return ('\\lim_{'+texArgs[1]+' \\to '+texArgs[2]+'}{'+texArgs[0]+'}'); }),
 	'mod': (function(thing,texArgs) {return texArgs[0]+' \\pmod{'+texArgs[1]+'}';}),
 	'perm': (function(thing,texArgs) { return '^{'+texArgs[0]+'}\\kern-2pt P_{'+texArgs[1]+'}';}),
@@ -524,11 +549,11 @@ var texOps = jme.display.texOps = {
 		if(thing.args[0].tok.type=='function' &amp;&amp; thing.args[0].tok.name=='abs')
 			return '\\ln '+texArgs[0];
 		else
-			return '\\ln \\left( '+texArgs[0]+' \\right)';
+			return '\\ln \\left ( '+texArgs[0]+' \\right )';
 	},
 	'log': funcTex('\\log_{10}'),
 	'vector': (function(thing,texArgs,settings) {
-		return '\\left( '+texVector(thing,settings)+' \\right)';
+		return '\\left ( '+texVector(thing,settings)+' \\right )';
 	}),
 	'rowvector': (function(thing,texArgs,settings) {
 		if(thing.args[0].tok.type!='list')
@@ -898,12 +923,12 @@ var typeToTeX = jme.display.typeToTeX = {
 		return '\\left[ '+texArgs.join(', ')+' \\right]';
 	},
 	vector: function(thing,tok,texArgs,settings) {
-		return ('\\left( ' 
+		return ('\\left ( ' 
 				+ texVector(tok.value,settings)
-				+ ' \\right)' );
+				+ ' \\right )' );
 	},
 	matrix: function(thing,tok,texArgs,settings) {
-		return '\\left( '+texMatrix(tok.value,settings)+' \\right)';
+		return '\\left ( '+texMatrix(tok.value,settings)+' \\right )';
 	},
 	name: function(thing,tok,texArgs,settings) {
 		return texName(tok.name,tok.annotation);
@@ -1228,7 +1253,7 @@ var typeToJME = Numbas.jme.display.typeToJME = {
 			}
 			else if(arg_type=='number' &amp;&amp; arg_value.complex &amp;&amp; (op=='*' || op=='-u' || op=='/'))	// put brackets round a complex number
 			{
-				if(arg_value.im!=0 &amp;&amp; arg_value.im!=1)
+				if(arg_value.im!=0 &amp;&amp; !(arg_value.im==1 &amp;&amp; arg_value.re==0))
 				{
 					bits[i] = '('+bits[i]+')';
 					args[i].bracketed = true;
@@ -1350,7 +1375,9 @@ var opBrackets = Numbas.jme.display.opBrackets = {
  * @param {JME[]} conditions - conditions as expressions in JME expressions on the matched variables, which must all evaluate to true for the rule to match.
  * @param {JME} result - expression pattern to rewrite to.
  * 
- * @property {JME} patternString
+ * @property {JME} patternString - the JME string defining the pattern to match
+ * @property {JME} resultString - the JME string defining the result of the rule
+ * @property {JME} conditionStrings - JME strings defining the conditions
  * @property {Numbas.jme.tree} tree - `patternString` compiled to a syntax tree
  * @property {Numbas.jme.tree} result - `result` compiled to a syntax tree
  * @property {Numbas.jme.tree[]} conditions `conditions` compiled to syntax trees
@@ -1360,8 +1387,10 @@ var Rule = jme.display.Rule = function(pattern,conditions,result)
 	this.patternString = pattern;
 	this.tree = jme.compile(pattern,{},true);
 
+	this.resultString = result;
 	this.result = jme.compile(result,{},true);
 
+	this.conditionStrings = conditions.slice();
 	this.conditions = [];
 	for(var i=0;i&lt;conditions.length;i++)
 	{
@@ -1793,7 +1822,8 @@ var simplificationRules = jme.display.simplificationRules = {
 	],
 
 	noLeadingMinus: [
-		['-?;x+?;y',[],'y-x']											//don't start with a unary minus
+		['-?;x+?;y',[],'y-x'],											//don't start with a unary minus
+		['-0',[],'0']
 	],
 
 	collectNumbers: [
@@ -1868,9 +1898,9 @@ var compileRules = jme.display.compileRules = function(rules)
 {
 	for(var i=0;i&lt;rules.length;i++)
 	{
-		pattern = rules[i][0];
-		conditions = rules[i][1];
-		result = rules[i][2];
+		var pattern = rules[i][0];
+		var conditions = rules[i][1];
+		var result = rules[i][2];
 		rules[i] = new Rule(pattern,conditions,result);
 	}
 	return new jme.Ruleset(rules,{});
@@ -2018,7 +2048,7 @@ Numbas.jme.builtinScope = new Numbas.jme.Scope([Numbas.jme.builtinScope,{ruleset
 	
 		<li><a href="Numbas.matrixmath.html">matrixmath</a></li>
 	
-		<li><a href="Numbas.parts.html">parts</a></li>
+		<li><a href="Numbas.html#parts">parts</a></li>
 	
 		<li><a href="Numbas.schedule.html">schedule</a></li>
 	
@@ -2071,7 +2101,7 @@ Numbas.jme.builtinScope = new Numbas.jme.Scope([Numbas.jme.builtinScope,{ruleset
 	<br clear="both">
 
 	<footer>
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Apr 15 2015 14:15:24 GMT+0100 (BST)
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Aug 05 2015 15:07:54 GMT+0100 (BST)
 	</footer>
 
 	<script> prettyPrint(); </script>
