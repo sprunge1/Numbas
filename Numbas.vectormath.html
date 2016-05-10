@@ -73,7 +73,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1542">line 1542</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1562">line 1562</a>
     </li></ul></dd>
     
 
@@ -124,6 +124,8 @@
 				
 					<li class="name"><a href="Numbas.vectormath.html#eq">eq</a></li>
 				
+					<li class="name"><a href="Numbas.vectormath.html#map">map</a></li>
+				
 					<li class="name"><a href="Numbas.vectormath.html#matrixmul">matrixmul</a></li>
 				
 					<li class="name"><a href="Numbas.vectormath.html#mul">mul</a></li>
@@ -132,11 +134,17 @@
 				
 					<li class="name"><a href="Numbas.vectormath.html#neq">neq</a></li>
 				
+					<li class="name"><a href="Numbas.vectormath.html#precround">precround</a></li>
+				
+					<li class="name"><a href="Numbas.vectormath.html#siground">siground</a></li>
+				
 					<li class="name"><a href="Numbas.vectormath.html#sub">sub</a></li>
 				
 					<li class="name"><a href="Numbas.vectormath.html#toMatrix">toMatrix</a></li>
 				
 					<li class="name"><a href="Numbas.vectormath.html#transpose">transpose</a></li>
+				
+					<li class="name"><a href="Numbas.vectormath.html#vectormatrixmul">vectormatrixmul</a></li>
 				
 				</ul>
 			</div>
@@ -246,7 +254,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1687">line 1687</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1707">line 1707</a>
     </li></ul></dd>
     
 
@@ -407,7 +415,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1561">line 1561</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1581">line 1581</a>
     </li></ul></dd>
     
 
@@ -574,7 +582,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1651">line 1651</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1671">line 1671</a>
     </li></ul></dd>
     
 
@@ -787,7 +795,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1601">line 1601</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1621">line 1621</a>
     </li></ul></dd>
     
 
@@ -954,7 +962,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1611">line 1611</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1631">line 1631</a>
     </li></ul></dd>
     
 
@@ -1142,7 +1150,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1696">line 1696</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1716">line 1716</a>
     </li></ul></dd>
     
 
@@ -1177,6 +1185,161 @@
     <dd>
         
 <span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="map"><span class="type-signature">&lt;static> </span>map<span class="signature">()</span><span class="type-signature">&rarr; {<a href="global.html#vector">vector</a>}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Apply given function to each element</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#vector">vector</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1766">line 1766</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#vector">vector</a></span>
 
 
     </dd>
@@ -1303,7 +1466,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1721">line 1721</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1741">line 1741</a>
     </li></ul></dd>
     
 
@@ -1464,7 +1627,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1592">line 1592</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1612">line 1612</a>
     </li></ul></dd>
     
 
@@ -1602,7 +1765,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1552">line 1552</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1572">line 1572</a>
     </li></ul></dd>
     
 
@@ -1763,7 +1926,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1712">line 1712</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1732">line 1732</a>
     </li></ul></dd>
     
 
@@ -1805,6 +1968,316 @@
     <dd>
         
 <span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="precround"><span class="type-signature">&lt;static> </span>precround<span class="signature">()</span><span class="type-signature">&rarr; {<a href="global.html#vector">vector</a>}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Round each element to given number of decimal places</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#vector">vector</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>number of decimal places</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1775">line 1775</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#vector">vector</a></span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="siground"><span class="type-signature">&lt;static> </span>siground<span class="signature">()</span><span class="type-signature">&rarr; {<a href="global.html#vector">vector</a>}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Round each element to given number of significant figures</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#vector">vector</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>number of decimal places</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1784">line 1784</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#vector">vector</a></span>
 
 
     </dd>
@@ -1931,7 +2404,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1576">line 1576</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1596">line 1596</a>
     </li></ul></dd>
     
 
@@ -2069,7 +2542,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1742">line 1742</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1803">line 1803</a>
     </li></ul></dd>
     
 
@@ -2207,7 +2680,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1731">line 1731</a>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1792">line 1792</a>
     </li></ul></dd>
     
 
@@ -2242,6 +2715,168 @@
     <dd>
         
 <span class="param-type"><a href="global.html#matrix">matrix</a></span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="vectormatrixmul"><span class="type-signature">&lt;static> </span>vectormatrixmul<span class="signature">(v, v)</span><span class="type-signature">&rarr; {<a href="global.html#vector">vector</a>}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Multiply a vector on the right by a matrix.
+The vector is considered as a column vector.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>v</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#vector">vector</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>v</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#matrix">matrix</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="math.js.html">runtime/scripts/math.js</a>, <a href="math.js.html#line1753">line 1753</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="global.html#vector">vector</a></span>
 
 
     </dd>
@@ -2441,7 +3076,7 @@
 	<br clear="both">
 
 	<footer>
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Aug 05 2015 15:08:02 GMT+0100 (BST)
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Tue May 10 2016 13:48:08 GMT+0100 (BST)
 	</footer>
 
 	<script> prettyPrint(); </script>

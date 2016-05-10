@@ -77,10 +77,10 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 
 	/** Regular expressions to match tokens */
 	re: {
-		re_bool: /^true|^false/i,
+		re_bool: /^(true|false)(?![a-zA-Z_0-9'])/i,
 		re_number: /^[0-9]+(?:\x2E[0-9]+)?/,
 		re_name: /^{?((?:(?:[a-zA-Z]+):)*)((?:\$?[a-zA-Z_][a-zA-Z0-9_]*'*)|\?\??)}?/i,
-		re_op: /^(\.\.|#|&lt;=|>=|&lt;>|&amp;&amp;|\|\||[\|*+\-\/\^&lt;>=!&amp;;]|(?:(not|and|or|xor|isa|except|in)([^a-zA-Z0-9_']|$)))/i,
+		re_op: /^(\.\.|#|&lt;=|>=|&lt;>|&amp;&amp;|\|\||[\|*+\-\/\^&lt;>=!&amp;;]|(?:(not|and|or|xor|implies|isa|except|in)([^a-zA-Z0-9_']|$)))/i,
 		re_punctuation: /^([\(\),\[\]])/,
 		re_string: /^(['"])((?:[^\1\\]|\\.)*?)\1/,
 		re_comment: /^\/\/.*(?:\n|$)/
@@ -128,6 +128,7 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 			else if (result = expr.match(jme.re.re_bool))
 			{
 				token = new TBool(util.parseBool(result[0]));
+				result[0] = result[1];
 			}
 			else if (result = expr.match(jme.re.re_op))
 			{
@@ -461,9 +462,7 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 				else
 				{
 					var v = scope.variables[name];
-					if(v.type=='expression') {
-						return jme.substituteTree(v.tree,scope,allowUnbound);
-					} else if(v.tok) {
+					if(v.tok) {
 						return v;
 					} else {
 						return {tok: v};
@@ -535,6 +534,7 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 			if(tok.name.toLowerCase() in scope.variables)
 				return scope.variables[tok.name.toLowerCase()];
 			else
+				tok = new TName(tok.name);
 				tok.unboundName = true;
 				return tok;
 			break;
@@ -550,6 +550,7 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 					tree.args[i] = jme.evaluate(tree.args[i],scope);
 				}
 
+				var matchedFunction;
 				if(scope.functions[op]===undefined)
 				{
 					if(tok.type=='function') {
@@ -569,12 +570,12 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 					var fn = scope.functions[op][j];
 					if(fn.typecheck(tree.args))
 					{
-						tok.fn = fn;
+						matchedFunction = fn;
 						break;
 					}
 				}
-				if(tok.fn)
-					return tok.fn.evaluate(tree.args,scope);
+				if(matchedFunction)
+					return matchedFunction.evaluate(tree.args,scope);
 				else {
 					for(var i=0;i&lt;=tree.args.length;i++) {
 						if(tree.args[i] &amp;&amp; tree.args[i].unboundName) {
@@ -752,7 +753,8 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 		return bits.join('');
 	},
 
-	/** Split up a string along TeX delimiters (`$`, `\[`, `\]`)
+	/** Split up a TeX expression, finding the \var and \simplify commands.
+	 * Returns an array [normal tex,var or simplify,options,argument,normal tex,...]a
 	 * @param {string} s
 	 * @returns {string[]}
 	 */
@@ -863,11 +865,11 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 					v = jme.tokenToDisplayString(v);
 				} else {
 					if(v.type=='number') {
-						v = '('+Numbas.jme.display.treeToJME({tok:v})+')';
+						v = '('+Numbas.jme.display.treeToJME({tok:v},{niceNumber: false})+')';
 					} else if(v.type=='string') {
 						v = "'"+v.value+"'";
 					} else {
-						v = jme.display.treeToJME({tok:v});
+						v = jme.display.treeToJME({tok:v},{niceNumber: false});
 					}
 				}
 
@@ -1455,7 +1457,10 @@ var TPunc = types.TPunc = function(kind)
 	this.type = kind;
 }
 
-var TExpression = types.TExpression = function(tree) {
+var TExpression = types.TExpression = types.expression = function(tree) {
+	if(typeof(tree)=='string') {
+		tree = jme.compile(tree);
+	}
 	this.tree = tree;
 }
 TExpression.prototype = {
@@ -1524,7 +1529,8 @@ var precedence = jme.precedence = {
 	'isa': 9,
 	'and': 11,
 	'or': 12,
-	'xor': 13
+	'xor': 13,
+	'implies': 14
 };
 
 /** Synonyms of names - keys in this dictionary are translated to their corresponding values after tokenising.
@@ -1824,26 +1830,39 @@ var findvars = jme.findvars = function(tree,boundvars,scope)
 				return [];
 			break;
 		case 'string':
-			var bits = jme.texsplit(tree.tok.value);
+			var bits = util.contentsplitbrackets(tree.tok.value);
 			var out = [];
-			for(var i=0;i&lt;bits.length-3;i+=4)
+			for(var i=0;i&lt;bits.length;i+=4)
 			{
-				var cmd = bits[i+1];
-				var expr = bits[i+3];
-				switch(cmd)
+				var plain = bits[i];
+				var sbits = util.splitbrackets(plain,'{','}');
+				for(var k=1;k&lt;sbits.length-1;k+=2)
 				{
-				case 'var':
-					var tree2 = jme.compile(expr,scope,true);
+					var tree2 = jme.compile(sbits[k],scope,true);
 					out = out.merge(findvars(tree2,boundvars));
-					break;
-				case 'simplify':
-					var sbits = util.splitbrackets(expr,'{','}');
-					for(var i=1;i&lt;sbits.length-1;i+=2)
-					{
-						var tree2 = jme.compile(sbits[i],scope,true);
-						out = out.merge(findvars(tree2,boundvars));
+				}
+				if(i&lt;=bits.length-3) {
+					var tex = bits[i+2];
+					var tbits = jme.texsplit(tex);
+					for(var j=0;j&lt;tbits.length;j+=4) {
+						var cmd = tbits[j+1];
+						var expr = tbits[j+3];
+						switch(cmd)
+						{
+						case 'var':
+							var tree2 = jme.compile(expr,scope,true);
+							out = out.merge(findvars(tree2,boundvars));
+							break;
+						case 'simplify':
+							var sbits = util.splitbrackets(expr,'{','}');
+							for(var k=1;k&lt;sbits.length-1;k+=2)
+							{
+								var tree2 = jme.compile(sbits[k],scope,true);
+								out = out.merge(findvars(tree2,boundvars));
+							}
+							break;
+						}
 					}
-					break;
 				}
 			}
 			return out;
@@ -2115,7 +2134,7 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 	<br clear="both">
 
 	<footer>
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Aug 05 2015 15:07:54 GMT+0100 (BST)
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Tue May 10 2016 13:48:01 GMT+0100 (BST)
 	</footer>
 
 	<script> prettyPrint(); </script>
