@@ -217,6 +217,8 @@
 				
 					<li class="name"><a href="Numbas.parts.InformationPart.html#hideSteps">hideSteps</a></li>
 				
+					<li class="name"><a href="Numbas.parts.InformationPart.html#mark">mark</a></li>
+				
 					<li class="name"><a href="Numbas.parts.InformationPart.html#markAgainstScope">markAgainstScope</a></li>
 				
 					<li class="name"><a href="Numbas.parts.InformationPart.html#markingComment">markingComment</a></li>
@@ -2163,7 +2165,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line692">line 692</a>
+        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line696">line 696</a>
     </li></ul></dd>
     
 
@@ -2461,7 +2463,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line609">line 609</a>
+        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line610">line 610</a>
     </li></ul></dd>
     
 
@@ -2519,7 +2521,7 @@
     
     <div class="description">
         <p>Compute the correct answer, based on the given scope
-Anything to do with marking that depends on the scope should be in this method, and calling it witha new scope should update all the settings used by the marking algorithm.</p>
+Anything to do with marking that depends on the scope should be in this method, and calling it with a new scope should update all the settings used by the marking algorithm.</p>
     </div>
     
 
@@ -2605,7 +2607,7 @@ Anything to do with marking that depends on the scope should be in this method, 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line654">line 654</a>
+        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line655">line 655</a>
     </li></ul></dd>
     
 
@@ -2814,7 +2816,7 @@ Anything to do with marking that depends on the scope should be in this method, 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line567">line 567</a>
+        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line568">line 568</a>
     </li></ul></dd>
     
 
@@ -2916,12 +2918,100 @@ Anything to do with marking that depends on the scope should be in this method, 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line757">line 757</a>
+        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line761">line 761</a>
     </li></ul></dd>
     
 
     
 
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="mark"><span class="type-signature">&lt;abstract> </span>mark<span class="signature">()</span><span class="type-signature"></span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Function which marks the student's answer: set the credit for the student's answer to a number between 0 and 1. Runs before <a href="Numbas.parts.Part.html#validate">Numbas.parts.Part#validate</a> - set properties on <code>this.validation</code> to record reasons answer is valid/invalid.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Numbas.parts.Part.html#mark">Numbas.parts.Part#mark</a>
+    </li></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line675">line 675</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="Numbas.parts.Part.html#setCredit">Numbas.parts.Part#setCredit</a></li>
+        
+            <li><a href="Numbas.parts.Part.html#markingComment">Numbas.parts.Part#markingComment</a></li>
+        
+            <li><a href="Numbas.parts.Part.html#validate">Numbas.parts.Part#validate</a></li>
+        </ul>
+    </dd>
     
 
     
@@ -3064,7 +3154,7 @@ Anything to do with marking that depends on the scope should be in this method, 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line587">line 587</a>
+        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line588">line 588</a>
     </li></ul></dd>
     
 
@@ -3213,7 +3303,7 @@ Anything to do with marking that depends on the scope should be in this method, 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line720">line 720</a>
+        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line724">line 724</a>
     </li></ul></dd>
     
 
@@ -3361,7 +3451,7 @@ Anything to do with marking that depends on the scope should be in this method, 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line706">line 706</a>
+        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line710">line 710</a>
     </li></ul></dd>
     
 
@@ -3439,7 +3529,7 @@ Sets this part as dirty, and gives a warning explaining why the student must res
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line574">line 574</a>
+        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line575">line 575</a>
     </li></ul></dd>
     
 
@@ -3648,7 +3738,7 @@ Sets this part as dirty, and gives a warning explaining why the student must res
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line767">line 767</a>
+        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line771">line 771</a>
     </li></ul></dd>
     
 
@@ -3796,7 +3886,7 @@ Sets this part as dirty, and gives a warning explaining why the student must res
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line677">line 677</a>
+        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line681">line 681</a>
     </li></ul></dd>
     
 
@@ -3998,7 +4088,7 @@ Sets this part as dirty, and gives a warning explaining why the student must res
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line659">line 659</a>
+        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line660">line 660</a>
     </li></ul></dd>
     
 
@@ -4255,7 +4345,7 @@ Sets this part as dirty, and gives a warning explaining why the student must res
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line737">line 737</a>
+        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line741">line 741</a>
     </li></ul></dd>
     
 
@@ -4409,7 +4499,7 @@ Sets this part as dirty, and gives a warning explaining why the student must res
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line665">line 665</a>
+        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line666">line 666</a>
     </li></ul></dd>
     
 
@@ -4581,7 +4671,7 @@ Sets this part as dirty, and gives a warning explaining why the student must res
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line732">line 732</a>
+        <a href="part.js.html">runtime/scripts/part.js</a>, <a href="part.js.html#line736">line 736</a>
     </li></ul></dd>
     
 
@@ -4653,6 +4743,8 @@ Sets this part as dirty, and gives a warning explaining why the student must res
 	
 		<li><a href="Numbas.display.ExamDisplay.html">ExamDisplay</a></li>
 	
+		<li><a href="Numbas.display.ExtensionPartDisplay.html">ExtensionPartDisplay</a></li>
+	
 		<li><a href="Numbas.display.GapFillPartDisplay.html">GapFillPartDisplay</a></li>
 	
 		<li><a href="Numbas.display.InformationPartDisplay.html">InformationPartDisplay</a></li>
@@ -4710,6 +4802,8 @@ Sets this part as dirty, and gives a warning explaining why the student must res
 		<li><a href="Numbas.jme.types.TString.html">TString</a></li>
 	
 		<li><a href="Numbas.jme.types.TVector.html">TVector</a></li>
+	
+		<li><a href="Numbas.parts.ExtensionPart.html">ExtensionPart</a></li>
 	
 		<li><a href="Numbas.parts.GapFillPart.html">GapFillPart</a></li>
 	
@@ -4815,7 +4909,7 @@ Sets this part as dirty, and gives a warning explaining why the student must res
 	<br clear="both">
 
 	<footer>
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Tue May 10 2016 13:48:06 GMT+0100 (BST)
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Jul 13 2016 11:31:11 GMT+0100 (BST)
 	</footer>
 
 	<script> prettyPrint(); </script>

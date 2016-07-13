@@ -156,6 +156,8 @@
 				
 					<li class="name"><a href="Numbas.util.html#isFloat">isFloat</a></li>
 				
+					<li class="name"><a href="Numbas.util.html#isFraction">isFraction</a></li>
+				
 					<li class="name"><a href="Numbas.util.html#isInt">isInt</a></li>
 				
 					<li class="name"><a href="Numbas.util.html#isNonemptyHTML">isNonemptyHTML</a></li>
@@ -242,7 +244,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line351">line 351</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line360">line 360</a>
     </li></ul></dd>
     
 
@@ -519,7 +521,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line461">line 461</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line497">line 497</a>
     </li></ul></dd>
     
 
@@ -680,7 +682,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line640">line 640</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line686">line 686</a>
     </li></ul></dd>
     
 
@@ -823,7 +825,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line674">line 674</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line720">line 720</a>
     </li></ul></dd>
     
 
@@ -1128,7 +1130,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line804">line 804</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line850">line 850</a>
     </li></ul></dd>
     
 
@@ -1796,7 +1798,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line410">line 410</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line419">line 419</a>
     </li></ul></dd>
     
 
@@ -2227,7 +2229,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line539">line 539</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line575">line 575</a>
     </li></ul></dd>
     
 
@@ -2735,7 +2737,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line394">line 394</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line403">line 403</a>
     </li></ul></dd>
     
 
@@ -2831,7 +2833,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line569">line 569</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line605">line 605</a>
     </li></ul></dd>
     
 
@@ -2951,7 +2953,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line319">line 319</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line328">line 328</a>
     </li></ul></dd>
     
 
@@ -3090,6 +3092,144 @@ This function clones the array elements as well, so there should be no side-effe
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
         <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line279">line 279</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+        
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="isFraction"><span class="type-signature">&lt;static> </span>isFraction<span class="signature">(s)</span><span class="type-signature">&rarr; {boolean}</span>
+</h4>
+
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Test if parameter is a fraction</p>
+    </div>
+    
+
+    
+
+    
+
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>s</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+    
+
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line288">line 288</a>
     </li></ul></dd>
     
 
@@ -3365,7 +3505,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line332">line 332</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line341">line 341</a>
     </li></ul></dd>
     
 
@@ -3526,7 +3666,7 @@ This function clones the array elements as well, so there should be no side-effe
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line289">line 289</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line298">line 298</a>
     </li></ul></dd>
     
 
@@ -3665,7 +3805,7 @@ e.g. the Nth element in the sequence a,b,c,...z,aa,ab,..,az,ba,...</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line749">line 749</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line795">line 795</a>
     </li></ul></dd>
     
 
@@ -3849,7 +3989,7 @@ e.g. the Nth element in the sequence a,b,c,...z,aa,ab,..,az,ba,...</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line380">line 380</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line389">line 389</a>
     </li></ul></dd>
     
 
@@ -4155,7 +4295,7 @@ e.g. the Nth element in the sequence a,b,c,...z,aa,ab,..,az,ba,...</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line771">line 771</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line817">line 817</a>
     </li></ul></dd>
     
 
@@ -4293,7 +4433,7 @@ e.g. the Nth element in the sequence a,b,c,...z,aa,ab,..,az,ba,...</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line342">line 342</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line351">line 351</a>
     </li></ul></dd>
     
 
@@ -4431,7 +4571,7 @@ e.g. the Nth element in the sequence a,b,c,...z,aa,ab,..,az,ba,...</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line357">line 357</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line366">line 366</a>
     </li></ul></dd>
     
 
@@ -4593,7 +4733,7 @@ e.g. the Nth element in the sequence a,b,c,...z,aa,ab,..,az,ba,...</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line707">line 707</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line753">line 753</a>
     </li></ul></dd>
     
 
@@ -4760,7 +4900,7 @@ e.g. the Nth element in the sequence a,b,c,...z,aa,ab,..,az,ba,...</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line448">line 448</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line484">line 484</a>
     </li></ul></dd>
     
 
@@ -4898,7 +5038,7 @@ e.g. the Nth element in the sequence a,b,c,...z,aa,ab,..,az,ba,...</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line586">line 586</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line622">line 622</a>
     </li></ul></dd>
     
 
@@ -5039,7 +5179,7 @@ e.g. the Nth element in the sequence a,b,c,...z,aa,ab,..,az,ba,...</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line548">line 548</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line584">line 584</a>
     </li></ul></dd>
     
 
@@ -5224,7 +5364,7 @@ e.g. the Nth element in the sequence a,b,c,...z,aa,ab,..,az,ba,...</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line474">line 474</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line510">line 510</a>
     </li></ul></dd>
     
 
@@ -5373,7 +5513,7 @@ e.g. the Nth element in the sequence a,b,c,...z,aa,ab,..,az,ba,...</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line434">line 434</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line470">line 470</a>
     </li></ul></dd>
     
 
@@ -5541,7 +5681,7 @@ e.g. the Nth element in the sequence a,b,c,...z,aa,ab,..,az,ba,...</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line308">line 308</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line317">line 317</a>
     </li></ul></dd>
     
 
@@ -5679,7 +5819,7 @@ e.g. the Nth element in the sequence a,b,c,...z,aa,ab,..,az,ba,...</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line618">line 618</a>
+        <a href="util.js.html">runtime/scripts/util.js</a>, <a href="util.js.html#line664">line 664</a>
     </li></ul></dd>
     
 
@@ -5751,6 +5891,8 @@ e.g. the Nth element in the sequence a,b,c,...z,aa,ab,..,az,ba,...</p>
 	
 		<li><a href="Numbas.display.ExamDisplay.html">ExamDisplay</a></li>
 	
+		<li><a href="Numbas.display.ExtensionPartDisplay.html">ExtensionPartDisplay</a></li>
+	
 		<li><a href="Numbas.display.GapFillPartDisplay.html">GapFillPartDisplay</a></li>
 	
 		<li><a href="Numbas.display.InformationPartDisplay.html">InformationPartDisplay</a></li>
@@ -5808,6 +5950,8 @@ e.g. the Nth element in the sequence a,b,c,...z,aa,ab,..,az,ba,...</p>
 		<li><a href="Numbas.jme.types.TString.html">TString</a></li>
 	
 		<li><a href="Numbas.jme.types.TVector.html">TVector</a></li>
+	
+		<li><a href="Numbas.parts.ExtensionPart.html">ExtensionPart</a></li>
 	
 		<li><a href="Numbas.parts.GapFillPart.html">GapFillPart</a></li>
 	
@@ -5913,7 +6057,7 @@ e.g. the Nth element in the sequence a,b,c,...z,aa,ab,..,az,ba,...</p>
 	<br clear="both">
 
 	<footer>
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Tue May 10 2016 13:48:08 GMT+0100 (BST)
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Jul 13 2016 11:31:13 GMT+0100 (BST)
 	</footer>
 
 	<script> prettyPrint(); </script>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Class: PatternMatchPartDisplay - Numbas API documentation</title>
+    <title>Class: ExtensionPartDisplay - Numbas API documentation</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -21,7 +21,7 @@
 
 	<div id="main">
 
-		<h1 class="page-title">Class: PatternMatchPartDisplay</h1>
+		<h1 class="page-title">Class: ExtensionPartDisplay</h1>
 
 		
 
@@ -34,7 +34,7 @@
 		
         	<span class="ancestors"><a href="Numbas.html">Numbas</a><a href="Numbas.display.html">.display</a>.</span>
 	    
-    	PatternMatchPartDisplay
+    	ExtensionPartDisplay
 	    
 	</h3>
     
@@ -47,7 +47,7 @@
     
         
 <dt>
-    <h4 class="name" id="PatternMatchPartDisplay"><span class="type-signature"></span>new PatternMatchPartDisplay<span class="signature">()</span><span class="type-signature"></span>
+    <h4 class="name" id="ExtensionPartDisplay"><span class="type-signature"></span>new ExtensionPartDisplay<span class="signature">()</span><span class="type-signature"></span>
 </h4>
 
     
@@ -56,7 +56,7 @@
 
     
     <div class="description">
-        <p>Display code for a <a href="Numbas.parts.PatternMatchPart.html">Numbas.parts.PatternMatchPart</a></p>
+        <p>Display code for a <a href="Numbas.parts.ExtensionPart.html">Numbas.parts.ExtensionPart</a></p>
     </div>
     
 
@@ -89,7 +89,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="display.js.html">themes/default/files/scripts/display.js</a>, <a href="display.js.html#line1724">line 1724</a>
+        <a href="display.js.html">themes/default/files/scripts/display.js</a>, <a href="display.js.html#line2181">line 2181</a>
     </li></ul></dd>
     
 
@@ -142,46 +142,33 @@
 		
 
 		
-			<div class="toc-section">
-				<h4>Members</h4>
-				<ul>
-				
-					<li class="name"><a href="Numbas.display.PatternMatchPartDisplay.html#correctAnswer">correctAnswer</a></li>
-				
-					<li class="name"><a href="Numbas.display.PatternMatchPartDisplay.html#displayAnswer">displayAnswer</a></li>
-				
-					<li class="name"><a href="Numbas.display.PatternMatchPartDisplay.html#studentAnswer">studentAnswer</a></li>
-				
-				</ul>
-			</div>
-		
 
 		
 			<div class="toc-section">
 				<h4>Methods</h4>
 				<ul>
 				
-					<li class="name"><a href="Numbas.display.PatternMatchPartDisplay.html#end">end</a></li>
+					<li class="name"><a href="Numbas.display.ExtensionPartDisplay.html#end">end</a></li>
 				
-					<li class="name"><a href="Numbas.display.PatternMatchPartDisplay.html#hideSteps">hideSteps</a></li>
+					<li class="name"><a href="Numbas.display.ExtensionPartDisplay.html#hideSteps">hideSteps</a></li>
 				
-					<li class="name"><a href="Numbas.display.PatternMatchPartDisplay.html#init">init</a></li>
+					<li class="name"><a href="Numbas.display.ExtensionPartDisplay.html#init">init</a></li>
 				
-					<li class="name"><a href="Numbas.display.PatternMatchPartDisplay.html#removeWarnings">removeWarnings</a></li>
+					<li class="name"><a href="Numbas.display.ExtensionPartDisplay.html#removeWarnings">removeWarnings</a></li>
 				
-					<li class="name"><a href="Numbas.display.PatternMatchPartDisplay.html#restoreAnswer">restoreAnswer</a></li>
+					<li class="name"><a href="Numbas.display.ExtensionPartDisplay.html#restoreAnswer">restoreAnswer</a></li>
 				
-					<li class="name"><a href="Numbas.display.PatternMatchPartDisplay.html#revealAnswer">revealAnswer</a></li>
+					<li class="name"><a href="Numbas.display.ExtensionPartDisplay.html#revealAnswer">revealAnswer</a></li>
 				
-					<li class="name"><a href="Numbas.display.PatternMatchPartDisplay.html#setWarnings">setWarnings</a></li>
+					<li class="name"><a href="Numbas.display.ExtensionPartDisplay.html#setWarnings">setWarnings</a></li>
 				
-					<li class="name"><a href="Numbas.display.PatternMatchPartDisplay.html#show">show</a></li>
+					<li class="name"><a href="Numbas.display.ExtensionPartDisplay.html#show">show</a></li>
 				
-					<li class="name"><a href="Numbas.display.PatternMatchPartDisplay.html#showScore">showScore</a></li>
+					<li class="name"><a href="Numbas.display.ExtensionPartDisplay.html#showScore">showScore</a></li>
 				
-					<li class="name"><a href="Numbas.display.PatternMatchPartDisplay.html#showSteps">showSteps</a></li>
+					<li class="name"><a href="Numbas.display.ExtensionPartDisplay.html#showSteps">showSteps</a></li>
 				
-					<li class="name"><a href="Numbas.display.PatternMatchPartDisplay.html#warning">warning</a></li>
+					<li class="name"><a href="Numbas.display.ExtensionPartDisplay.html#warning">warning</a></li>
 				
 				</ul>
 			</div>
@@ -193,217 +180,6 @@
 	</nav>
 	
 
-    
-        <h3 class="subsection-title">Members</h3>
-
-        <dl>
-            
-<dt>
-    <h4 class="name" id="correctAnswer"><span class="type-signature">&lt;static> </span>correctAnswer<span class="type-signature"> :observable|RegExp</span></h4>
-
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        <p>The correct answer regular expression</p>
-    </div>
-    
-
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
-<span class="param-type">observable</span>
-|
-
-<span class="param-type">RegExp</span>
-
-
-            </li>
-        </ul>
-    
-
-    
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="display.js.html">themes/default/files/scripts/display.js</a>, <a href="display.js.html#line1740">line 1740</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-    
-
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="displayAnswer"><span class="type-signature">&lt;static> </span>displayAnswer<span class="type-signature"> :observable|string</span></h4>
-
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        <p>A representative correct answer to display when answers are revealed</p>
-    </div>
-    
-
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
-<span class="param-type">observable</span>
-|
-
-<span class="param-type">string</span>
-
-
-            </li>
-        </ul>
-    
-
-    
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="display.js.html">themes/default/files/scripts/display.js</a>, <a href="display.js.html#line1746">line 1746</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-    
-
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="studentAnswer"><span class="type-signature">&lt;static> </span>studentAnswer<span class="type-signature"> :observable|string</span></h4>
-
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        <p>The student's current answer (not necessarily submitted)</p>
-    </div>
-    
-
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
-<span class="param-type">observable</span>
-|
-
-<span class="param-type">string</span>
-
-
-            </li>
-        </ul>
-    
-
-    
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="display.js.html">themes/default/files/scripts/display.js</a>, <a href="display.js.html#line1734">line 1734</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-    
-
-    
-</dd>
-
-        </dl>
     
 
     
@@ -1559,7 +1335,7 @@
 	<br clear="both">
 
 	<footer>
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Jul 13 2016 11:31:08 GMT+0100 (BST)
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Jul 13 2016 11:31:07 GMT+0100 (BST)
 	</footer>
 
 	<script> prettyPrint(); </script>

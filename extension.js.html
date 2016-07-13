@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Source: runtime/scripts/start-exam.js - Numbas API documentation</title>
+    <title>Source: runtime/scripts/parts/extension.js - Numbas API documentation</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -21,7 +21,7 @@
 
 	<div id="main">
 
-		<h1 class="page-title">Source: runtime/scripts/start-exam.js</h1>
+		<h1 class="page-title">Source: runtime/scripts/parts/extension.js</h1>
 
 		
 
@@ -29,8 +29,8 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>﻿/*
-Copyright 2011-14 Newcastle University
+            <pre class="prettyprint source linenums"><code>/*
+Copyright 2011-15 Newcastle University
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -45,93 +45,58 @@ Copyright 2011-14 Newcastle University
    limitations under the License.
 */
 
-/** @file Start the exam */
+/** @file The {@link Numbas.parts.} object */
 
-// 'base' gives the third-party libraries on which Numbas depends
-Numbas.queueScript('base',['jquery','R','seedrandom','knockout','sarissa','es6-promise'],function() {
-});
+Numbas.queueScript('parts/extension',['base','display','util','scorm-storage','part'],function() {
 
-Numbas.queueScript('start-exam',['base','exam','settings'],function() {
+var util = Numbas.util;
 
-	/**
-	 * Initialise the exam:
-	 *
-	 * - Connect to the LMS, which might have saved student answers
-	 * - Load the exam XML and the XSL templates
-	 * - create and initialise the exam object
-	 * - display the frontpage
-	 *
-	 * This function is called when all the other scripts have been loaded and executed. 
-	 * It uses the scheduling system to make sure the browser isn't locked up when the exam is being initialised
-	 * @memberof Numbas
-	 * @method
-	 */
-	var init = Numbas.init = function()
-	{
-	$(document).ready(function() {
-		var seed = Math.seedrandom(new Date().getTime());
+var Part = Numbas.parts.Part;
 
-		var job = Numbas.schedule.add;
+/** Extension part - validation and marking should be filled in by an extension, or custom javascript code belonging to the question.
+ * The idea 
+ * @constructor
+ * @memberof Numbas.parts
+ * @augments Numbas.parts.Part
+ */
+var ExtensionPart = Numbas.parts.ExtensionPart = function(xml, path, question, parentPart, loading)
+{
+	this.display = new Numbas.display.ExtensionPartDisplay(this);
+}
+ExtensionPart.prototype = /** @lends Numbas.parts.ExtensionPart.prototype */ {
+	validate: function() {
+        return false;
+	},
 
-		job(Numbas.xml.loadXMLDocs);				//load in all the XML and XSLT files
+	hasStagedAnswer: function() {
+		return true;
+	},
 
-		job(Numbas.display.localisePage);
+	doesMarking: true,
 
-		job(function()
-		{
-			var store = Numbas.store = new Numbas.storage.SCORMStorage();	//The storage object manages communication between the LMS and the exam
-			
-			var exam = Numbas.exam = new Numbas.Exam();					//create the exam object, and load in everything from the XML
-			exam.seed = Numbas.util.hashCode(seed);
+    mark: function() {
+        this.markingComment(R('part.extension.not implemented','mark'));
+    },
 
-			var entry = store.getEntry();
-			if(store.getMode() == 'review')
-				entry = 'review';
+    /** Return suspend data for this part so it can be restored when resuming the exam - must be implemented by an extension or the question.
+     * @ returns {object}
+     */
+    createSuspendData: function() {
+        return {};
+    },
 
-			switch(entry)
-			{
-			case 'ab-initio':
-				job(exam.init,exam);
-				job(Numbas.display.init);
-				job(function() {
-					if(exam.settings.showFrontPage)
-					{
-						exam.display.showInfoPage('frontpage');
-					}
-					else
-					{
-						exam.begin();
-					}
-				});	
-				break;
+    /** Get the suspend data created in a previous session for this part, if it exists.
+     * @ param {object} data
+     */
+    loadSuspendData: function(data) {
+        var pobj = Numbas.store.loadExtensionPart(this);
+        if(pobj) {
+            return pobj.extension_data;
+        }
+    }
+};
 
-			case 'resume':
-			case 'review':
-				job(exam.load,exam);
-				job(Numbas.display.init);
-
-				job(function() {
-					if(entry == 'review')
-					{
-						job(exam.end,exam,false);
-					}
-					else if(exam.currentQuestion !== undefined)
-					{
-						job(exam.display.showInfoPage,exam.display,'suspend');
-					}
-					else
-					{
-						job(exam.display.showInfoPage,exam.display,'frontpage');
-					}
-				});
-
-				break;
-			}
-		});
-
-	});
-	}
-
+Numbas.partConstructors['extension'] = util.extend(Part,ExtensionPart);
 });
 </code></pre>
         </article>
