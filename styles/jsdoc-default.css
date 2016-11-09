@@ -396,10 +396,12 @@ tr > th:last-child { border-right: 1px solid #ddd; }
     border: 1px solid #ddd;
     width: 80%;
     overflow: auto;
+	font-size: 0.8rem;
 }
 
 .prettyprint.source {
     width: inherit;
+	max-width: 872px;
 }
 
 .prettyprint code
