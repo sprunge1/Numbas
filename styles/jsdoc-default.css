@@ -1,62 +1,198 @@
+@font-face{
+    font-family: 'Source Sans Pro';
+    font-weight: 200;
+    font-style: normal;
+    font-stretch: normal;
+    src: url('../fonts/EOT/SourceSansPro-ExtraLight.eot') format('embedded-opentype'),
+         url('../fonts/WOFF2/TTF/SourceSansPro-ExtraLight.ttf.woff2') format('woff2'),
+         url('../fonts/WOFF/OTF/SourceSansPro-ExtraLight.otf.woff') format('woff'),
+         url('../fonts/OTF/SourceSansPro-ExtraLight.otf') format('opentype'),
+         url('../fonts/TTF/SourceSansPro-ExtraLight.ttf') format('truetype');
+}
+
+@font-face{
+    font-family: 'Source Sans Pro';
+    font-weight: 200;
+    font-style: italic;
+    font-stretch: normal;
+    src: url('../fonts/EOT/SourceSansPro-ExtraLightIt.eot') format('embedded-opentype'),
+         url('../fonts/WOFF2/TTF/SourceSansPro-ExtraLightIt.ttf.woff2') format('woff2'),
+         url('../fonts/WOFF/OTF/SourceSansPro-ExtraLightIt.otf.woff') format('woff'),
+         url('../fonts/OTF/SourceSansPro-ExtraLightIt.otf') format('opentype'),
+         url('../fonts/TTF/SourceSansPro-ExtraLightIt.ttf') format('truetype');
+}
+
+@font-face{
+    font-family: 'Source Sans Pro';
+    font-weight: 300;
+    font-style: normal;
+    font-stretch: normal;
+    src: url('../fonts/EOT/SourceSansPro-Light.eot') format('embedded-opentype'),
+         url('../fonts/WOFF2/TTF/SourceSansPro-Light.ttf.woff2') format('woff2'),
+         url('../fonts/WOFF/OTF/SourceSansPro-Light.otf.woff') format('woff'),
+         url('../fonts/OTF/SourceSansPro-Light.otf') format('opentype'),
+         url('../fonts/TTF/SourceSansPro-Light.ttf') format('truetype');
+}
+
+@font-face{
+    font-family: 'Source Sans Pro';
+    font-weight: 300;
+    font-style: italic;
+    font-stretch: normal;
+    src: url('../fonts/EOT/SourceSansPro-LightIt.eot') format('embedded-opentype'),
+         url('../fonts/WOFF2/TTF/SourceSansPro-LightIt.ttf.woff2') format('woff2'),
+         url('../fonts/WOFF/OTF/SourceSansPro-LightIt.otf.woff') format('woff'),
+         url('../fonts/OTF/SourceSansPro-LightIt.otf') format('opentype'),
+         url('../fonts/TTF/SourceSansPro-LightIt.ttf') format('truetype');
+}
+
+@font-face{
+    font-family: 'Source Sans Pro';
+    font-weight: 400;
+    font-style: normal;
+    font-stretch: normal;
+    src: url('../fonts/EOT/SourceSansPro-Regular.eot') format('embedded-opentype'),
+         url('../fonts/WOFF2/TTF/SourceSansPro-Regular.ttf.woff2') format('woff2'),
+         url('../fonts/WOFF/OTF/SourceSansPro-Regular.otf.woff') format('woff'),
+         url('../fonts/OTF/SourceSansPro-Regular.otf') format('opentype'),
+         url('../fonts/TTF/SourceSansPro-Regular.ttf') format('truetype');
+}
+
+@font-face{
+    font-family: 'Source Sans Pro';
+    font-weight: 400;
+    font-style: italic;
+    font-stretch: normal;
+    src: url('../fonts/EOT/SourceSansPro-It.eot') format('embedded-opentype'),
+         url('../fonts/WOFF2/TTF/SourceSansPro-It.ttf.woff2') format('woff2'),
+         url('../fonts/WOFF/OTF/SourceSansPro-It.otf.woff') format('woff'),
+         url('../fonts/OTF/SourceSansPro-It.otf') format('opentype'),
+         url('../fonts/TTF/SourceSansPro-It.ttf') format('truetype');
+}
+
+@font-face{
+    font-family: 'Source Sans Pro';
+    font-weight: 600;
+    font-style: normal;
+    font-stretch: normal;
+    src: url('../fonts/EOT/SourceSansPro-Semibold.eot') format('embedded-opentype'),
+         url('../fonts/WOFF2/TTF/SourceSansPro-Semibold.ttf.woff2') format('woff2'),
+         url('../fonts/WOFF/OTF/SourceSansPro-Semibold.otf.woff') format('woff'),
+         url('../fonts/OTF/SourceSansPro-Semibold.otf') format('opentype'),
+         url('../fonts/TTF/SourceSansPro-Semibold.ttf') format('truetype');
+}
+
+@font-face{
+    font-family: 'Source Sans Pro';
+    font-weight: 600;
+    font-style: italic;
+    font-stretch: normal;
+    src: url('../fonts/EOT/SourceSansPro-SemiboldIt.eot') format('embedded-opentype'),
+         url('../fonts/WOFF2/TTF/SourceSansPro-SemiboldIt.ttf.woff2') format('woff2'),
+         url('../fonts/WOFF/OTF/SourceSansPro-SemiboldIt.otf.woff') format('woff'),
+         url('../fonts/OTF/SourceSansPro-SemiboldIt.otf') format('opentype'),
+         url('../fonts/TTF/SourceSansPro-SemiboldIt.ttf') format('truetype');
+}
+
+@font-face{
+    font-family: 'Source Sans Pro';
+    font-weight: 700;
+    font-style: normal;
+    font-stretch: normal;
+    src: url('../fonts/EOT/SourceSansPro-Bold.eot') format('embedded-opentype'),
+         url('../fonts/WOFF2/TTF/SourceSansPro-Bold.ttf.woff2') format('woff2'),
+         url('../fonts/WOFF/OTF/SourceSansPro-Bold.otf.woff') format('woff'),
+         url('../fonts/OTF/SourceSansPro-Bold.otf') format('opentype'),
+         url('../fonts/TTF/SourceSansPro-Bold.ttf') format('truetype');
+}
+
+@font-face{
+    font-family: 'Source Sans Pro';
+    font-weight: 700;
+    font-style: italic;
+    font-stretch: normal;
+    src: url('../fonts/EOT/SourceSansPro-BoldIt.eot') format('embedded-opentype'),
+         url('../fonts/WOFF2/TTF/SourceSansPro-BoldIt.ttf.woff2') format('woff2'),
+         url('../fonts/WOFF/OTF/SourceSansPro-BoldIt.otf.woff') format('woff'),
+         url('../fonts/OTF/SourceSansPro-BoldIt.otf') format('opentype'),
+         url('../fonts/TTF/SourceSansPro-BoldIt.ttf') format('truetype');
+}
+
+@font-face{
+    font-family: 'Source Sans Pro';
+    font-weight: 900;
+    font-style: normal;
+    font-stretch: normal;
+    src: url('../fonts/EOT/SourceSansPro-Black.eot') format('embedded-opentype'),
+         url('../fonts/WOFF2/TTF/SourceSansPro-Black.ttf.woff2') format('woff2'),
+         url('../fonts/WOFF/OTF/SourceSansPro-Black.otf.woff') format('woff'),
+         url('../fonts/OTF/SourceSansPro-Black.otf') format('opentype'),
+         url('../fonts/TTF/SourceSansPro-Black.ttf') format('truetype');
+}
+
+@font-face{
+    font-family: 'Source Sans Pro';
+    font-weight: 900;
+    font-style: italic;
+    font-stretch: normal;
+    src: url('../fonts/EOT/SourceSansPro-BlackIt.eot') format('embedded-opentype'),
+         url('../fonts/WOFF2/TTF/SourceSansPro-BlackIt.ttf.woff2') format('woff2'),
+         url('../fonts/WOFF/OTF/SourceSansPro-BlackIt.otf.woff') format('woff'),
+         url('../fonts/OTF/SourceSansPro-BlackIt.otf') format('opentype'),
+         url('../fonts/TTF/SourceSansPro-BlackIt.ttf') format('truetype');
+}
 html
 {
     overflow: auto;
     background-color: #fff;
+    font-size: 16px;
 }
 
 body
 {
-    font: 14px "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
-    line-height: 130%;
-    color: #000;
-    background-color: #acdeff;
-    margin: 0;
+    font-family: 'Source Sans Pro', sans-serif;
+    line-height: 1.5;
+    color: #111;
+    background-color: white;
 }
 
-a {
-    color: #444;
+a, a:visited, a:active {
+    color: #f400ee;
+    text-decoration: none;
 }
 
-a:visited {
-    color: #444;
-}
-
-a:active {
-    color: #444;
+a:hover {
+    text-decoration: underline;
 }
 
 header
 {
     display: block;
-    padding: 0.5em 0;
+    padding: 0px;
 }
 
-section header h3 {
-	font-size: 1.8em;
-	margin: 0;
+tt, code, kbd, samp {
+    font-family: Consolas, Monaco, 'Andale Mono', monospace;
 }
 
 .class-description {
-    font-style: italic;
-    font-family: Palatino, 'Palatino Linotype', serif;
     font-size: 130%;
     line-height: 140%;
     margin-bottom: 1em;
     margin-top: 1em;
 }
 
-#header {
-    margin: 0px 0px 8px 0px;
-    padding: 8px;
-    background: #ddd;
-    border-bottom: 1px solid #aaa;
+.class-description:empty {
+    margin: 0;
 }
 
-#main {
-    float: left;
-    width: 100%;
-    padding: 8px;
-	box-sizing: border-box;
+section, nav.main-nav {
+	padding: 1rem;
+}
+
+
+article dl {
+    margin-bottom: 40px;
 }
 
 section
@@ -64,105 +200,52 @@ section
     display: block;
     background-color: #fff;
     padding: 12px 24px;
-    margin-right: 240px;
-    border-radius: 2px;
-}
-section:not(:last-child) {
     border-bottom: 1px solid #ccc;
-}
-section.readme {
-	border-bottom: none;
+    margin-right: 30px;
 }
 
 .variation {
     display: none;
 }
 
-.optional:after {
-    content: "opt";
+.signature-attributes {
     font-size: 60%;
     color: #aaa;
     font-style: italic;
     font-weight: lighter;
 }
 
-nav
+nav.main-nav
 {
+	margin-top: 2rem;
     display: block;
-    background-color: #eee;
-    max-width: 200px;
-	width: 200px;
-    padding: 0em 1em 1em 1em;
-    border-radius: 2px;
+    box-sizing: border-box;
+	background: white;
 }
 
-.main-nav {
-    margin-top: 46px;
-    margin-left: -238px;
-    margin-right: 8px;
-    float: right;
-}
-
-.toc {
-    overflow: auto;
-    margin: 2em 1em;
-    width: auto;
-    display: inline-block;
-    max-width: none;
-}
-.toc h3 {
-    margin-bottom: 1em;
-}
-.toc h4 {
-	margin: 0 0 0.5em 0;
-}
-.toc-section {
-	float: left;
-	margin-bottom: 1em;
-}
-.toc-section:not(:last-child) {
-	margin-right: 3em;
-}
-
-nav ul {
-    font-family: 'Lucida Grande', 'Lucida Sans Unicode', arial, sans-serif;
+nav.main-nav ul {
     font-size: 100%;
     line-height: 17px;
-    padding:0;
-    margin:0;
-    list-style-type:none;
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+	display: flex;
+	flex-wrap: wrap;
 }
 
-nav h2 {
-	font-size: 2em;
-	margin-bottom: 0.8em;
+nav.main-nav ul a, nav.main-nav ul a:visited, nav.main-nav ul a:active {
+    font-family: Consolas, Monaco, 'Andale Mono', monospace;
+    line-height: 18px;
+    color: #111;
 }
 
-nav h2 a, nav h2 a:visited {
-    color: #A35A00;
-    text-decoration: none;
-}
-
-nav h3 {
+nav.main-nav h3 {
     margin-top: 12px;
-	font-size: 1.5em;
-	margin-bottom: 0.5em;
 }
 
-nav li {
-    margin-top: 6px;
-}
-
-nav a {
-    color: #5C5954;
-}
-
-nav a:visited {
-    color: #5C5954;
-}
-
-nav a:active {
-    color: #5C5954;
+nav.main-nav li {
+    padding: 0.5em;
+	flex: 0 0 20em;
 }
 
 footer {
@@ -173,36 +256,43 @@ footer {
     font-size: 90%;
 }
 
-h1
-{
-    font-size: 200%;
-    font-weight: bold;
-    letter-spacing: -0.01em;
-    margin: 0.2em 0 0.5em 0;
+h1, h2, h3, h4 {
+    font-weight: 600;
+    margin: 0;
 }
 
-h2
+h1
 {
-    font-size: 170%;
-    font-weight: bold;
-    letter-spacing: -0.01em;
-    margin: 0.5em 0 0.5em 0;
+    font-family: 'Source Sans Pro', sans-serif;
+	font-weight: 600;
+    font-size: 48px;
+    letter-spacing: -2px;
+    margin: 12px 24px 20px;
+	text-align: center;
+	border-bottom: 3px solid #ccc;
+}
+
+h2, h3.subsection-title
+{
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 12px;
 }
 
 h3
 {
-    font-size: 140%;
-    font-weight: bold;
-    letter-spacing: -0.01em;
-    margin-top: 16px;
+    font-size: 24px;
+    letter-spacing: -0.5px;
+    margin-bottom: 12px;
 }
 
 h4
 {
-    font-size: 130%;
-    font-weight: bold;
-    letter-spacing: -0.01em;
-    color: #A35A00;
+    font-size: 18px;
+    letter-spacing: -0.33px;
+    margin-bottom: 12px;
+    color: #111;
 }
 
 h5, .container-overview .subsection-title
@@ -210,21 +300,53 @@ h5, .container-overview .subsection-title
     font-size: 120%;
     font-weight: bold;
     letter-spacing: -0.01em;
-	margin: 1em 0;
+    margin: 8px 0 3px 0;
 }
 
 h6
 {
     font-size: 100%;
     letter-spacing: -0.01em;
+    margin: 6px 0 3px 0;
     font-style: italic;
 }
+
+table
+{
+    border-spacing: 0;
+    border: 0;
+    border-collapse: collapse;
+}
+
+td, th
+{
+    border: 1px solid #ddd;
+    margin: 0px;
+    text-align: left;
+    vertical-align: top;
+    padding: 4px 6px;
+    display: table-cell;
+}
+
+thead tr
+{
+    background-color: #ddd;
+    font-weight: bold;
+}
+
+th { border-right: 1px solid #aaa; }
+tr > th:last-child { border-right: 1px solid #ddd; }
 
 .ancestors { color: #999; }
 .ancestors a
 {
     color: #999 !important;
     text-decoration: none;
+}
+
+.clear
+{
+    clear: both;
 }
 
 .important
@@ -242,30 +364,29 @@ h6
 }
 
 .name, .signature {
-    font-family: Consolas, "Lucida Console", Monaco, monospace;
-	line-height: 1.5em;
-	margin: 0;
+    font-family: Consolas, Monaco, 'Andale Mono', monospace;
 }
 
-.details { margin-top: 14px; border-left: 2px solid #DDD; }
-.details dt { width:100px; float:left; padding-left: 10px;  padding-top: 6px; }
-.details dd { margin-left: 50px; }
+.details {margin-top: 14px;border-left: 2px solid #DDD;background: #f5f5f5;padding: 0.2em;}
+.details dt {width: 120px;float: left;padding-left: 10px;/* padding-top: 6px; */}
+.details dd {margin-left: 70px;}
 .details ul { margin: 0; }
 .details ul { list-style-type: none; }
-.details li { margin-left: 30px; padding-top: 6px; }
+.details li {margin-left: 30px;}
 .details pre.prettyprint { margin: 0 }
 .details .object-value { padding-top: 0; }
+.details dd ~ * {
+    margin-top: 0.5em;
+}
 
 .description {
     margin-bottom: 1em;
-    margin-left: -16px;
     margin-top: 1em;
 }
 
 .code-caption
 {
     font-style: italic;
-    font-family: Palatino, 'Palatino Linotype', serif;
     font-size: 107%;
     margin: 0;
 }
@@ -283,14 +404,13 @@ h6
 
 .prettyprint code
 {
-    font-family: Consolas, 'Lucida Console', Monaco, monospace;
     font-size: 100%;
     line-height: 18px;
     display: block;
     padding: 4px 12px;
     margin: 0;
     background-color: #fff;
-    color: #000;
+    color: #111;
 }
 
 .prettyprint code span.line
@@ -331,51 +451,21 @@ h6
   user-select: text;
 }
 
-.params, .props
-{
-    border-spacing: 0;
-    border: 0;
-    border-collapse: collapse;
-}
-
 .params .name, .props .name, .name code {
-    color: #A35A00;
-    font-family: Consolas, 'Lucida Console', Monaco, monospace;
+    color: #111;
+    font-family: Consolas, Monaco, 'Andale Mono', monospace;
     font-size: 100%;
 }
 
-.params td, .params th, .props td, .props th
-{
-    border: 1px solid #ddd;
-    margin: 0px;
-    text-align: left;
-    vertical-align: top;
-    padding: 4px 6px;
-    display: table-cell;
-}
-
-.params thead tr, .props thead tr
-{
-    background-color: #ddd;
-    font-weight: bold;
-}
-
-.params .params thead tr, .props .props thead tr
-{
-    background-color: #fff;
-    font-weight: bold;
-}
-
-.params th, .props th { border-right: 1px solid #aaa; }
-.params thead .last, .props thead .last { border-right: 1px solid #ddd; }
-
-.params td.description > p:first-child
+.params td.description > p:first-child,
+.props td.description > p:first-child
 {
     margin-top: 0;
     padding-top: 0;
 }
 
-.params td.description > p:last-child
+.params td.description > p:last-child,
+.props td.description > p:last-child
 {
     margin-bottom: 0;
     padding-bottom: 0;
@@ -385,19 +475,75 @@ h6
     color: #454545;
 }
 
-@media screen and (max-width: 700px) {
-	section {
-		margin-right: 2px;
+.item ~ .item {
+	border-top: 3px solid #eee;
+	padding-top: 1em;
+}
+
+.subsection ~ .subsection {
+    margin-top: 3em;
+}
+
+nav.toc {
+    background: #eee;
+    padding: 0.5em 1em;
+    display: inline-block;
+	margin-bottom: 2rem;
+}
+
+.toc-sections {
+    display: flex;
+	flex-wrap: wrap;
+}
+
+.toc-section {
+    margin: 0 0.5em 1em 0.5em;
+	padding: 0 0.5em;
+}
+
+.toc-section ul {
+    padding-left: 0;
+	list-style: none;
+}
+
+.toc-section li ~ li {
+    margin-top: 0.3em;
+}
+
+.toc-section h4 {
+    border-bottom: 1px solid;
+}
+
+section.readme {
+	font-size: 1.2rem;
+	padding-bottom: 4rem;
+}
+
+.main-nav-link {
+	text-align: right;
+	display: block;
+}
+
+@media screen and (min-width: 1280px) {
+	.main-nav-link {
+		display: none;
 	}
 
-	nav {
-		max-width: 220px;
+	#body-container {
+		display: flex;
 	}
 
-	.main-nav {
-		margin-top: 0;
-		float: left;
-		margin-left: 8px;
-		margin-right: 8px;
+	#main {
+		flex: 1;
+	}
+
+	nav.main-nav {
+		margin-top: 2rem;
+		padding-left: 1rem;
+	}
+
+	nav.main-nav ul {
+		display: block;
 	}
 }
+

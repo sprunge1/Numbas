@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Source: runtime/scripts/parts/patternmatch.js | Numbas API documentation</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<a class="main-nav-link" href="#main-nav">Jump to navigation</a>
+
+<div id="body-container">
+	<div id="main">
+
+		<h1 class="page-title">Source: runtime/scripts/parts/patternmatch.js</h1>
+
+		
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
+Copyright 2011-15 Newcastle University
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
+/** @file The {@link Numbas.parts.PatternMatchPart} object */
+
+Numbas.queueScript('parts/patternmatch',['base','display','jme','jme-variables','xml','util','scorm-storage','part'],function() {
+
+var util = Numbas.util;
+var jme = Numbas.jme;
+var math = Numbas.math;
+var tryGetAttribute = Numbas.xml.tryGetAttribute;
+
+var Part = Numbas.parts.Part;
+
+/** Text-entry part - student's answer must match the given regular expression
+ * @constructor
+ * @memberof Numbas.parts
+ * @augments Numbas.parts.Part
+ */
+var PatternMatchPart = Numbas.parts.PatternMatchPart = function(xml, path, question, parentPart, loading)
+{
+	var settings = this.settings;
+	util.copyinto(PatternMatchPart.prototype.settings,settings);
+
+	settings.correctAnswerString = Numbas.xml.getTextContent(this.xml.selectSingleNode('correctanswer'));
+
+	var displayAnswerNode = this.xml.selectSingleNode('displayanswer');
+	if(!displayAnswerNode)
+		this.error('part.patternmatch.display answer missing');
+	settings.displayAnswerString = $.trim(Numbas.xml.getTextContent(displayAnswerNode));
+
+	this.getCorrectAnswer(this.question.scope);
+
+	tryGetAttribute(settings,this.xml,'case',['sensitive','partialCredit'],'caseSensitive');
+
+	this.display = new Numbas.display.PatternMatchPartDisplay(this);
+
+	if(loading)
+	{
+		var pobj = Numbas.store.loadPatternMatchPart(this);
+		this.stagedAnswer = [pobj.studentAnswer];
+	}
+}
+PatternMatchPart.prototype = /** @lends Numbas.PatternMatchPart.prototype */ {
+	/** The student's last submitted answer 
+	 * @type {string}
+	 */
+	studentAnswer: '',
+
+	/** Properties set when the part is generated.
+	 * Extends {@link Numbas.parts.Part#settings}
+	 * @property {string} correctAnswerString - the definition of the correct answer, without variables substituted in.
+	 * @property {RegExp} correctAnswer - regular expression pattern to match correct answers
+	 * @property {string} displayAnswerString - the definition of the display answer, without variables substituted in.
+	 * @property {string} displayAnswer - a representative correct answer to display when answers are revealed
+	 * @property {boolean} caseSensitive - does case matter?
+	 * @property {number} partialCredit - partial credit to award if the student's answer matches, apart from case, and `caseSensitive` is `true`.
+	 */
+	settings: 
+	{
+		correctAnswerString: '.*',
+		correctAnswer: /.*/,
+		displayAnswerString: '',
+		displayAnswer: '',
+		caseSensitive: false,
+		partialCredit: 0
+	},
+
+	/** Compute the correct answer, based on the given scope
+	 */
+	getCorrectAnswer: function(scope) {
+		var settings = this.settings;
+
+		settings.correctAnswer = '^'+jme.subvars(settings.correctAnswerString, scope, true)+'$';
+		settings.displayAnswer = jme.subvars(settings.displayAnswerString,scope, true);
+	},
+
+	/** Save a copy of the student's answer as entered on the page, for use in marking.
+	 */
+	setStudentAnswer: function() {
+		this.studentAnswer = this.answerList[0];
+	},
+
+	/** Get the student's answer as a JME data type, to be used in error-carried-forward calculations
+	 * @abstract
+	 * @returns {Numbas.jme.token}
+	 */
+	studentAnswerAsJME: function() {
+		return new Numbas.jme.types.TString(this.studentAnswer);
+	},
+
+	/** Mark the student's answer
+	 */
+	mark: function ()
+	{
+		var validation = this.validation;
+
+		if(this.answerList==undefined) {
+			this.setCredit(0,R('part.marking.nothing entered'));
+			return false;
+		}
+		this.answered = this.studentAnswer.length>0;
+
+		var caseInsensitiveAnswer = new RegExp( this.settings.correctAnswer, 'i' );			
+		var caseSensitiveAnswer = new RegExp( this.settings.correctAnswer );
+		
+		if( this.settings.caseSensitive ) {
+			if( caseSensitiveAnswer.test(this.studentAnswer) ) {
+				this.setCredit(1,R('part.marking.correct'));
+			} else if(caseInsensitiveAnswer.test(this.studentAnswer)) {
+				this.setCredit(this.settings.partialCredit,R('part.patternmatch.correct except case'));
+			} else {
+				this.setCredit(0,R('part.marking.incorrect'));
+			}
+		} else {
+			if(caseInsensitiveAnswer.test(this.studentAnswer)) {
+				this.setCredit(1,R('part.marking.correct'));
+			} else {
+				this.setCredit(0,R('part.marking.incorrect'));
+			}
+		}
+	},
+
+	/** Is the student's answer valid? False if the part hasn't been submitted.
+	 * @returns {boolean}
+	 */
+	validate: function()
+	{
+		if(!this.answered) {
+			this.giveWarning(R('part.marking.not submitted'));
+		}
+
+		return this.answered;
+	}
+};
+
+Numbas.partConstructors['patternmatch'] = util.extend(Part,PatternMatchPart);
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+	</div>
+
+	<nav class="main-nav" id="main-nav">
+		<h2><a href="index.html">Home</a></h2><div class="main-nav-item"><h3>Classes</h3><ul><li><a href="Numbas.storage.BlankStorage.html">BlankStorage</a></li><li><a href="Numbas.Error.html">Error</a></li><li><a href="Numbas.Exam.html">Exam</a></li><li><a href="Numbas.display.ExamDisplay.html">ExamDisplay</a></li><li><a href="Numbas.ExamEvent.html">ExamEvent</a></li><li><a href="Numbas.parts.ExtensionPart.html">ExtensionPart</a></li><li><a href="Numbas.display.ExtensionPartDisplay.html">ExtensionPartDisplay</a></li><li><a href="Numbas.jme.funcObj.html">funcObj</a></li><li><a href="Numbas.parts.GapFillPart.html">GapFillPart</a></li><li><a href="Numbas.display.GapFillPartDisplay.html">GapFillPartDisplay</a></li><li><a href="Numbas.parts.InformationPart.html">InformationPart</a></li><li><a href="Numbas.display.InformationPartDisplay.html">InformationPartDisplay</a></li><li><a href="Numbas.parts.JMEPart.html">JMEPart</a></li><li><a href="Numbas.display.JMEPartDisplay.html">JMEPartDisplay</a></li><li><a href="Numbas.parts.MatrixEntryPart.html">MatrixEntryPart</a></li><li><a href="Numbas.display.MatrixEntryPartDisplay.html">MatrixEntryPartDisplay</a></li><li><a href="Numbas.parts.MultipleResponsePart.html">MultipleResponsePart</a></li><li><a href="Numbas.display.MultipleResponsePartDisplay.html">MultipleResponsePartDisplay</a></li><li><a href="Numbas.parts.NumberEntryPart.html">NumberEntryPart</a></li><li><a href="Numbas.display.NumberEntryPartDisplay.html">NumberEntryPartDisplay</a></li><li><a href="Numbas.parts.Part.html">Part</a></li><li><a href="Numbas.display.PartDisplay.html">PartDisplay</a></li><li><a href="Numbas.parts.PatternMatchPart.html">PatternMatchPart</a></li><li><a href="Numbas.display.PatternMatchPartDisplay.html">PatternMatchPartDisplay</a></li><li><a href="Numbas.Question.html">Question</a></li><li><a href="Numbas.display.QuestionDisplay.html">QuestionDisplay</a></li><li><a href="RequireScript.html">RequireScript</a></li><li><a href="Numbas.jme.display.Rule.html">Rule</a></li><li><a href="Numbas.jme.Ruleset.html">Ruleset</a></li><li><a href="Numbas.jme.Scope.html">Scope</a></li><li><a href="Numbas.storage.SCORMStorage.html">SCORMStorage</a></li><li><a href="Numbas.jme.types.TBool.html">TBool</a></li><li><a href="Numbas.jme.types.TFunc.html">TFunc</a></li><li><a href="Numbas.jme.types.THTML.html">THTML</a></li><li><a href="Numbas.jme.types.TList.html">TList</a></li><li><a href="Numbas.jme.types.TMatrix.html">TMatrix</a></li><li><a href="Numbas.jme.types.TName.html">TName</a></li><li><a href="Numbas.jme.types.TNum.html">TNum</a></li><li><a href="Numbas.jme.types.TOp.html">TOp</a></li><li><a href="Numbas.jme.types.TPunc.html">TPunc</a></li><li><a href="Numbas.jme.types.TRange.html">TRange</a></li><li><a href="Numbas.jme.types.TSet.html">TSet</a></li><li><a href="Numbas.jme.types.TString.html">TString</a></li><li><a href="Numbas.jme.types.TVector.html">TVector</a></li></ul></div><div class="main-nav-item"><h3>Namespaces</h3><ul><li><a href="Numbas.controls.html">controls</a></li><li><a href="Numbas.display.html">display</a></li><li><a href="Numbas.jme.display.html">display</a></li><li><a href="Numbas.jme.html">jme</a></li><li><a href="Numbas.math.html">math</a></li><li><a href="Numbas.matrixmath.html">matrixmath</a></li><li><a href="Numbas.html">Numbas</a></li><li><a href="Numbas.parts.html">parts</a></li><li><a href="Numbas.schedule.html">schedule</a></li><li><a href="Numbas.setmath.html">setmath</a></li><li><a href="Numbas.storage.html">storage</a></li><li><a href="Numbas.timing.html">timing</a></li><li><a href="Numbas.jme.types.html">types</a></li><li><a href="Numbas.util.html">util</a></li><li><a href="Numbas.jme.variables.html">variables</a></li><li><a href="Numbas.vectormath.html">vectormath</a></li><li><a href="Numbas.xml.html">xml</a></li></ul></div><h3><a href="global.html">Global variables</a></h3>
+	</nav>
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.0-dev</a> on Wed Nov 09 2016 11:30:05 GMT+0000 (GMT Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

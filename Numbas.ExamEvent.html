@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Class: ExamEvent - Numbas API documentation</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Class: ExamEvent | Numbas API documentation</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -14,11 +15,10 @@
 </head>
 
 <body>
-	<div id="header">
-		<span>This is the <a target="_blank" href="http://www.ncl.ac.uk/maths/numbas">Numbas</a> API Documentation</a>.</span>
-		<span>The documentation for users is at <a href="http://numbas-editor.readthedocs.org">Read the Docs</a>.</span>
-	</div>
 
+<a class="main-nav-link" href="#main-nav">Jump to navigation</a>
+
+<div id="body-container">
 	<div id="main">
 
 		<h1 class="page-title">Class: ExamEvent</h1>
@@ -27,46 +27,45 @@
 
 
 
+
 <section>
 
 <header>
-    <h3>
-		
-        	<span class="ancestors"><a href="Numbas.html">Numbas</a>.</span>
-	    
-    	ExamEvent
-	    
-	</h3>
+    
+        <h2>
+            <span class="ancestors"><a href="Numbas.html">Numbas</a>.</span>ExamEvent</h2>
+        
     
 </header>
 
 <article>
     <div class="container-overview">
-    
+		
+			
 
     
-        
-<dt>
-    <h4 class="name" id="ExamEvent"><span class="type-signature"></span>new ExamEvent<span class="signature">(Element)</span><span class="type-signature"></span>
-</h4>
+	
 
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Represents what should happen when a particular timing or navigation event happens</p>
-    </div>
-    
+    <h4 class="name" id="ExamEvent"><span class="type-signature"></span>new ExamEvent<span class="signature">(Element)</span><span class="type-signature"></span></h4>
 
     
 
-    
 
+
+<div class="description">
+    <p>Represents what should happen when a particular timing or navigation event happens</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
     
-        <h5>Parameters:</h5>
-        
 
 <table class="params">
     <thead>
@@ -107,10 +106,20 @@
     
     </tbody>
 </table>
+
+
+
+
+
+
+<dl class="details">
+
     
 
     
-<dl class="details">
+
+    
+
     
 
     
@@ -132,7 +141,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="exam.js.html">runtime/scripts/exam.js</a>, <a href="exam.js.html#line736">line 736</a>
+        <a href="runtime_scripts_exam.js.html">runtime/scripts/exam.js</a>, <a href="runtime_scripts_exam.js.html#line770">line 770</a>
     </li></ul></dd>
     
 
@@ -144,77 +153,77 @@
 </dl>
 
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
-</dd>
 
-    
+
+
+
+
+
+
+
+
+
+		
     </div>
 
     
 
     
 
-    
-
-    
-
+	
 
 	
 	<nav class="toc">
 		<h3>Table of contents</h3>
-		
+		<div class="toc-sections">
+			
 
-		
+			
 
-		
-			<div class="toc-section">
-				<h4>Members</h4>
-				<ul>
-				
-					<li class="name"><a href="Numbas.ExamEvent.html#action">action</a></li>
-				
-					<li class="name"><a href="Numbas.ExamEvent.html#message">message</a></li>
-				
-					<li class="name"><a href="Numbas.ExamEvent.html#type">type</a></li>
-				
-				</ul>
-			</div>
-		
+			
+				<div class="toc-section">
+					<h4>Members</h4>
+					<ul>
+					
+						<li class="name"><a href="Numbas.ExamEvent.html#action">action</a></li>
+					
+						<li class="name"><a href="Numbas.ExamEvent.html#message">message</a></li>
+					
+						<li class="name"><a href="Numbas.ExamEvent.html#type">type</a></li>
+					
+					</ul>
+				</div>
+			
 
-		
+			
 
-		
+			
 
-		
+			
+		</div>
 	</nav>
 	
 
     
+		<div class="subsection">
         <h3 class="subsection-title">Members</h3>
 
-        <dl>
+        
             
-<dt>
-    <h4 class="name" id="action"><span class="type-signature"></span>action<span class="type-signature"> :string</span></h4>
+<div class="item member">
+<h4 class="name" id="action"><span class="type-signature"></span>action<span class="type-signature"> :string</span></h4>
 
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        <p>Action to take when the event happens.</p>
+
+
+
+<div class="description">
+    <p>Action to take when the event happens.</p>
 <p>Choices for timer events:</p>
 <ul>
 <li><code>none</code> - don't do anything</li>
@@ -226,23 +235,32 @@
 <li><code>warnifunattempted</code> - Show a warning but allow the student to continue.</li>
 <li><code>preventifunattempted</code> - Show a warning but allow the student to continue.</li>
 </ul>
-    </div>
-    
+</div>
 
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
 <span class="param-type">string</span>
 
 
-            </li>
-        </ul>
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
     
 
     
-<dl class="details">
+
+    
+
     
 
     
@@ -264,7 +282,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="exam.js.html">runtime/scripts/exam.js</a>, <a href="exam.js.html#line773">line 773</a>
+        <a href="runtime_scripts_exam.js.html">runtime/scripts/exam.js</a>, <a href="runtime_scripts_exam.js.html#line807">line 807</a>
     </li></ul></dd>
     
 
@@ -276,39 +294,47 @@
 </dl>
 
 
-    
 
-    
-</dd>
+
+
+</div>
 
         
             
-<dt>
-    <h4 class="name" id="message"><span class="type-signature"></span>message<span class="type-signature"> :string</span></h4>
+<div class="item member">
+<h4 class="name" id="message"><span class="type-signature"></span>message<span class="type-signature"> :string</span></h4>
 
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        <p>Message to show the student when the event happens.</p>
-    </div>
-    
 
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
+
+
+<div class="description">
+    <p>Message to show the student when the event happens.</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
 <span class="param-type">string</span>
 
 
-            </li>
-        </ul>
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
     
 
     
-<dl class="details">
+
+    
+
     
 
     
@@ -330,7 +356,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="exam.js.html">runtime/scripts/exam.js</a>, <a href="exam.js.html#line780">line 780</a>
+        <a href="runtime_scripts_exam.js.html">runtime/scripts/exam.js</a>, <a href="runtime_scripts_exam.js.html#line814">line 814</a>
     </li></ul></dd>
     
 
@@ -342,22 +368,21 @@
 </dl>
 
 
-    
 
-    
-</dd>
+
+
+</div>
 
         
             
-<dt>
-    <h4 class="name" id="type"><span class="type-signature"></span>type<span class="type-signature"> :string</span></h4>
+<div class="item member">
+<h4 class="name" id="type"><span class="type-signature"></span>type<span class="type-signature"> :string</span></h4>
 
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        <p>Name of the event this corresponds to </p>
+
+
+
+<div class="description">
+    <p>Name of the event this corresponds to </p>
 <p>Navigation events:</p>
 <ul>
 <li><code>onleave</code> - the student tries to move to another question without answering the current one.</li>
@@ -368,23 +393,32 @@
 <li><code>timedwarning</code> - Five minutes until the exam ends.</li>
 <li><code>timeout</code> - There's no time left; the exam is over.</li>
 </ul>
-    </div>
-    
+</div>
 
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
 <span class="param-type">string</span>
 
 
-            </li>
-        </ul>
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
     
 
     
-<dl class="details">
+
+    
+
     
 
     
@@ -406,7 +440,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="exam.js.html">runtime/scripts/exam.js</a>, <a href="exam.js.html#line757">line 757</a>
+        <a href="runtime_scripts_exam.js.html">runtime/scripts/exam.js</a>, <a href="runtime_scripts_exam.js.html#line791">line 791</a>
     </li></ul></dd>
     
 
@@ -418,12 +452,13 @@
 </dl>
 
 
-    
 
-    
-</dd>
 
-        </dl>
+
+</div>
+
+        
+		</div>
     
 
     
@@ -440,188 +475,18 @@
 
 	</div>
 
-	<nav class="main-nav">
-		<h2><a href="index.html">Index</a></h2>
-
-
-
-
-
-	<h3>Classes</h3>
-	<ul>
-	
-		<li><a href="Numbas.display.ExamDisplay.html">ExamDisplay</a></li>
-	
-		<li><a href="Numbas.display.ExtensionPartDisplay.html">ExtensionPartDisplay</a></li>
-	
-		<li><a href="Numbas.display.GapFillPartDisplay.html">GapFillPartDisplay</a></li>
-	
-		<li><a href="Numbas.display.InformationPartDisplay.html">InformationPartDisplay</a></li>
-	
-		<li><a href="Numbas.display.JMEPartDisplay.html">JMEPartDisplay</a></li>
-	
-		<li><a href="Numbas.display.MatrixEntryPartDisplay.html">MatrixEntryPartDisplay</a></li>
-	
-		<li><a href="Numbas.display.MultipleResponsePartDisplay.html">MultipleResponsePartDisplay</a></li>
-	
-		<li><a href="Numbas.display.NumberEntryPartDisplay.html">NumberEntryPartDisplay</a></li>
-	
-		<li><a href="Numbas.display.PartDisplay.html">PartDisplay</a></li>
-	
-		<li><a href="Numbas.display.PatternMatchPartDisplay.html">PatternMatchPartDisplay</a></li>
-	
-		<li><a href="Numbas.display.QuestionDisplay.html">QuestionDisplay</a></li>
-	
-		<li><a href="Numbas.Error.html">Error</a></li>
-	
-		<li><a href="Numbas.Exam.html">Exam</a></li>
-	
-		<li><a href="Numbas.ExamEvent.html">ExamEvent</a></li>
-	
-		<li><a href="Numbas.jme.display.Rule.html">Rule</a></li>
-	
-		<li><a href="Numbas.jme.funcObj.html">funcObj</a></li>
-	
-		<li><a href="Numbas.jme.Ruleset.html">Ruleset</a></li>
-	
-		<li><a href="Numbas.jme.Scope.html">Scope</a></li>
-	
-		<li><a href="Numbas.jme.types.TBool.html">TBool</a></li>
-	
-		<li><a href="Numbas.jme.types.TFunc.html">TFunc</a></li>
-	
-		<li><a href="Numbas.jme.types.THTML.html">THTML</a></li>
-	
-		<li><a href="Numbas.jme.types.TList.html">TList</a></li>
-	
-		<li><a href="Numbas.jme.types.TMatrix.html">TMatrix</a></li>
-	
-		<li><a href="Numbas.jme.types.TName.html">TName</a></li>
-	
-		<li><a href="Numbas.jme.types.TNum.html">TNum</a></li>
-	
-		<li><a href="Numbas.jme.types.TOp.html">TOp</a></li>
-	
-		<li><a href="Numbas.jme.types.TPunc.html">TPunc</a></li>
-	
-		<li><a href="Numbas.jme.types.TRange.html">TRange</a></li>
-	
-		<li><a href="Numbas.jme.types.TSet.html">TSet</a></li>
-	
-		<li><a href="Numbas.jme.types.TString.html">TString</a></li>
-	
-		<li><a href="Numbas.jme.types.TVector.html">TVector</a></li>
-	
-		<li><a href="Numbas.parts.ExtensionPart.html">ExtensionPart</a></li>
-	
-		<li><a href="Numbas.parts.GapFillPart.html">GapFillPart</a></li>
-	
-		<li><a href="Numbas.parts.InformationPart.html">InformationPart</a></li>
-	
-		<li><a href="Numbas.parts.JMEPart.html">JMEPart</a></li>
-	
-		<li><a href="Numbas.parts.MatrixEntryPart.html">MatrixEntryPart</a></li>
-	
-		<li><a href="Numbas.parts.MultipleResponsePart.html">MultipleResponsePart</a></li>
-	
-		<li><a href="Numbas.parts.NumberEntryPart.html">NumberEntryPart</a></li>
-	
-		<li><a href="Numbas.parts.Part.html">Part</a></li>
-	
-		<li><a href="Numbas.parts.PatternMatchPart.html">PatternMatchPart</a></li>
-	
-		<li><a href="Numbas.Question.html">Question</a></li>
-	
-		<li><a href="Numbas.storage.BlankStorage.html">BlankStorage</a></li>
-	
-		<li><a href="Numbas.storage.SCORMStorage.html">SCORMStorage</a></li>
-	
-		<li><a href="RequireScript.html">RequireScript</a></li>
-	
-	</ul>
-
-
-
-
-
-	<h3>Namespaces</h3>
-	<ul>
-	
-		<li><a href="Numbas.html">Numbas</a></li>
-	
-		<li><a href="Numbas.controls.html">controls</a></li>
-	
-		<li><a href="Numbas.display.html">display</a></li>
-	
-		<li><a href="Numbas.jme.html">jme</a></li>
-	
-		<li><a href="Numbas.jme.display.html">display</a></li>
-	
-		<li><a href="Numbas.jme.types.html">types</a></li>
-	
-		<li><a href="Numbas.jme.variables.html">variables</a></li>
-	
-		<li><a href="Numbas.math.html">math</a></li>
-	
-		<li><a href="Numbas.matrixmath.html">matrixmath</a></li>
-	
-		<li><a href="Numbas.html#parts">parts</a></li>
-	
-		<li><a href="Numbas.schedule.html">schedule</a></li>
-	
-		<li><a href="Numbas.setmath.html">setmath</a></li>
-	
-		<li><a href="Numbas.storage.html">storage</a></li>
-	
-		<li><a href="Numbas.timing.html">timing</a></li>
-	
-		<li><a href="Numbas.util.html">util</a></li>
-	
-		<li><a href="Numbas.vectormath.html">vectormath</a></li>
-	
-		<li><a href="Numbas.xml.html">xml</a></li>
-	
-	</ul>
-
-
-
-
-
-
-
-	<h3><a href="global.html">Globals</a></h3>
-	<ul>
-	
-		<li><a href="global.html#complex">complex</a></li>
-	
-		<li><a href="global.html#func_data">func_data</a></li>
-	
-		<li><a href="global.html#JME">JME</a></li>
-	
-		<li><a href="global.html#matrix">matrix</a></li>
-	
-		<li><a href="global.html#partpath">partpath</a></li>
-	
-		<li><a href="global.html#range">range</a></li>
-	
-		<li><a href="global.html#TeX">TeX</a></li>
-	
-		<li><a href="global.html#variable_data_dict">variable_data_dict</a></li>
-	
-		<li><a href="global.html#vector">vector</a></li>
-	
-	</ul>
-
-
+	<nav class="main-nav" id="main-nav">
+		<h2><a href="index.html">Home</a></h2><div class="main-nav-item"><h3>Classes</h3><ul><li><a href="Numbas.storage.BlankStorage.html">BlankStorage</a></li><li><a href="Numbas.Error.html">Error</a></li><li><a href="Numbas.Exam.html">Exam</a></li><li><a href="Numbas.display.ExamDisplay.html">ExamDisplay</a></li><li><a href="Numbas.ExamEvent.html">ExamEvent</a></li><li><a href="Numbas.parts.ExtensionPart.html">ExtensionPart</a></li><li><a href="Numbas.display.ExtensionPartDisplay.html">ExtensionPartDisplay</a></li><li><a href="Numbas.jme.funcObj.html">funcObj</a></li><li><a href="Numbas.parts.GapFillPart.html">GapFillPart</a></li><li><a href="Numbas.display.GapFillPartDisplay.html">GapFillPartDisplay</a></li><li><a href="Numbas.parts.InformationPart.html">InformationPart</a></li><li><a href="Numbas.display.InformationPartDisplay.html">InformationPartDisplay</a></li><li><a href="Numbas.parts.JMEPart.html">JMEPart</a></li><li><a href="Numbas.display.JMEPartDisplay.html">JMEPartDisplay</a></li><li><a href="Numbas.parts.MatrixEntryPart.html">MatrixEntryPart</a></li><li><a href="Numbas.display.MatrixEntryPartDisplay.html">MatrixEntryPartDisplay</a></li><li><a href="Numbas.parts.MultipleResponsePart.html">MultipleResponsePart</a></li><li><a href="Numbas.display.MultipleResponsePartDisplay.html">MultipleResponsePartDisplay</a></li><li><a href="Numbas.parts.NumberEntryPart.html">NumberEntryPart</a></li><li><a href="Numbas.display.NumberEntryPartDisplay.html">NumberEntryPartDisplay</a></li><li><a href="Numbas.parts.Part.html">Part</a></li><li><a href="Numbas.display.PartDisplay.html">PartDisplay</a></li><li><a href="Numbas.parts.PatternMatchPart.html">PatternMatchPart</a></li><li><a href="Numbas.display.PatternMatchPartDisplay.html">PatternMatchPartDisplay</a></li><li><a href="Numbas.Question.html">Question</a></li><li><a href="Numbas.display.QuestionDisplay.html">QuestionDisplay</a></li><li><a href="RequireScript.html">RequireScript</a></li><li><a href="Numbas.jme.display.Rule.html">Rule</a></li><li><a href="Numbas.jme.Ruleset.html">Ruleset</a></li><li><a href="Numbas.jme.Scope.html">Scope</a></li><li><a href="Numbas.storage.SCORMStorage.html">SCORMStorage</a></li><li><a href="Numbas.jme.types.TBool.html">TBool</a></li><li><a href="Numbas.jme.types.TFunc.html">TFunc</a></li><li><a href="Numbas.jme.types.THTML.html">THTML</a></li><li><a href="Numbas.jme.types.TList.html">TList</a></li><li><a href="Numbas.jme.types.TMatrix.html">TMatrix</a></li><li><a href="Numbas.jme.types.TName.html">TName</a></li><li><a href="Numbas.jme.types.TNum.html">TNum</a></li><li><a href="Numbas.jme.types.TOp.html">TOp</a></li><li><a href="Numbas.jme.types.TPunc.html">TPunc</a></li><li><a href="Numbas.jme.types.TRange.html">TRange</a></li><li><a href="Numbas.jme.types.TSet.html">TSet</a></li><li><a href="Numbas.jme.types.TString.html">TString</a></li><li><a href="Numbas.jme.types.TVector.html">TVector</a></li></ul></div><div class="main-nav-item"><h3>Namespaces</h3><ul><li><a href="Numbas.controls.html">controls</a></li><li><a href="Numbas.display.html">display</a></li><li><a href="Numbas.jme.display.html">display</a></li><li><a href="Numbas.jme.html">jme</a></li><li><a href="Numbas.math.html">math</a></li><li><a href="Numbas.matrixmath.html">matrixmath</a></li><li><a href="Numbas.html">Numbas</a></li><li><a href="Numbas.parts.html">parts</a></li><li><a href="Numbas.schedule.html">schedule</a></li><li><a href="Numbas.setmath.html">setmath</a></li><li><a href="Numbas.storage.html">storage</a></li><li><a href="Numbas.timing.html">timing</a></li><li><a href="Numbas.jme.types.html">types</a></li><li><a href="Numbas.util.html">util</a></li><li><a href="Numbas.jme.variables.html">variables</a></li><li><a href="Numbas.vectormath.html">vectormath</a></li><li><a href="Numbas.xml.html">xml</a></li></ul></div><h3><a href="global.html">Global variables</a></h3>
 	</nav>
+</div>
 
-	<br clear="both">
+<br class="clear">
 
-	<footer>
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Jul 13 2016 11:31:09 GMT+0100 (BST)
-	</footer>
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.0-dev</a> on Wed Nov 09 2016 11:30:06 GMT+0000 (GMT Standard Time)
+</footer>
 
-	<script> prettyPrint(); </script>
-	<script src="scripts/linenumber.js"> </script>
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
 </body>
 </html>

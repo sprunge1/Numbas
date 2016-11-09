@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Namespace: schedule - Numbas API documentation</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Namespace: schedule | Numbas API documentation</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -14,11 +15,10 @@
 </head>
 
 <body>
-	<div id="header">
-		<span>This is the <a target="_blank" href="http://www.ncl.ac.uk/maths/numbas">Numbas</a> API Documentation</a>.</span>
-		<span>The documentation for users is at <a href="http://numbas-editor.readthedocs.org">Read the Docs</a>.</span>
-	</div>
 
+<a class="main-nav-link" href="#main-nav">Jump to navigation</a>
+
+<div id="body-container">
 	<div id="main">
 
 		<h1 class="page-title">Namespace: schedule</h1>
@@ -27,30 +27,36 @@
 
 
 
+
 <section>
 
 <header>
-    <h3>
-		
-        	<span class="ancestors"><a href="Numbas.html">Numbas</a>.</span>
-	    
-    	schedule
-	    
-	</h3>
+    
+        <h2>
+            <span class="ancestors"><a href="Numbas.html">Numbas</a>.</span>schedule</h2>
+        
     
 </header>
 
 <article>
     <div class="container-overview">
-    
+		
+			
+				<div class="description"><p>Schedule functions to be called. The scheduler can put tiny timeouts in between function calls so the browser doesn't become unresponsive. It also updates the loading bar.</p></div>
+			
 
-    
-        
-            <div class="description"><p>Schedule functions to be called. The scheduler can put tiny timeouts in between function calls so the browser doesn't become unresponsive. It also updates the loading bar.</p></div>
-        
+			
+			
 
-        
+
 <dl class="details">
+
+    
+
+    
+
+    
+
     
 
     
@@ -72,7 +78,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="schedule.js.html">runtime/scripts/schedule.js</a>, <a href="schedule.js.html#line21">line 21</a>
+        <a href="runtime_scripts_schedule.js.html">runtime/scripts/schedule.js</a>, <a href="runtime_scripts_schedule.js.html#line21">line 21</a>
     </li></ul></dd>
     
 
@@ -83,100 +89,109 @@
     
 </dl>
 
+			
 
-        
-    
+			
+		
     </div>
 
     
 
     
 
-    
-
-    
-
+	
 
 	
 	<nav class="toc">
 		<h3>Table of contents</h3>
-		
+		<div class="toc-sections">
+			
 
-		
+			
 
-		
-			<div class="toc-section">
-				<h4>Members</h4>
-				<ul>
-				
-					<li class="name"><a href="Numbas.schedule.html#calls">calls</a></li>
-				
-					<li class="name"><a href="Numbas.schedule.html#completed">completed</a></li>
-				
-					<li class="name"><a href="Numbas.schedule.html#halt">halt</a></li>
-				
-					<li class="name"><a href="Numbas.schedule.html#lifts">lifts</a></li>
-				
-					<li class="name"><a href="Numbas.schedule.html#total">total</a></li>
-				
-				</ul>
-			</div>
-		
+			
+				<div class="toc-section">
+					<h4>Members</h4>
+					<ul>
+					
+						<li class="name"><a href="Numbas.schedule.html#.calls">calls</a></li>
+					
+						<li class="name"><a href="Numbas.schedule.html#.completed">completed</a></li>
+					
+						<li class="name"><a href="Numbas.schedule.html#.halt">halt</a></li>
+					
+						<li class="name"><a href="Numbas.schedule.html#.lifts">lifts</a></li>
+					
+						<li class="name"><a href="Numbas.schedule.html#.total">total</a></li>
+					
+					</ul>
+				</div>
+			
 
-		
-			<div class="toc-section">
-				<h4>Methods</h4>
-				<ul>
-				
-					<li class="name"><a href="Numbas.schedule.html#add">add</a></li>
-				
-					<li class="name"><a href="Numbas.schedule.html#drop">drop</a></li>
-				
-					<li class="name"><a href="Numbas.schedule.html#lift">lift</a></li>
-				
-					<li class="name"><a href="Numbas.schedule.html#pop">pop</a></li>
-				
-				</ul>
-			</div>
-		
+			
+				<div class="toc-section">
+					<h4>Methods</h4>
+					<ul>
+					
+						<li class="name"><a href="Numbas.schedule.html#.add">add</a></li>
+					
+						<li class="name"><a href="Numbas.schedule.html#.drop">drop</a></li>
+					
+						<li class="name"><a href="Numbas.schedule.html#.lift">lift</a></li>
+					
+						<li class="name"><a href="Numbas.schedule.html#.pop">pop</a></li>
+					
+					</ul>
+				</div>
+			
 
-		
+			
 
-		
+			
+		</div>
 	</nav>
 	
 
     
+		<div class="subsection">
         <h3 class="subsection-title">Members</h3>
 
-        <dl>
+        
             
-<dt>
-    <h4 class="name" id="calls"><span class="type-signature">&lt;static> </span>calls<span class="type-signature"> :function[]</span></h4>
-
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        <p>Functions to call</p>
-    </div>
-    
-
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
-<span class="param-type">function[]</span>
+<div class="item member">
+<h4 class="name" id=".calls"><span class="type-signature">(static) </span>calls<span class="type-signature"> :Array.&lt;function()></span></h4>
 
 
-            </li>
-        </ul>
-    
 
-    
+
+<div class="description">
+    <p>Functions to call</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Array.&lt;function()></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
 <dl class="details">
+
+    
+
+    
+
+    
+
     
 
     
@@ -198,7 +213,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="schedule.js.html">runtime/scripts/schedule.js</a>, <a href="schedule.js.html#line30">line 30</a>
+        <a href="runtime_scripts_schedule.js.html">runtime/scripts/schedule.js</a>, <a href="runtime_scripts_schedule.js.html#line30">line 30</a>
     </li></ul></dd>
     
 
@@ -210,39 +225,47 @@
 </dl>
 
 
-    
 
-    
-</dd>
+
+
+</div>
 
         
             
-<dt>
-    <h4 class="name" id="completed"><span class="type-signature">&lt;static> </span>completed<span class="type-signature"> :number</span></h4>
+<div class="item member">
+<h4 class="name" id=".completed"><span class="type-signature">(static) </span>completed<span class="type-signature"> :number</span></h4>
 
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        <p>Number of tasks completed</p>
-    </div>
-    
 
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
+
+
+<div class="description">
+    <p>Number of tasks completed</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
 <span class="param-type">number</span>
 
 
-            </li>
-        </ul>
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
     
 
     
-<dl class="details">
+
+    
+
     
 
     
@@ -264,7 +287,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="schedule.js.html">runtime/scripts/schedule.js</a>, <a href="schedule.js.html#line39">line 39</a>
+        <a href="runtime_scripts_schedule.js.html">runtime/scripts/schedule.js</a>, <a href="runtime_scripts_schedule.js.html#line39">line 39</a>
     </li></ul></dd>
     
 
@@ -276,39 +299,47 @@
 </dl>
 
 
-    
 
-    
-</dd>
+
+
+</div>
 
         
             
-<dt>
-    <h4 class="name" id="halt"><span class="type-signature">&lt;static> </span>halt<span class="type-signature"> :boolean</span></h4>
+<div class="item member">
+<h4 class="name" id=".halt"><span class="type-signature">(static) </span>halt<span class="type-signature"> :boolean</span></h4>
 
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        <p>Should the scheduler stop running tasks?</p>
-    </div>
-    
 
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
+
+
+<div class="description">
+    <p>Should the scheduler stop running tasks?</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
 <span class="param-type">boolean</span>
 
 
-            </li>
-        </ul>
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
     
 
     
-<dl class="details">
+
+    
+
     
 
     
@@ -330,7 +361,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="schedule.js.html">runtime/scripts/schedule.js</a>, <a href="schedule.js.html#line49">line 49</a>
+        <a href="runtime_scripts_schedule.js.html">runtime/scripts/schedule.js</a>, <a href="runtime_scripts_schedule.js.html#line49">line 49</a>
     </li></ul></dd>
     
 
@@ -342,39 +373,47 @@
 </dl>
 
 
-    
 
-    
-</dd>
+
+
+</div>
 
         
             
-<dt>
-    <h4 class="name" id="lifts"><span class="type-signature">&lt;static> </span>lifts<span class="type-signature"> :Array.Array.&lt;function()></span></h4>
+<div class="item member">
+<h4 class="name" id=".lifts"><span class="type-signature">(static) </span>lifts<span class="type-signature"> :Array.Array.&lt;function()></span></h4>
 
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        <p>Bits of queue that have been picked up while a task performs sub-tasks</p>
-    </div>
-    
 
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
+
+
+<div class="description">
+    <p>Bits of queue that have been picked up while a task performs sub-tasks</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
 <span class="param-type">Array.Array.&lt;function()></span>
 
 
-            </li>
-        </ul>
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
     
 
     
-<dl class="details">
+
+    
+
     
 
     
@@ -396,7 +435,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="schedule.js.html">runtime/scripts/schedule.js</a>, <a href="schedule.js.html#line34">line 34</a>
+        <a href="runtime_scripts_schedule.js.html">runtime/scripts/schedule.js</a>, <a href="runtime_scripts_schedule.js.html#line34">line 34</a>
     </li></ul></dd>
     
 
@@ -408,39 +447,47 @@
 </dl>
 
 
-    
 
-    
-</dd>
+
+
+</div>
 
         
             
-<dt>
-    <h4 class="name" id="total"><span class="type-signature">&lt;static> </span>total<span class="type-signature"> :number</span></h4>
+<div class="item member">
+<h4 class="name" id=".total"><span class="type-signature">(static) </span>total<span class="type-signature"> :number</span></h4>
 
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        <p>Total number of tasks ever scheduled</p>
-    </div>
-    
 
-    
-        <h5>Type:</h5>
-        <ul>
-            <li>
-                
+
+
+<div class="description">
+    <p>Total number of tasks ever scheduled</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
 <span class="param-type">number</span>
 
 
-            </li>
-        </ul>
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
     
 
     
-<dl class="details">
+
+    
+
     
 
     
@@ -462,7 +509,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="schedule.js.html">runtime/scripts/schedule.js</a>, <a href="schedule.js.html#line44">line 44</a>
+        <a href="runtime_scripts_schedule.js.html">runtime/scripts/schedule.js</a>, <a href="runtime_scripts_schedule.js.html#line44">line 44</a>
     </li></ul></dd>
     
 
@@ -474,40 +521,47 @@
 </dl>
 
 
+
+
+
+</div>
+
+        
+		</div>
     
 
     
-</dd>
-
-        </dl>
-    
-
-    
+		<div class="subsection">
         <h3 class="subsection-title">Methods</h3>
 
-        <dl>
-            
-<dt>
-    <h4 class="name" id="add"><span class="type-signature">&lt;static> </span>add<span class="signature">(fn, that)</span><span class="type-signature"></span>
-</h4>
-
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Add a task to the queue</p>
-    </div>
-    
-
-    
-
-    
-
-    
-        <h5>Parameters:</h5>
         
+            
+
+    
+	
+		<div class="item function">
+	
+
+    <h4 class="name" id=".add"><span class="type-signature">(static) </span>add<span class="signature">(fn, that)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Add a task to the queue</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
 
 <table class="params">
     <thead>
@@ -579,10 +633,20 @@
     
     </tbody>
 </table>
+
+
+
+
+
+
+<dl class="details">
+
     
 
     
-<dl class="details">
+
+    
+
     
 
     
@@ -604,7 +668,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="schedule.js.html">runtime/scripts/schedule.js</a>, <a href="schedule.js.html#line55">line 55</a>
+        <a href="runtime_scripts_schedule.js.html">runtime/scripts/schedule.js</a>, <a href="runtime_scripts_schedule.js.html#line55">line 55</a>
     </li></ul></dd>
     
 
@@ -616,45 +680,62 @@
 </dl>
 
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
-</dd>
+
+
+
+
+
+
+
+
+
+	</div>
+
 
         
             
-<dt>
-    <h4 class="name" id="drop"><span class="type-signature">&lt;static> </span>drop<span class="signature">()</span><span class="type-signature"></span>
-</h4>
 
     
-</dt>
-<dd>
+	
+		<div class="item function">
+	
 
-    
-    <div class="description">
-        <p>Put the last lifted queue back on the end of the real queue</p>
-    </div>
-    
+    <h4 class="name" id=".drop"><span class="type-signature">(static) </span>drop<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
-    
 
-    
 
-    
+<div class="description">
+    <p>Put the last lifted queue back on the end of the real queue</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
 <dl class="details">
+
+    
+
+    
+
+    
+
     
 
     
@@ -676,7 +757,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="schedule.js.html">runtime/scripts/schedule.js</a>, <a href="schedule.js.html#line129">line 129</a>
+        <a href="runtime_scripts_schedule.js.html">runtime/scripts/schedule.js</a>, <a href="runtime_scripts_schedule.js.html#line129">line 129</a>
     </li></ul></dd>
     
 
@@ -688,45 +769,62 @@
 </dl>
 
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
-</dd>
+
+
+
+
+
+
+
+
+
+	</div>
+
 
         
             
-<dt>
-    <h4 class="name" id="lift"><span class="type-signature">&lt;static> </span>lift<span class="signature">()</span><span class="type-signature"></span>
-</h4>
 
     
-</dt>
-<dd>
+	
+		<div class="item function">
+	
 
-    
-    <div class="description">
-        <p>'pick up' the current queue and put stuff in front. Called before running a task, so it can queue things which must be done before the rest of the queue is called</p>
-    </div>
-    
+    <h4 class="name" id=".lift"><span class="type-signature">(static) </span>lift<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
-    
 
-    
 
-    
+<div class="description">
+    <p>'pick up' the current queue and put stuff in front. Called before running a task, so it can queue things which must be done before the rest of the queue is called</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
 <dl class="details">
+
+    
+
+    
+
+    
+
     
 
     
@@ -748,7 +846,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="schedule.js.html">runtime/scripts/schedule.js</a>, <a href="schedule.js.html#line120">line 120</a>
+        <a href="runtime_scripts_schedule.js.html">runtime/scripts/schedule.js</a>, <a href="runtime_scripts_schedule.js.html#line120">line 120</a>
     </li></ul></dd>
     
 
@@ -760,46 +858,63 @@
 </dl>
 
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
-</dd>
+
+
+
+
+
+
+
+
+
+	</div>
+
 
         
             
-<dt>
-    <h4 class="name" id="pop"><span class="type-signature">&lt;static> </span>pop<span class="signature">()</span><span class="type-signature"></span>
-</h4>
 
     
-</dt>
-<dd>
+	
+		<div class="item function">
+	
+
+    <h4 class="name" id=".pop"><span class="type-signature">(static) </span>pop<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
-    <div class="description">
-        <p>Pop the first task off the queue and run it.</p>
+
+
+
+<div class="description">
+    <p>Pop the first task off the queue and run it.</p>
 <p>If there's an error, the scheduler halts and shows the error.</p>
-    </div>
-    
+</div>
 
-    
 
-    
 
-    
 
-    
+
+
+
+
+
+
+
+
+
 <dl class="details">
+
+    
+
+    
+
+    
+
     
 
     
@@ -821,7 +936,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="schedule.js.html">runtime/scripts/schedule.js</a>, <a href="schedule.js.html#line95">line 95</a>
+        <a href="runtime_scripts_schedule.js.html">runtime/scripts/schedule.js</a>, <a href="runtime_scripts_schedule.js.html#line95">line 95</a>
     </li></ul></dd>
     
 
@@ -833,22 +948,26 @@
 </dl>
 
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
-</dd>
 
-        </dl>
+
+
+
+
+
+
+
+
+	</div>
+
+
+        
+		</div>
     
 
     
@@ -863,188 +982,18 @@
 
 	</div>
 
-	<nav class="main-nav">
-		<h2><a href="index.html">Index</a></h2>
-
-
-
-
-
-	<h3>Classes</h3>
-	<ul>
-	
-		<li><a href="Numbas.display.ExamDisplay.html">ExamDisplay</a></li>
-	
-		<li><a href="Numbas.display.ExtensionPartDisplay.html">ExtensionPartDisplay</a></li>
-	
-		<li><a href="Numbas.display.GapFillPartDisplay.html">GapFillPartDisplay</a></li>
-	
-		<li><a href="Numbas.display.InformationPartDisplay.html">InformationPartDisplay</a></li>
-	
-		<li><a href="Numbas.display.JMEPartDisplay.html">JMEPartDisplay</a></li>
-	
-		<li><a href="Numbas.display.MatrixEntryPartDisplay.html">MatrixEntryPartDisplay</a></li>
-	
-		<li><a href="Numbas.display.MultipleResponsePartDisplay.html">MultipleResponsePartDisplay</a></li>
-	
-		<li><a href="Numbas.display.NumberEntryPartDisplay.html">NumberEntryPartDisplay</a></li>
-	
-		<li><a href="Numbas.display.PartDisplay.html">PartDisplay</a></li>
-	
-		<li><a href="Numbas.display.PatternMatchPartDisplay.html">PatternMatchPartDisplay</a></li>
-	
-		<li><a href="Numbas.display.QuestionDisplay.html">QuestionDisplay</a></li>
-	
-		<li><a href="Numbas.Error.html">Error</a></li>
-	
-		<li><a href="Numbas.Exam.html">Exam</a></li>
-	
-		<li><a href="Numbas.ExamEvent.html">ExamEvent</a></li>
-	
-		<li><a href="Numbas.jme.display.Rule.html">Rule</a></li>
-	
-		<li><a href="Numbas.jme.funcObj.html">funcObj</a></li>
-	
-		<li><a href="Numbas.jme.Ruleset.html">Ruleset</a></li>
-	
-		<li><a href="Numbas.jme.Scope.html">Scope</a></li>
-	
-		<li><a href="Numbas.jme.types.TBool.html">TBool</a></li>
-	
-		<li><a href="Numbas.jme.types.TFunc.html">TFunc</a></li>
-	
-		<li><a href="Numbas.jme.types.THTML.html">THTML</a></li>
-	
-		<li><a href="Numbas.jme.types.TList.html">TList</a></li>
-	
-		<li><a href="Numbas.jme.types.TMatrix.html">TMatrix</a></li>
-	
-		<li><a href="Numbas.jme.types.TName.html">TName</a></li>
-	
-		<li><a href="Numbas.jme.types.TNum.html">TNum</a></li>
-	
-		<li><a href="Numbas.jme.types.TOp.html">TOp</a></li>
-	
-		<li><a href="Numbas.jme.types.TPunc.html">TPunc</a></li>
-	
-		<li><a href="Numbas.jme.types.TRange.html">TRange</a></li>
-	
-		<li><a href="Numbas.jme.types.TSet.html">TSet</a></li>
-	
-		<li><a href="Numbas.jme.types.TString.html">TString</a></li>
-	
-		<li><a href="Numbas.jme.types.TVector.html">TVector</a></li>
-	
-		<li><a href="Numbas.parts.ExtensionPart.html">ExtensionPart</a></li>
-	
-		<li><a href="Numbas.parts.GapFillPart.html">GapFillPart</a></li>
-	
-		<li><a href="Numbas.parts.InformationPart.html">InformationPart</a></li>
-	
-		<li><a href="Numbas.parts.JMEPart.html">JMEPart</a></li>
-	
-		<li><a href="Numbas.parts.MatrixEntryPart.html">MatrixEntryPart</a></li>
-	
-		<li><a href="Numbas.parts.MultipleResponsePart.html">MultipleResponsePart</a></li>
-	
-		<li><a href="Numbas.parts.NumberEntryPart.html">NumberEntryPart</a></li>
-	
-		<li><a href="Numbas.parts.Part.html">Part</a></li>
-	
-		<li><a href="Numbas.parts.PatternMatchPart.html">PatternMatchPart</a></li>
-	
-		<li><a href="Numbas.Question.html">Question</a></li>
-	
-		<li><a href="Numbas.storage.BlankStorage.html">BlankStorage</a></li>
-	
-		<li><a href="Numbas.storage.SCORMStorage.html">SCORMStorage</a></li>
-	
-		<li><a href="RequireScript.html">RequireScript</a></li>
-	
-	</ul>
-
-
-
-
-
-	<h3>Namespaces</h3>
-	<ul>
-	
-		<li><a href="Numbas.html">Numbas</a></li>
-	
-		<li><a href="Numbas.controls.html">controls</a></li>
-	
-		<li><a href="Numbas.display.html">display</a></li>
-	
-		<li><a href="Numbas.jme.html">jme</a></li>
-	
-		<li><a href="Numbas.jme.display.html">display</a></li>
-	
-		<li><a href="Numbas.jme.types.html">types</a></li>
-	
-		<li><a href="Numbas.jme.variables.html">variables</a></li>
-	
-		<li><a href="Numbas.math.html">math</a></li>
-	
-		<li><a href="Numbas.matrixmath.html">matrixmath</a></li>
-	
-		<li><a href="Numbas.html#parts">parts</a></li>
-	
-		<li><a href="Numbas.schedule.html">schedule</a></li>
-	
-		<li><a href="Numbas.setmath.html">setmath</a></li>
-	
-		<li><a href="Numbas.storage.html">storage</a></li>
-	
-		<li><a href="Numbas.timing.html">timing</a></li>
-	
-		<li><a href="Numbas.util.html">util</a></li>
-	
-		<li><a href="Numbas.vectormath.html">vectormath</a></li>
-	
-		<li><a href="Numbas.xml.html">xml</a></li>
-	
-	</ul>
-
-
-
-
-
-
-
-	<h3><a href="global.html">Globals</a></h3>
-	<ul>
-	
-		<li><a href="global.html#complex">complex</a></li>
-	
-		<li><a href="global.html#func_data">func_data</a></li>
-	
-		<li><a href="global.html#JME">JME</a></li>
-	
-		<li><a href="global.html#matrix">matrix</a></li>
-	
-		<li><a href="global.html#partpath">partpath</a></li>
-	
-		<li><a href="global.html#range">range</a></li>
-	
-		<li><a href="global.html#TeX">TeX</a></li>
-	
-		<li><a href="global.html#variable_data_dict">variable_data_dict</a></li>
-	
-		<li><a href="global.html#vector">vector</a></li>
-	
-	</ul>
-
-
+	<nav class="main-nav" id="main-nav">
+		<h2><a href="index.html">Home</a></h2><div class="main-nav-item"><h3>Classes</h3><ul><li><a href="Numbas.storage.BlankStorage.html">BlankStorage</a></li><li><a href="Numbas.Error.html">Error</a></li><li><a href="Numbas.Exam.html">Exam</a></li><li><a href="Numbas.display.ExamDisplay.html">ExamDisplay</a></li><li><a href="Numbas.ExamEvent.html">ExamEvent</a></li><li><a href="Numbas.parts.ExtensionPart.html">ExtensionPart</a></li><li><a href="Numbas.display.ExtensionPartDisplay.html">ExtensionPartDisplay</a></li><li><a href="Numbas.jme.funcObj.html">funcObj</a></li><li><a href="Numbas.parts.GapFillPart.html">GapFillPart</a></li><li><a href="Numbas.display.GapFillPartDisplay.html">GapFillPartDisplay</a></li><li><a href="Numbas.parts.InformationPart.html">InformationPart</a></li><li><a href="Numbas.display.InformationPartDisplay.html">InformationPartDisplay</a></li><li><a href="Numbas.parts.JMEPart.html">JMEPart</a></li><li><a href="Numbas.display.JMEPartDisplay.html">JMEPartDisplay</a></li><li><a href="Numbas.parts.MatrixEntryPart.html">MatrixEntryPart</a></li><li><a href="Numbas.display.MatrixEntryPartDisplay.html">MatrixEntryPartDisplay</a></li><li><a href="Numbas.parts.MultipleResponsePart.html">MultipleResponsePart</a></li><li><a href="Numbas.display.MultipleResponsePartDisplay.html">MultipleResponsePartDisplay</a></li><li><a href="Numbas.parts.NumberEntryPart.html">NumberEntryPart</a></li><li><a href="Numbas.display.NumberEntryPartDisplay.html">NumberEntryPartDisplay</a></li><li><a href="Numbas.parts.Part.html">Part</a></li><li><a href="Numbas.display.PartDisplay.html">PartDisplay</a></li><li><a href="Numbas.parts.PatternMatchPart.html">PatternMatchPart</a></li><li><a href="Numbas.display.PatternMatchPartDisplay.html">PatternMatchPartDisplay</a></li><li><a href="Numbas.Question.html">Question</a></li><li><a href="Numbas.display.QuestionDisplay.html">QuestionDisplay</a></li><li><a href="RequireScript.html">RequireScript</a></li><li><a href="Numbas.jme.display.Rule.html">Rule</a></li><li><a href="Numbas.jme.Ruleset.html">Ruleset</a></li><li><a href="Numbas.jme.Scope.html">Scope</a></li><li><a href="Numbas.storage.SCORMStorage.html">SCORMStorage</a></li><li><a href="Numbas.jme.types.TBool.html">TBool</a></li><li><a href="Numbas.jme.types.TFunc.html">TFunc</a></li><li><a href="Numbas.jme.types.THTML.html">THTML</a></li><li><a href="Numbas.jme.types.TList.html">TList</a></li><li><a href="Numbas.jme.types.TMatrix.html">TMatrix</a></li><li><a href="Numbas.jme.types.TName.html">TName</a></li><li><a href="Numbas.jme.types.TNum.html">TNum</a></li><li><a href="Numbas.jme.types.TOp.html">TOp</a></li><li><a href="Numbas.jme.types.TPunc.html">TPunc</a></li><li><a href="Numbas.jme.types.TRange.html">TRange</a></li><li><a href="Numbas.jme.types.TSet.html">TSet</a></li><li><a href="Numbas.jme.types.TString.html">TString</a></li><li><a href="Numbas.jme.types.TVector.html">TVector</a></li></ul></div><div class="main-nav-item"><h3>Namespaces</h3><ul><li><a href="Numbas.controls.html">controls</a></li><li><a href="Numbas.display.html">display</a></li><li><a href="Numbas.jme.display.html">display</a></li><li><a href="Numbas.jme.html">jme</a></li><li><a href="Numbas.math.html">math</a></li><li><a href="Numbas.matrixmath.html">matrixmath</a></li><li><a href="Numbas.html">Numbas</a></li><li><a href="Numbas.parts.html">parts</a></li><li><a href="Numbas.schedule.html">schedule</a></li><li><a href="Numbas.setmath.html">setmath</a></li><li><a href="Numbas.storage.html">storage</a></li><li><a href="Numbas.timing.html">timing</a></li><li><a href="Numbas.jme.types.html">types</a></li><li><a href="Numbas.util.html">util</a></li><li><a href="Numbas.jme.variables.html">variables</a></li><li><a href="Numbas.vectormath.html">vectormath</a></li><li><a href="Numbas.xml.html">xml</a></li></ul></div><h3><a href="global.html">Global variables</a></h3>
 	</nav>
+</div>
 
-	<br clear="both">
+<br class="clear">
 
-	<footer>
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-dev</a> on Wed Jul 13 2016 11:31:12 GMT+0100 (BST)
-	</footer>
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.0-dev</a> on Wed Nov 09 2016 11:30:06 GMT+0000 (GMT Standard Time)
+</footer>
 
-	<script> prettyPrint(); </script>
-	<script src="scripts/linenumber.js"> </script>
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
 </body>
 </html>
