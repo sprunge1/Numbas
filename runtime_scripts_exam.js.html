@@ -51,6 +51,7 @@ Copyright 2011-14 Newcastle University
 
 Numbas.queueScript('exam',['base','timing','util','xml','display','schedule','storage','scorm-storage','math','question','jme-variables','jme-display','jme'],function() {
 	var job = Numbas.schedule.add;
+    var util = Numbas.util;
 
 /** Keeps track of all info we need to know while exam is running.
  *
@@ -103,7 +104,7 @@ function Exam()
 		
 	//feedback
 	var feedbackPath = 'settings/feedback';
-	tryGetAttribute(settings,xml,feedbackPath,['showactualmark','showtotalmark','showanswerstate','allowrevealanswer'],['showActualMark','showTotalMark','showAnswerState','allowRevealAnswer']);
+	tryGetAttribute(settings,xml,feedbackPath,['showactualmark','showtotalmark','showanswerstate','allowrevealanswer','showStudentName'],['showActualMark','showTotalMark','showAnswerState','allowRevealAnswer','showStudentName']);
 
 	tryGetAttribute(settings,xml,feedbackPath+'/advice',['threshold'],['adviceGlobalThreshold']);
 
@@ -124,8 +125,6 @@ function Exam()
         this.feedbackMessages.push(feedbackMessage);
     }
     this.feedbackMessages.sort(function(a,b){ var ta = a.threshold, tb = b.threshold; return ta>tb ? 1 : ta&lt;tb ? -1 : 0});
-
-	settings.numQuestions = xml.selectNodes('questions/question').length;
 
 	var scopes = [
 		Numbas.jme.builtinScope
@@ -182,6 +181,15 @@ function Exam()
 		this.scope.rulesets[name] = Numbas.jme.collectRuleset(sets[name],this.scope.rulesets);
 	}
 
+    // question groups
+    tryGetAttribute(settings,xml,'question_groups',['showQuestionGroupNames']);
+    var groupNodes = this.xml.selectNodes('question_groups/question_group');
+    this.question_groups = [];
+    for(var i=0;i&lt;groupNodes.length;i++) {
+        this.question_groups.push(new QuestionGroup(this,groupNodes[i]));
+    }
+
+
 	//initialise display
 	this.display = new Numbas.display.ExamDisplay(this);
 
@@ -189,25 +197,28 @@ function Exam()
 Numbas.Exam = Exam;
 Exam.prototype = /** @lends Numbas.Exam.prototype */ {
 	/** Settings
-	 * @property {string} name - Title of exam
-	 * @property {number} percentPass - Percentage of max. score student must achieve to pass 
-	 * @property {boolean} shuffleQuestions - should the questions be shuffled?
-	 * @property {number} numQuestions - number of questions in this sitting
-	 * @property {boolean} preventLeave - prevent the browser from leaving the page while the exam is running?
-	 * @property {boolean} allowRegen -can student re-randomise a question?
-	 * @property {boolean} navigateReverse - can student navigate to previous question?
-	 * @property {boolean} navigateBrowse - can student jump to any question they like?
-	 * @property {boolean} showFrontPage - show the frontpage before starting the exam?
-	 * @property {boolean} showResultsPage - show the results page after finishing the exam?
-	 * @property {Array.object} navigationEvents - checks to perform when doing certain navigation action
-	 * @property {Array.object} timerEvents - events based on timing
-	 * @property {number} duration - how long is exam? (seconds)
-	 * @property {boolean} allowPause - can the student suspend the timer with the pause button or by leaving?
-	 * @property {boolean} showActualMark - show current score?
-	 * @property {boolean} showTotalMark - show total marks in exam?
-	 * @property {boolean} showAnswerState - tell student if answer is correct/wrong/partial?
-	 * @property {boolean} allowRevealAnswer - allow 'reveal answer' button?
-	 * @property {number} adviceGlobalThreshold - if student scores lower than this percentage on a question, the advice is displayed
+	 * @property {String} name - Title of exam
+	 * @property {Number} percentPass - Percentage of max. score student must achieve to pass 
+	 * @property {Boolean} shuffleQuestions - should the questions be shuffled?
+	 * @property {Number} numQuestions - number of questions in this sitting
+	 * @property {Boolean} preventLeave - prevent the browser from leaving the page while the exam is running?
+	 * @property {Boolean} allowRegen -can student re-randomise a question?
+	 * @property {Boolean} navigateReverse - can student navigate to previous question?
+	 * @property {Boolean} navigateBrowse - can student jump to any question they like?
+	 * @property {Boolean} showFrontPage - show the frontpage before starting the exam?
+	 * @property {Boolean} showResultsPage - show the results page after finishing the exam?
+	 * @property {Array.&lt;Object.&lt;Numbas.ExamEvent>>} navigationEvents - checks to perform when doing certain navigation action
+	 * @property {Array.&lt;Object.&lt;Numbas.ExamEvent>>} timerEvents - events based on timing
+	 * @property {Number} duration - how long is exam? (seconds)
+	 * @property {Boolean} allowPause - can the student suspend the timer with the pause button or by leaving?
+	 * @property {Boolean} showActualMark - show current score?
+	 * @property {Boolean} showTotalMark - show total marks in exam?
+	 * @property {Boolean} showAnswerState - tell student if answer is correct/wrong/partial?
+	 * @property {Boolean} allowRevealAnswer - allow 'reveal answer' button?
+	 * @property {Number} adviceGlobalThreshold - if student scores lower than this percentage on a question, the advice is displayed
+     * @property {Boolean} showQuestionGroupNames - show the names of question groups?
+     * @memberof Numbas.Exam.prototype
+     * @instance
 	 */
 	settings: {
 		
@@ -230,6 +241,8 @@ Exam.prototype = /** @lends Numbas.Exam.prototype */ {
 		showAnswerState: false,		
 		allowRevealAnswer: false,	
 		adviceGlobalThreshold: 0, 	
+        showQuestionGroupNames: false,
+        showStudentName: true
 	},
 
 	/** Base node of exam XML
@@ -241,37 +254,37 @@ Exam.prototype = /** @lends Numbas.Exam.prototype */ {
 	 * Can be
 	 *  * `"normal"` - Student is currently sitting the exam
 	 *  * `"review"` - Student is reviewing a completed exam
-	 *  @type string
+	 *  @type String
 	 */
 	mode: 'normal',				
                                 
 	/** Total marks available in the exam 
-	 * @type number
+	 * @type Number
 	 */
 	mark: 0,					
 
 	/** Student's current score 
-	 * @type number
+	 * @type Number
 	 */
 	score: 0,					//student's current score
 
 	/** Student's score as a percentage
-	 * @type number
+	 * @type Number
 	 */
 	percentScore: 0,
 	
 	/** Did the student pass the exam? 
-	 * @type boolean
+	 * @type Boolean
 	 */
 	passed: false,				//did student pass the exam?
 
 	/** Student's name
-	 * @type string
+	 * @type String
 	 */
 	student_name: undefined,
 
 	/** Student's ID
-	 * @type string
+	 * @type String
 	 */
 	student_id: undefined,
 
@@ -285,7 +298,7 @@ Exam.prototype = /** @lends Numbas.Exam.prototype */ {
 	scope: undefined,
 
 	/** Number of the current question
-	 * @type number
+	 * @type Number
 	 */
 	currentQuestionNumber: 0,
 	/**
@@ -293,27 +306,32 @@ Exam.prototype = /** @lends Numbas.Exam.prototype */ {
 	 * @type Numbas.Question
 	 */
 	currentQuestion: undefined,
+
+    /** Groups of questions in the exam
+     * @type Array.&lt;Numbas.QuestionGroup>
+     */
+    question_groups: [],
 	
 	/**
 	 * Which questions are used?
-	 * @type number[]
+	 * @type Number[]
 	 */
 	questionSubset: [],
 	/**
 	 * Question objects, in the order the student will see them
-	 * @type Numbas.Question[]
+	 * @type Array.&lt;Numbas.Question>
 	 */
 	questionList: [],			
 		
 	/** Exam duration in `h:m:s` format
-	 * @type string
+	 * @type String
 	 */
 	displayDuration: '',
 	/** Stopwatch object - updates the timer every second.
 	 * @property {Date} start
 	 * @property {Date} end
-	 * @property {number} oldTimeSpent - `timeSpent` when the stopwatch was last updated
-	 * @property {number} id - id of the `Interval` which calls {@link Numbas.Exam#countDown}
+	 * @property {Number} oldTimeSpent - `timeSpent` when the stopwatch was last updated
+	 * @property {Number} id - id of the `Interval` which calls {@link Numbas.Exam#countDown}
 	 */
 	stopwatch: undefined,
 	/** Time that the exam should stop
@@ -321,17 +339,17 @@ Exam.prototype = /** @lends Numbas.Exam.prototype */ {
 	 */
 	endTime: undefined,
 	/** Seconds until the end of the exam
-	 * @type number
+	 * @type Number
 	 */
 	timeRemaining: 0,
 	/** Seconds the exam has been in progress
-	 * @type number
+	 * @type Number
 	 */
 	timeSpent: 0,
 	/** Is the exam in progress?
 	 *
 	 * `false` before starting, when paused, and after ending.
-	 * @type boolean
+	 * @type Boolean
 	 */
 	inProgress: false,
 
@@ -358,6 +376,7 @@ Exam.prototype = /** @lends Numbas.Exam.prototype */ {
 		var variablesTodo = Numbas.xml.loadVariables(exam.xml,exam.scope);
 		var result = Numbas.jme.variables.makeVariables(variablesTodo,exam.scope);
 		exam.scope.variables = result.variables;
+
 		job(exam.chooseQuestionSubset,exam);			//choose questions to use
 		job(exam.makeQuestionList,exam);				//create question objects
 		job(Numbas.store.init,Numbas.store,exam);		//initialise storage
@@ -371,8 +390,14 @@ Exam.prototype = /** @lends Numbas.Exam.prototype */ {
 		var suspendData = Numbas.store.load(this);	//get saved info from storage
 
 		job(function() {
-			this.questionSubset = suspendData.questionSubset;
-			this.settings.numQuestions = this.questionSubset.length;
+            var e = this;
+            var numQuestions = 0;
+            suspendData.questionSubsets.forEach(function(subset,i) {
+                e.question_groups[i].questionSubset = subset;
+                numQuestions += subset.length;
+            });
+			this.settings.numQuestions = numQuestions;
+
 			this.start = new Date(suspendData.start);
 			if(this.settings.allowPause) {
 				this.timeRemaining = this.settings.duration - (suspendData.duration-suspendData.timeRemaining);
@@ -393,31 +418,20 @@ Exam.prototype = /** @lends Numbas.Exam.prototype */ {
 		},this);
 	},
 
-
-	/** Decide which questions to use and in what order */
+	/** Decide which questions to use and in what order
+     * @see Numbas.QuestionGroup#chooseQuestionSubset
+     */
 	chooseQuestionSubset: function()
 	{
-		//get all questions out of XML
-		var tmpQuestionList = new Array();
+        var numQuestions = 0;
+        this.question_groups.forEach(function(group) {
+            group.chooseQuestionSubset();
+            numQuestions += group.questionSubset.length;
+        });
+        this.settings.numQuestions = numQuestions;
 
-		//shuffle questions?
-		this.questionSubset = [];
-		if(this.settings.shuffleQuestions)
-		{
-			this.questionSubset = Numbas.math.deal(this.settings.numQuestions);
-		}
-		else	//otherwise just pick required number of questions from beginning of list
-		{
-			this.questionSubset = Numbas.math.range(this.settings.numQuestions);
-		}
-		if(!this.settings.allQuestions) {
-			this.questionSubset = this.questionSubset.slice(0,this.settings.pickQuestions);
-			this.settings.numQuestions = this.settings.pickQuestions;
-		}
-
-		if(this.questionSubset.length==0)
-		{
-			Numbas.display.showAlert("This exam contains no questions! Check the .exam file for errors.");
+		if(numQuestions==0) {
+            throw(new Numbas.Error('exam.changeQuestion.no questions'));
 		}
 	},
 
@@ -426,23 +440,29 @@ Exam.prototype = /** @lends Numbas.Exam.prototype */ {
 	 *
 	 * If loading, need to restore randomised variables instead of generating anew
 	 *
-	 * @param {boolean} [loading=true]
+	 * @param {Boolean} lo
 	 */
 	makeQuestionList: function(loading)
 	{
+        var exam = this;
 		this.questionList = [];
+        var questionAcc = 0;
+        
+        this.question_groups.forEach(function(group) {
+            group.questionList = [];
+            var questionNodes = group.xml.selectNodes("questions/question");
+            group.questionSubset.forEach(function(n) {
+                job(function(n) {
+    				var question = new Numbas.Question( exam, group, questionNodes[n], questionAcc++, loading, exam.scope );
+                    exam.questionList.push(question);
+                    group.questionList.push(question);
+                },group,n);
+            });
+        });
 		
-		var questions = this.xml.selectNodes("questions/question");
-		for(var i = 0; i&lt;this.questionSubset.length; i++) 
-		{
-			job(function(i)
-			{
-				var question = new Numbas.Question( this, questions[this.questionSubset[i]], i, loading, this.scope );
-				this.questionList.push(question);
-			},this,i);
-		}
-
 		job(function() {
+            this.settings.numQuestions = this.questionList.length;
+
 			//register questions with exam display
 			this.display.initQuestionList();
 
@@ -465,7 +485,7 @@ Exam.prototype = /** @lends Numbas.Exam.prototype */ {
 
 	/** 
 	 * Show the given info page
-	 * @param {string} page - Name of the page to show
+	 * @param {String} page - Name of the page to show
 	 */
 	showInfoPage: function(page) {
 		if(this.currentQuestion)
@@ -603,7 +623,7 @@ Exam.prototype = /** @lends Numbas.Exam.prototype */ {
 	 *
 	 * Will check move is allowed and if so change question and update display
 	 *
-	 * @param {number} i - Number of the question to move to
+	 * @param {Number} i - Number of the question to move to
 	 * @see Numbas.Exam#changeQuestion
 	 */
 	tryChangeQuestion: function(i)
@@ -660,7 +680,7 @@ Exam.prototype = /** @lends Numbas.Exam.prototype */ {
 	/**
 	 * Change the current question. Student's can't trigger this without going through {@link Numbas.Exam#tryChangeQuestion}
 	 *
-	 * @param {number} i - Number of the question to move to
+	 * @param {Number} i - Number of the question to move to
 	 */
 	changeQuestion: function(i)
 	{
@@ -679,7 +699,7 @@ Exam.prototype = /** @lends Numbas.Exam.prototype */ {
 	/**
 	 * Show a question in review mode
 	 *
-	 * @param {number} i - Number of the question to show
+	 * @param {Number} i - Number of the question to show
 	 */
 	reviewQuestion: function(i) {
 		this.changeQuestion(i);
@@ -692,11 +712,14 @@ Exam.prototype = /** @lends Numbas.Exam.prototype */ {
 	regenQuestion: function()
 	{
 		var e = this;
-		var n = e.currentQuestion.number;
+        var oq = e.currentQuestion;
+		var n = oq.number;
+        var group = oq.group
+        var n_in_group = group.questionList.indexOf(oq);
 		job(e.display.startRegen,e.display);
 		job(function() {
-			var on = e.questionSubset[n];
-			e.questionList[n] = new Numbas.Question(e, e.xml.selectNodes('questions/question')[on], n, false, e.scope);
+            var q = new Numbas.Question(e, oq.group, oq.originalXML, oq.number, false, e.scope);
+			e.questionList[n] = group.questionList[n_in_group] = q;
 		})
 		job(function() {
 			e.changeQuestion(n);
@@ -818,7 +841,7 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 	 * * `timeout` - There's no time left; the exam is over.
 	 * @memberof Numbas.ExamEvent
 	 * @instance
-	 * @type string 
+	 * @type String 
 	 */
 	type: '',
 
@@ -834,17 +857,63 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 	 * * `preventifunattempted` - Show a warning but allow the student to continue.
 	 * @memberof Numbas.ExamEvent
 	 * @instance
-	 * @type string
+	 * @type String
 	 */
 	action: 'none',
 
 	/** Message to show the student when the event happens.
 	 * @memberof Numbas.ExamEvent
 	 * @instance
-	 * @type string
+	 * @type String
 	 */
 	message: ''
 };
+
+/** Represents a group of questions
+ *
+ * @constructor
+ * @property {Numbas.Exam} exam - the exam this group belongs to
+ * @property {Element} xml
+ * @property {Array.&lt;Number>} questionSubset - the indices of the picked questions, in the order they should appear to the student
+ * @property {Array.&lt;Numbas.Question>} questionList
+ * @memberof Numbas
+ */
+function QuestionGroup(exam, groupNode) {
+    this.exam = exam;
+    this.xml = groupNode;
+
+    this.settings = util.copyobj(this.settings);
+    Numbas.xml.tryGetAttribute(this.settings,this.xml,'.',['name','pickingStrategy','pickQuestions']);
+}
+QuestionGroup.prototype = {
+    /** Settings for this group
+     * @property {String} name
+     * @property {String} pickingStrategy - how to pick the list of questions: 'all-ordered', 'all-shuffled' or 'random-subset'
+     * @property {Number} pickQuestions - if `pickingStrategy` is 'random-subset', how many questions to pick
+     */
+    settings: {
+        name: '',
+        pickingStrategy: 'all-ordered',
+        pickQuestions: 1
+    },
+
+	/** Decide which questions to use and in what order */
+    chooseQuestionSubset: function() {
+        var questionNodes = this.xml.selectNodes('questions/question');
+        var numQuestions = questionNodes.length;
+        switch(this.settings.pickingStrategy) {
+            case 'all-ordered':
+                this.questionSubset = Numbas.math.range(numQuestions);
+                break;
+            case 'all-shuffled':
+                this.questionSubset = Numbas.math.deal(numQuestions);
+                break;
+            case 'random-subset':
+                this.questionSubset = Numbas.math.deal(numQuestions).slice(0,this.settings.pickQuestions);
+                break;
+        }
+    }
+}
 
 });
 </code></pre>
@@ -869,15 +938,25 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 		
 			<li class="search-result" data-longname="complex.complexToString"><a href="global.html#complex#.complexToString">complex.complexToString</a></li>
 		
+			<li class="search-result" data-longname="fraction"><a href="global.html#fraction">fraction</a></li>
+		
 			<li class="search-result" data-longname="func_data"><a href="global.html#func_data">func_data</a></li>
 		
 			<li class="search-result" data-longname="JME"><a href="global.html#JME">JME</a></li>
 		
+			<li class="search-result" data-longname="jme_display_settings"><a href="global.html#jme_display_settings">jme_display_settings</a></li>
+		
+			<li class="search-result" data-longname="jme_pattern_match"><a href="global.html#jme_pattern_match">jme_pattern_match</a></li>
+		
 			<li class="search-result" data-longname="matrix"><a href="global.html#matrix">matrix</a></li>
+		
+			<li class="search-result" data-longname="niceNumber_settings"><a href="global.html#niceNumber_settings">niceNumber_settings</a></li>
 		
 			<li class="search-result" data-longname="Numbas"><a href="Numbas.html">Numbas</a></li>
 		
 			<li class="search-result" data-longname="Numbas.addExtension"><a href="Numbas.html#.addExtension">Numbas.addExtension</a></li>
+		
+			<li class="search-result" data-longname="Numbas.checkAllScriptsLoaded"><a href="Numbas.html#.checkAllScriptsLoaded">Numbas.checkAllScriptsLoaded</a></li>
 		
 			<li class="search-result" data-longname="Numbas.controls"><a href="Numbas.controls.html">Numbas.controls</a></li>
 		
@@ -894,6 +973,8 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 			<li class="search-result" data-longname="Numbas.controls.getAdvice"><a href="Numbas.controls.html#.getAdvice">Numbas.controls.getAdvice</a></li>
 		
 			<li class="search-result" data-longname="Numbas.controls.hideSteps"><a href="Numbas.controls.html#.hideSteps">Numbas.controls.hideSteps</a></li>
+		
+			<li class="search-result" data-longname="Numbas.controls.jumpQuestion"><a href="Numbas.controls.html#.jumpQuestion">Numbas.controls.jumpQuestion</a></li>
 		
 			<li class="search-result" data-longname="Numbas.controls.makeQuestionJumper"><a href="Numbas.controls.html#.makeQuestionJumper">Numbas.controls.makeQuestionJumper</a></li>
 		
@@ -983,6 +1064,8 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 		
 			<li class="search-result" data-longname="Numbas.display.ExamDisplay.showQuestion"><a href="Numbas.display.ExamDisplay.html#.showQuestion">Numbas.display.ExamDisplay.showQuestion</a></li>
 		
+			<li class="search-result" data-longname="Numbas.display.ExamDisplay.showQuestionGroupNames"><a href="Numbas.display.ExamDisplay.html#.showQuestionGroupNames">Numbas.display.ExamDisplay.showQuestionGroupNames</a></li>
+		
 			<li class="search-result" data-longname="Numbas.display.ExamDisplay.showScore"><a href="Numbas.display.ExamDisplay.html#.showScore">Numbas.display.ExamDisplay.showScore</a></li>
 		
 			<li class="search-result" data-longname="Numbas.display.ExamDisplay.showTiming"><a href="Numbas.display.ExamDisplay.html#.showTiming">Numbas.display.ExamDisplay.showTiming</a></li>
@@ -995,73 +1078,19 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 		
 			<li class="search-result" data-longname="Numbas.display.ExamDisplay.viewType"><a href="Numbas.display.ExamDisplay.html#.viewType">Numbas.display.ExamDisplay.viewType</a></li>
 		
-			<li class="search-result" data-longname="Numbas.display.ExtensionPartDisplay"><a href="Numbas.display.ExtensionPartDisplay.html">Numbas.display.ExtensionPartDisplay</a></li>
+			<li class="search-result" data-longname="Numbas.display.feedback_state"><a href="Numbas.display.html#.feedback_state">Numbas.display.feedback_state</a></li>
 		
-			<li class="search-result" data-longname="Numbas.display.GapFillPartDisplay"><a href="Numbas.display.GapFillPartDisplay.html">Numbas.display.GapFillPartDisplay</a></li>
+			<li class="search-result" data-longname="Numbas.display.feedbackable"><a href="Numbas.display.html#.feedbackable">Numbas.display.feedbackable</a></li>
 		
-			<li class="search-result" data-longname="Numbas.display.InformationPartDisplay"><a href="Numbas.display.InformationPartDisplay.html">Numbas.display.InformationPartDisplay</a></li>
+			<li class="search-result" data-longname="Numbas.display.getLocalisedAttribute"><a href="Numbas.display.html#.getLocalisedAttribute">Numbas.display.getLocalisedAttribute</a></li>
 		
 			<li class="search-result" data-longname="Numbas.display.inInput"><a href="Numbas.display.html#.inInput">Numbas.display.inInput</a></li>
 		
 			<li class="search-result" data-longname="Numbas.display.init"><a href="Numbas.display.html#.init">Numbas.display.init</a></li>
 		
-			<li class="search-result" data-longname="Numbas.display.JMEPartDisplay"><a href="Numbas.display.JMEPartDisplay.html">Numbas.display.JMEPartDisplay</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.JMEPartDisplay.correctAnswer"><a href="Numbas.display.JMEPartDisplay.html#.correctAnswer">Numbas.display.JMEPartDisplay.correctAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.JMEPartDisplay.correctAnswerLaTeX"><a href="Numbas.display.JMEPartDisplay.html#.correctAnswerLaTeX">Numbas.display.JMEPartDisplay.correctAnswerLaTeX</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.JMEPartDisplay.focusInput"><a href="Numbas.display.JMEPartDisplay.html#.focusInput">Numbas.display.JMEPartDisplay.focusInput</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.JMEPartDisplay.inputHasFocus"><a href="Numbas.display.JMEPartDisplay.html#.inputHasFocus">Numbas.display.JMEPartDisplay.inputHasFocus</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.JMEPartDisplay.showPreview"><a href="Numbas.display.JMEPartDisplay.html#.showPreview">Numbas.display.JMEPartDisplay.showPreview</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.JMEPartDisplay.studentAnswer"><a href="Numbas.display.JMEPartDisplay.html#.studentAnswer">Numbas.display.JMEPartDisplay.studentAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.JMEPartDisplay.studentAnswerLaTeX"><a href="Numbas.display.JMEPartDisplay.html#.studentAnswerLaTeX">Numbas.display.JMEPartDisplay.studentAnswerLaTeX</a></li>
-		
 			<li class="search-result" data-longname="Numbas.display.localisePage"><a href="Numbas.display.html#.localisePage">Numbas.display.localisePage</a></li>
 		
-			<li class="search-result" data-longname="Numbas.display.MatrixEntryPartDisplay"><a href="Numbas.display.MatrixEntryPartDisplay.html">Numbas.display.MatrixEntryPartDisplay</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.MatrixEntryPartDisplay.correctAnswer"><a href="Numbas.display.MatrixEntryPartDisplay.html#.correctAnswer">Numbas.display.MatrixEntryPartDisplay.correctAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.MatrixEntryPartDisplay.showPreview"><a href="Numbas.display.MatrixEntryPartDisplay.html#.showPreview">Numbas.display.MatrixEntryPartDisplay.showPreview</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.MatrixEntryPartDisplay.studentAnswer"><a href="Numbas.display.MatrixEntryPartDisplay.html#.studentAnswer">Numbas.display.MatrixEntryPartDisplay.studentAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.MatrixEntryPartDisplay.studentAnswerLaTeX"><a href="Numbas.display.MatrixEntryPartDisplay.html#.studentAnswerLaTeX">Numbas.display.MatrixEntryPartDisplay.studentAnswerLaTeX</a></li>
-		
 			<li class="search-result" data-longname="Numbas.display.modal"><a href="Numbas.display.html#.modal">Numbas.display.modal</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.MultipleResponsePartDisplay"><a href="Numbas.display.MultipleResponsePartDisplay.html">Numbas.display.MultipleResponsePartDisplay</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.MultipleResponsePartDisplay.correctAnswer"><a href="Numbas.display.MultipleResponsePartDisplay.html#.correctAnswer">Numbas.display.MultipleResponsePartDisplay.correctAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.MultipleResponsePartDisplay.studentAnswer"><a href="Numbas.display.MultipleResponsePartDisplay.html#.studentAnswer">Numbas.display.MultipleResponsePartDisplay.studentAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.MultipleResponsePartDisplay.ticks"><a href="Numbas.display.MultipleResponsePartDisplay.html#.ticks">Numbas.display.MultipleResponsePartDisplay.ticks</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay"><a href="Numbas.display.NumberEntryPartDisplay.html">Numbas.display.NumberEntryPartDisplay</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.cleanStudentAnswer"><a href="Numbas.display.NumberEntryPartDisplay.html#.cleanStudentAnswer">Numbas.display.NumberEntryPartDisplay.cleanStudentAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.correctAnswer"><a href="Numbas.display.NumberEntryPartDisplay.html#.correctAnswer">Numbas.display.NumberEntryPartDisplay.correctAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.focusInput"><a href="Numbas.display.NumberEntryPartDisplay.html#.focusInput">Numbas.display.NumberEntryPartDisplay.focusInput</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.inputHasFocus"><a href="Numbas.display.NumberEntryPartDisplay.html#.inputHasFocus">Numbas.display.NumberEntryPartDisplay.inputHasFocus</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.precisionHint"><a href="Numbas.display.NumberEntryPartDisplay.html#.precisionHint">Numbas.display.NumberEntryPartDisplay.precisionHint</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.showPrecisionHint"><a href="Numbas.display.NumberEntryPartDisplay.html#.showPrecisionHint">Numbas.display.NumberEntryPartDisplay.showPrecisionHint</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.showPreview"><a href="Numbas.display.NumberEntryPartDisplay.html#.showPreview">Numbas.display.NumberEntryPartDisplay.showPreview</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.studentAnswer"><a href="Numbas.display.NumberEntryPartDisplay.html#.studentAnswer">Numbas.display.NumberEntryPartDisplay.studentAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.studentAnswerLaTeX"><a href="Numbas.display.NumberEntryPartDisplay.html#.studentAnswerLaTeX">Numbas.display.NumberEntryPartDisplay.studentAnswerLaTeX</a></li>
 		
 			<li class="search-result" data-longname="Numbas.display.PartDisplay"><a href="Numbas.display.PartDisplay.html">Numbas.display.PartDisplay</a></li>
 		
@@ -1143,14 +1172,6 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 		
 			<li class="search-result" data-longname="Numbas.display.PartDisplay.warningsShown"><a href="Numbas.display.PartDisplay.html#.warningsShown">Numbas.display.PartDisplay.warningsShown</a></li>
 		
-			<li class="search-result" data-longname="Numbas.display.PatternMatchPartDisplay"><a href="Numbas.display.PatternMatchPartDisplay.html">Numbas.display.PatternMatchPartDisplay</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.PatternMatchPartDisplay.correctAnswer"><a href="Numbas.display.PatternMatchPartDisplay.html#.correctAnswer">Numbas.display.PatternMatchPartDisplay.correctAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.PatternMatchPartDisplay.displayAnswer"><a href="Numbas.display.PatternMatchPartDisplay.html#.displayAnswer">Numbas.display.PatternMatchPartDisplay.displayAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.PatternMatchPartDisplay.studentAnswer"><a href="Numbas.display.PatternMatchPartDisplay.html#.studentAnswer">Numbas.display.PatternMatchPartDisplay.studentAnswer</a></li>
-		
 			<li class="search-result" data-longname="Numbas.display.QuestionDisplay"><a href="Numbas.display.QuestionDisplay.html">Numbas.display.QuestionDisplay</a></li>
 		
 			<li class="search-result" data-longname="Numbas.display.QuestionDisplay.adviceDisplayed"><a href="Numbas.display.QuestionDisplay.html#.adviceDisplayed">Numbas.display.QuestionDisplay.adviceDisplayed</a></li>
@@ -1211,11 +1232,17 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 		
 			<li class="search-result" data-longname="Numbas.display.QuestionDisplay.visited"><a href="Numbas.display.QuestionDisplay.html#.visited">Numbas.display.QuestionDisplay.visited</a></li>
 		
+			<li class="search-result" data-longname="Numbas.display.scoreFeedback"><a href="Numbas.display.html#.scoreFeedback">Numbas.display.scoreFeedback</a></li>
+		
 			<li class="search-result" data-longname="Numbas.display.showAlert"><a href="Numbas.display.html#.showAlert">Numbas.display.showAlert</a></li>
 		
 			<li class="search-result" data-longname="Numbas.display.showConfirm"><a href="Numbas.display.html#.showConfirm">Numbas.display.showConfirm</a></li>
 		
 			<li class="search-result" data-longname="Numbas.display.showLoadProgress"><a href="Numbas.display.html#.showLoadProgress">Numbas.display.showLoadProgress</a></li>
+		
+			<li class="search-result" data-longname="Numbas.display.showScoreFeedback"><a href="Numbas.display.html#.showScoreFeedback">Numbas.display.showScoreFeedback</a></li>
+		
+			<li class="search-result" data-longname="Numbas.display.showScoreFeedback_settings"><a href="Numbas.display.html#.showScoreFeedback_settings">Numbas.display.showScoreFeedback_settings</a></li>
 		
 			<li class="search-result" data-longname="Numbas.display.typeset"><a href="Numbas.display.html#.typeset">Numbas.display.typeset</a></li>
 		
@@ -1264,6 +1291,8 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 			<li class="search-result" data-longname="Numbas.Exam#pause"><a href="Numbas.Exam.html#pause">Numbas.Exam#pause</a></li>
 		
 			<li class="search-result" data-longname="Numbas.Exam#percentScore"><a href="Numbas.Exam.html#percentScore">Numbas.Exam#percentScore</a></li>
+		
+			<li class="search-result" data-longname="Numbas.Exam#question_groups"><a href="Numbas.Exam.html#question_groups">Numbas.Exam#question_groups</a></li>
 		
 			<li class="search-result" data-longname="Numbas.Exam#questionList"><a href="Numbas.Exam.html#questionList">Numbas.Exam#questionList</a></li>
 		
@@ -1325,6 +1354,8 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 		
 			<li class="search-result" data-longname="Numbas.jme.builtinScope"><a href="Numbas.jme.html#.builtinScope">Numbas.jme.builtinScope</a></li>
 		
+			<li class="search-result" data-longname="Numbas.jme.checkingFunction"><a href="Numbas.jme.html#.checkingFunction">Numbas.jme.checkingFunction</a></li>
+		
 			<li class="search-result" data-longname="Numbas.jme.checkingFunctions"><a href="Numbas.jme.html#.checkingFunctions">Numbas.jme.checkingFunctions</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.checkingFunctions.absdiff"><a href="Numbas.jme.html#.checkingFunctions#.absdiff">Numbas.jme.checkingFunctions.absdiff</a></li>
@@ -1339,6 +1370,8 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 		
 			<li class="search-result" data-longname="Numbas.jme.compare"><a href="Numbas.jme.html#.compare">Numbas.jme.compare</a></li>
 		
+			<li class="search-result" data-longname="Numbas.jme.compare_settings"><a href="Numbas.jme.html#.compare_settings">Numbas.jme.compare_settings</a></li>
+		
 			<li class="search-result" data-longname="Numbas.jme.compile"><a href="Numbas.jme.html#.compile">Numbas.jme.compile</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.compileList"><a href="Numbas.jme.html#.compileList">Numbas.jme.compileList</a></li>
@@ -1348,6 +1381,8 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 			<li class="search-result" data-longname="Numbas.jme.contentsubvars"><a href="Numbas.jme.html#.contentsubvars">Numbas.jme.contentsubvars</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.display"><a href="Numbas.jme.display.html">Numbas.jme.display</a></li>
+		
+			<li class="search-result" data-longname="Numbas.jme.display.jmeFunctions"><a href="Numbas.jme.display.html#.jmeFunctions">Numbas.jme.display.jmeFunctions</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.display.matchExpression"><a href="Numbas.jme.display.html#.matchExpression">Numbas.jme.display.matchExpression</a></li>
 		
@@ -1399,11 +1434,15 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 		
 			<li class="search-result" data-longname="Numbas.jme.display.typeToJME.boolean"><a href="Numbas.jme.display.html#.typeToJME#.boolean">Numbas.jme.display.typeToJME.boolean</a></li>
 		
+			<li class="search-result" data-longname="Numbas.jme.display.typeToJME.dict"><a href="Numbas.jme.display.html#.typeToJME#.dict">Numbas.jme.display.typeToJME.dict</a></li>
+		
 			<li class="search-result" data-longname="Numbas.jme.display.typeToJME.expression"><a href="Numbas.jme.display.html#.typeToJME#.expression">Numbas.jme.display.typeToJME.expression</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.display.typeToJME.function"><a href="Numbas.jme.display.html#.typeToJME#.function">Numbas.jme.display.typeToJME.function</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.display.typeToJME.html"><a href="Numbas.jme.display.html#.typeToJME#.html">Numbas.jme.display.typeToJME.html</a></li>
+		
+			<li class="search-result" data-longname="Numbas.jme.display.typeToJME.keypair"><a href="Numbas.jme.display.html#.typeToJME#.keypair">Numbas.jme.display.typeToJME.keypair</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.display.typeToJME.list"><a href="Numbas.jme.display.html#.typeToJME#.list">Numbas.jme.display.typeToJME.list</a></li>
 		
@@ -1425,7 +1464,11 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 		
 			<li class="search-result" data-longname="Numbas.jme.display.typeToTeX"><a href="Numbas.jme.display.html#.typeToTeX">Numbas.jme.display.typeToTeX</a></li>
 		
+			<li class="search-result" data-longname="Numbas.jme.displayFlags"><a href="Numbas.jme.html#.displayFlags">Numbas.jme.displayFlags</a></li>
+		
 			<li class="search-result" data-longname="Numbas.jme.evaluate"><a href="Numbas.jme.html#.evaluate">Numbas.jme.evaluate</a></li>
+		
+			<li class="search-result" data-longname="Numbas.jme.evaluate_fn"><a href="Numbas.jme.html#.evaluate_fn">Numbas.jme.evaluate_fn</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.findvars"><a href="Numbas.jme.html#.findvars">Numbas.jme.findvars</a></li>
 		
@@ -1448,6 +1491,8 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 			<li class="search-result" data-longname="Numbas.jme.funcObj.random"><a href="Numbas.jme.funcObj.html#.random">Numbas.jme.funcObj.random</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.funcObj.typecheck"><a href="Numbas.jme.funcObj.html#.typecheck">Numbas.jme.funcObj.typecheck</a></li>
+		
+			<li class="search-result" data-longname="Numbas.jme.funcObj_options"><a href="Numbas.jme.html#.funcObj_options">Numbas.jme.funcObj_options</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.funcSynonyms"><a href="Numbas.jme.html#.funcSynonyms">Numbas.jme.funcSynonyms</a></li>
 		
@@ -1521,13 +1566,19 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 		
 			<li class="search-result" data-longname="Numbas.jme.tree"><a href="Numbas.jme.html#.tree">Numbas.jme.tree</a></li>
 		
+			<li class="search-result" data-longname="Numbas.jme.typecheck_fn"><a href="Numbas.jme.html#.typecheck_fn">Numbas.jme.typecheck_fn</a></li>
+		
 			<li class="search-result" data-longname="Numbas.jme.types"><a href="Numbas.jme.types.html">Numbas.jme.types</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.types.TBool"><a href="Numbas.jme.types.TBool.html">Numbas.jme.types.TBool</a></li>
 		
+			<li class="search-result" data-longname="Numbas.jme.types.TDict"><a href="Numbas.jme.types.TDict.html">Numbas.jme.types.TDict</a></li>
+		
 			<li class="search-result" data-longname="Numbas.jme.types.TFunc"><a href="Numbas.jme.types.TFunc.html">Numbas.jme.types.TFunc</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.types.THTML"><a href="Numbas.jme.types.THTML.html">Numbas.jme.types.THTML</a></li>
+		
+			<li class="search-result" data-longname="Numbas.jme.types.TKeyPair"><a href="Numbas.jme.types.TKeyPair.html">Numbas.jme.types.TKeyPair</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.types.TList"><a href="Numbas.jme.types.TList.html">Numbas.jme.types.TList</a></li>
 		
@@ -1564,6 +1615,8 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 			<li class="search-result" data-longname="Numbas.math.abs"><a href="Numbas.math.html#.abs">Numbas.math.abs</a></li>
 		
 			<li class="search-result" data-longname="Numbas.math.add"><a href="Numbas.math.html#.add">Numbas.math.add</a></li>
+		
+			<li class="search-result" data-longname="Numbas.math.addDigits"><a href="Numbas.math.html#.addDigits">Numbas.math.addDigits</a></li>
 		
 			<li class="search-result" data-longname="Numbas.math.arccos"><a href="Numbas.math.html#.arccos">Numbas.math.arccos</a></li>
 		
@@ -1869,6 +1922,8 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 		
 			<li class="search-result" data-longname="Numbas.parts.ExtensionPart#xml"><a href="Numbas.parts.ExtensionPart.html#xml">Numbas.parts.ExtensionPart#xml</a></li>
 		
+			<li class="search-result" data-longname="Numbas.parts.feedbackmessage"><a href="Numbas.parts.html#.feedbackmessage">Numbas.parts.feedbackmessage</a></li>
+		
 			<li class="search-result" data-longname="Numbas.parts.GapFillPart"><a href="Numbas.parts.GapFillPart.html">Numbas.parts.GapFillPart</a></li>
 		
 			<li class="search-result" data-longname="Numbas.parts.GapFillPart#addCredit"><a href="Numbas.parts.GapFillPart.html#addCredit">Numbas.parts.GapFillPart#addCredit</a></li>
@@ -2164,6 +2219,8 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 			<li class="search-result" data-longname="Numbas.parts.JMEPart#warnings"><a href="Numbas.parts.JMEPart.html#warnings">Numbas.parts.JMEPart#warnings</a></li>
 		
 			<li class="search-result" data-longname="Numbas.parts.JMEPart#xml"><a href="Numbas.parts.JMEPart.html#xml">Numbas.parts.JMEPart#xml</a></li>
+		
+			<li class="search-result" data-longname="Numbas.parts.marking_results"><a href="Numbas.parts.html#.marking_results">Numbas.parts.marking_results</a></li>
 		
 			<li class="search-result" data-longname="Numbas.parts.MatrixEntryPart"><a href="Numbas.parts.MatrixEntryPart.html">Numbas.parts.MatrixEntryPart</a></li>
 		
@@ -2463,6 +2520,8 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 		
 			<li class="search-result" data-longname="Numbas.parts.NumberEntryPart#studentAnswer"><a href="Numbas.parts.NumberEntryPart.html#studentAnswer">Numbas.parts.NumberEntryPart#studentAnswer</a></li>
 		
+			<li class="search-result" data-longname="Numbas.parts.NumberEntryPart#studentAnswerAsFloat"><a href="Numbas.parts.NumberEntryPart.html#studentAnswerAsFloat">Numbas.parts.NumberEntryPart#studentAnswerAsFloat</a></li>
+		
 			<li class="search-result" data-longname="Numbas.parts.NumberEntryPart#studentAnswerAsJME"><a href="Numbas.parts.NumberEntryPart.html#studentAnswerAsJME">Numbas.parts.NumberEntryPart#studentAnswerAsJME</a></li>
 		
 			<li class="search-result" data-longname="Numbas.parts.NumberEntryPart#submit"><a href="Numbas.parts.NumberEntryPart.html#submit">Numbas.parts.NumberEntryPart#submit</a></li>
@@ -2721,6 +2780,8 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 		
 			<li class="search-result" data-longname="Numbas.Question#runPreamble"><a href="Numbas.Question.html#runPreamble">Numbas.Question#runPreamble</a></li>
 		
+			<li class="search-result" data-longname="Numbas.Question#scope"><a href="Numbas.Question.html#scope">Numbas.Question#scope</a></li>
+		
 			<li class="search-result" data-longname="Numbas.Question#score"><a href="Numbas.Question.html#score">Numbas.Question#score</a></li>
 		
 			<li class="search-result" data-longname="Numbas.Question#submit"><a href="Numbas.Question.html#submit">Numbas.Question#submit</a></li>
@@ -2736,6 +2797,12 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 			<li class="search-result" data-longname="Numbas.Question#visited"><a href="Numbas.Question.html#visited">Numbas.Question#visited</a></li>
 		
 			<li class="search-result" data-longname="Numbas.Question#xml"><a href="Numbas.Question.html#xml">Numbas.Question#xml</a></li>
+		
+			<li class="search-result" data-longname="Numbas.QuestionGroup"><a href="Numbas.QuestionGroup.html">Numbas.QuestionGroup</a></li>
+		
+			<li class="search-result" data-longname="Numbas.QuestionGroup#chooseQuestionSubset"><a href="Numbas.QuestionGroup.html#chooseQuestionSubset">Numbas.QuestionGroup#chooseQuestionSubset</a></li>
+		
+			<li class="search-result" data-longname="Numbas.QuestionGroup#settings"><a href="Numbas.QuestionGroup.html#settings">Numbas.QuestionGroup#settings</a></li>
 		
 			<li class="search-result" data-longname="Numbas.queueScript"><a href="Numbas.html#.queueScript">Numbas.queueScript</a></li>
 		
@@ -2756,6 +2823,8 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 			<li class="search-result" data-longname="Numbas.schedule.lifts"><a href="Numbas.schedule.html#.lifts">Numbas.schedule.lifts</a></li>
 		
 			<li class="search-result" data-longname="Numbas.schedule.pop"><a href="Numbas.schedule.html#.pop">Numbas.schedule.pop</a></li>
+		
+			<li class="search-result" data-longname="Numbas.schedule.task_object"><a href="Numbas.schedule.html#.task_object">Numbas.schedule.task_object</a></li>
 		
 			<li class="search-result" data-longname="Numbas.schedule.total"><a href="Numbas.schedule.html#.total">Numbas.schedule.total</a></li>
 		
@@ -2957,6 +3026,8 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 		
 			<li class="search-result" data-longname="Numbas.util.capitalise"><a href="Numbas.util.html#.capitalise">Numbas.util.capitalise</a></li>
 		
+			<li class="search-result" data-longname="Numbas.util.cleanNumber"><a href="Numbas.util.html#.cleanNumber">Numbas.util.cleanNumber</a></li>
+		
 			<li class="search-result" data-longname="Numbas.util.combinations"><a href="Numbas.util.html#.combinations">Numbas.util.combinations</a></li>
 		
 			<li class="search-result" data-longname="Numbas.util.combinations_with_replacement"><a href="Numbas.util.html#.combinations_with_replacement">Numbas.util.combinations_with_replacement</a></li>
@@ -3009,7 +3080,11 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 		
 			<li class="search-result" data-longname="Numbas.util.nicePartName"><a href="Numbas.util.html#.nicePartName">Numbas.util.nicePartName</a></li>
 		
+			<li class="search-result" data-longname="Numbas.util.numberNotationStyles"><a href="Numbas.util.html#.numberNotationStyles">Numbas.util.numberNotationStyles</a></li>
+		
 			<li class="search-result" data-longname="Numbas.util.parseBool"><a href="Numbas.util.html#.parseBool">Numbas.util.parseBool</a></li>
+		
+			<li class="search-result" data-longname="Numbas.util.parseFraction"><a href="Numbas.util.html#.parseFraction">Numbas.util.parseFraction</a></li>
 		
 			<li class="search-result" data-longname="Numbas.util.parseNumber"><a href="Numbas.util.html#.parseNumber">Numbas.util.parseNumber</a></li>
 		
@@ -3024,6 +3099,8 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 			<li class="search-result" data-longname="Numbas.util.sortBy"><a href="Numbas.util.html#.sortBy">Numbas.util.sortBy</a></li>
 		
 			<li class="search-result" data-longname="Numbas.util.splitbrackets"><a href="Numbas.util.html#.splitbrackets">Numbas.util.splitbrackets</a></li>
+		
+			<li class="search-result" data-longname="Numbas.util.standardNumberFormatter"><a href="Numbas.util.html#.standardNumberFormatter">Numbas.util.standardNumberFormatter</a></li>
 		
 			<li class="search-result" data-longname="Numbas.util.unPercent"><a href="Numbas.util.html#.unPercent">Numbas.util.unPercent</a></li>
 		
@@ -3093,6 +3170,8 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 		
 			<li class="search-result" data-longname="Numbas.xml.tryGetAttribute"><a href="Numbas.xml.html#.tryGetAttribute">Numbas.xml.tryGetAttribute</a></li>
 		
+			<li class="search-result" data-longname="Numbas.xml.tryGetAttribute_options"><a href="Numbas.xml.html#.tryGetAttribute_options">Numbas.xml.tryGetAttribute_options</a></li>
+		
 			<li class="search-result" data-longname="package:undefined"><a href="global.html#package:">package:undefined</a></li>
 		
 			<li class="search-result" data-longname="partpath"><a href="global.html#partpath">partpath</a></li>
@@ -3100,6 +3179,8 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 			<li class="search-result" data-longname="range"><a href="global.html#range">range</a></li>
 		
 			<li class="search-result" data-longname="RequireScript"><a href="RequireScript.html">RequireScript</a></li>
+		
+			<li class="search-result" data-longname="ruleset_flags"><a href="global.html#ruleset_flags">ruleset_flags</a></li>
 		
 			<li class="search-result" data-longname="runtime/scripts/controls.js"><a href="global.html#runtime/scripts/controls.js">runtime/scripts/controls.js</a></li>
 		
@@ -3149,7 +3230,11 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 		
 			<li class="search-result" data-longname="runtime/scripts/xml.js"><a href="global.html#runtime/scripts/xml.js">runtime/scripts/xml.js</a></li>
 		
+			<li class="search-result" data-longname="set"><a href="global.html#set">set</a></li>
+		
 			<li class="search-result" data-longname="TeX"><a href="global.html#TeX">TeX</a></li>
+		
+			<li class="search-result" data-longname="texify_settings"><a href="global.html#texify_settings">texify_settings</a></li>
 		
 			<li class="search-result" data-longname="themes/default/files/scripts/display.js"><a href="global.html#themes/default/files/scripts/display.js">themes/default/files/scripts/display.js</a></li>
 		
@@ -3157,16 +3242,42 @@ ExamEvent.prototype = /** @lends Numbas.ExamEvent.prototype */ {
 		
 			<li class="search-result" data-longname="vector"><a href="global.html#vector">vector</a></li>
 		
+			<li class="search-result" data-longname="Number"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></li>
+		
+			<li class="search-result" data-longname="String"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></li>
+		
+			<li class="search-result" data-longname="RegExp"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp">RegExp</a></li>
+		
+			<li class="search-result" data-longname="Date"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date">Date</a></li>
+		
+			<li class="search-result" data-longname="Element"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element">Element</a></li>
+		
+			<li class="search-result" data-longname="observable"><a href="http://knockoutjs.com/documentation/observables.html">observable</a></li>
+		
+			<li class="search-result" data-longname="jQuery"><a href="http://api.jquery.com/Types/#jQuery">jQuery</a></li>
+		
+			<li class="search-result" data-longname="Error"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a></li>
+		
+			<li class="search-result" data-longname="Boolean"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></li>
+		
+			<li class="search-result" data-longname="Array"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></li>
+		
+			<li class="search-result" data-longname="function"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">function</a></li>
+		
+			<li class="search-result" data-longname="XMLDocument"><a href="https://developer.mozilla.org/en/docs/Web/API/XMLDocument">XMLDocument</a></li>
+		
+			<li class="search-result" data-longname="Object"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></li>
+		
 	</ul>
 </div>
-<div class="main-nav-item"><h3>Classes</h3><ul><li><a href="Numbas.storage.BlankStorage.html">BlankStorage</a></li><li><a href="Numbas.Error.html">Error</a></li><li><a href="Numbas.Exam.html">Exam</a></li><li><a href="Numbas.display.ExamDisplay.html">ExamDisplay</a></li><li><a href="Numbas.ExamEvent.html">ExamEvent</a></li><li><a href="Numbas.parts.ExtensionPart.html">ExtensionPart</a></li><li><a href="Numbas.display.ExtensionPartDisplay.html">ExtensionPartDisplay</a></li><li><a href="Numbas.jme.funcObj.html">funcObj</a></li><li><a href="Numbas.parts.GapFillPart.html">GapFillPart</a></li><li><a href="Numbas.display.GapFillPartDisplay.html">GapFillPartDisplay</a></li><li><a href="Numbas.parts.InformationPart.html">InformationPart</a></li><li><a href="Numbas.display.InformationPartDisplay.html">InformationPartDisplay</a></li><li><a href="Numbas.parts.JMEPart.html">JMEPart</a></li><li><a href="Numbas.display.JMEPartDisplay.html">JMEPartDisplay</a></li><li><a href="Numbas.parts.MatrixEntryPart.html">MatrixEntryPart</a></li><li><a href="Numbas.display.MatrixEntryPartDisplay.html">MatrixEntryPartDisplay</a></li><li><a href="Numbas.parts.MultipleResponsePart.html">MultipleResponsePart</a></li><li><a href="Numbas.display.MultipleResponsePartDisplay.html">MultipleResponsePartDisplay</a></li><li><a href="Numbas.parts.NumberEntryPart.html">NumberEntryPart</a></li><li><a href="Numbas.display.NumberEntryPartDisplay.html">NumberEntryPartDisplay</a></li><li><a href="Numbas.parts.Part.html">Part</a></li><li><a href="Numbas.display.PartDisplay.html">PartDisplay</a></li><li><a href="Numbas.parts.PatternMatchPart.html">PatternMatchPart</a></li><li><a href="Numbas.display.PatternMatchPartDisplay.html">PatternMatchPartDisplay</a></li><li><a href="Numbas.Question.html">Question</a></li><li><a href="Numbas.display.QuestionDisplay.html">QuestionDisplay</a></li><li><a href="RequireScript.html">RequireScript</a></li><li><a href="Numbas.jme.display.Rule.html">Rule</a></li><li><a href="Numbas.jme.Ruleset.html">Ruleset</a></li><li><a href="Numbas.jme.Scope.html">Scope</a></li><li><a href="Numbas.storage.SCORMStorage.html">SCORMStorage</a></li><li><a href="Numbas.jme.types.TBool.html">TBool</a></li><li><a href="Numbas.jme.types.TFunc.html">TFunc</a></li><li><a href="Numbas.jme.types.THTML.html">THTML</a></li><li><a href="Numbas.jme.types.TList.html">TList</a></li><li><a href="Numbas.jme.types.TMatrix.html">TMatrix</a></li><li><a href="Numbas.jme.types.TName.html">TName</a></li><li><a href="Numbas.jme.types.TNum.html">TNum</a></li><li><a href="Numbas.jme.types.TOp.html">TOp</a></li><li><a href="Numbas.jme.types.TPunc.html">TPunc</a></li><li><a href="Numbas.jme.types.TRange.html">TRange</a></li><li><a href="Numbas.jme.types.TSet.html">TSet</a></li><li><a href="Numbas.jme.types.TString.html">TString</a></li><li><a href="Numbas.jme.types.TVector.html">TVector</a></li></ul></div><div class="main-nav-item"><h3>Namespaces</h3><ul><li><a href="Numbas.controls.html">controls</a></li><li><a href="Numbas.display.html">display</a></li><li><a href="Numbas.jme.display.html">display</a></li><li><a href="Numbas.jme.html">jme</a></li><li><a href="Numbas.math.html">math</a></li><li><a href="Numbas.matrixmath.html">matrixmath</a></li><li><a href="Numbas.html">Numbas</a></li><li><a href="Numbas.parts.html">parts</a></li><li><a href="Numbas.schedule.html">schedule</a></li><li><a href="Numbas.setmath.html">setmath</a></li><li><a href="Numbas.storage.html">storage</a></li><li><a href="Numbas.timing.html">timing</a></li><li><a href="Numbas.jme.types.html">types</a></li><li><a href="Numbas.util.html">util</a></li><li><a href="Numbas.jme.variables.html">variables</a></li><li><a href="Numbas.vectormath.html">vectormath</a></li><li><a href="Numbas.xml.html">xml</a></li></ul></div><h3><a href="global.html">Global variables</a></h3>
+<div class="main-nav-item"><h3>Classes</h3><ul><li><a href="Numbas.storage.BlankStorage.html">BlankStorage</a></li><li><a href="Numbas.Error.html">Error</a></li><li><a href="Numbas.Exam.html">Exam</a></li><li><a href="Numbas.display.ExamDisplay.html">ExamDisplay</a></li><li><a href="Numbas.ExamEvent.html">ExamEvent</a></li><li><a href="Numbas.parts.ExtensionPart.html">ExtensionPart</a></li><li><a href="Numbas.jme.funcObj.html">funcObj</a></li><li><a href="Numbas.parts.GapFillPart.html">GapFillPart</a></li><li><a href="Numbas.parts.InformationPart.html">InformationPart</a></li><li><a href="Numbas.parts.JMEPart.html">JMEPart</a></li><li><a href="Numbas.parts.MatrixEntryPart.html">MatrixEntryPart</a></li><li><a href="Numbas.parts.MultipleResponsePart.html">MultipleResponsePart</a></li><li><a href="Numbas.parts.NumberEntryPart.html">NumberEntryPart</a></li><li><a href="Numbas.parts.Part.html">Part</a></li><li><a href="Numbas.display.PartDisplay.html">PartDisplay</a></li><li><a href="Numbas.parts.PatternMatchPart.html">PatternMatchPart</a></li><li><a href="Numbas.Question.html">Question</a></li><li><a href="Numbas.display.QuestionDisplay.html">QuestionDisplay</a></li><li><a href="Numbas.QuestionGroup.html">QuestionGroup</a></li><li><a href="RequireScript.html">RequireScript</a></li><li><a href="Numbas.jme.display.Rule.html">Rule</a></li><li><a href="Numbas.jme.Ruleset.html">Ruleset</a></li><li><a href="Numbas.jme.Scope.html">Scope</a></li><li><a href="Numbas.storage.SCORMStorage.html">SCORMStorage</a></li><li><a href="Numbas.jme.types.TBool.html">TBool</a></li><li><a href="Numbas.jme.types.TDict.html">TDict</a></li><li><a href="Numbas.jme.types.TFunc.html">TFunc</a></li><li><a href="Numbas.jme.types.THTML.html">THTML</a></li><li><a href="Numbas.jme.types.TKeyPair.html">TKeyPair</a></li><li><a href="Numbas.jme.types.TList.html">TList</a></li><li><a href="Numbas.jme.types.TMatrix.html">TMatrix</a></li><li><a href="Numbas.jme.types.TName.html">TName</a></li><li><a href="Numbas.jme.types.TNum.html">TNum</a></li><li><a href="Numbas.jme.types.TOp.html">TOp</a></li><li><a href="Numbas.jme.types.TPunc.html">TPunc</a></li><li><a href="Numbas.jme.types.TRange.html">TRange</a></li><li><a href="Numbas.jme.types.TSet.html">TSet</a></li><li><a href="Numbas.jme.types.TString.html">TString</a></li><li><a href="Numbas.jme.types.TVector.html">TVector</a></li></ul></div><div class="main-nav-item"><h3>Namespaces</h3><ul><li><a href="Numbas.controls.html">controls</a></li><li><a href="Numbas.display.html">display</a></li><li><a href="Numbas.jme.display.html">display</a></li><li><a href="Numbas.jme.html">jme</a></li><li><a href="Numbas.math.html">math</a></li><li><a href="Numbas.matrixmath.html">matrixmath</a></li><li><a href="Numbas.html">Numbas</a></li><li><a href="Numbas.parts.html">parts</a></li><li><a href="Numbas.schedule.html">schedule</a></li><li><a href="Numbas.setmath.html">setmath</a></li><li><a href="Numbas.storage.html">storage</a></li><li><a href="Numbas.timing.html">timing</a></li><li><a href="Numbas.jme.types.html">types</a></li><li><a href="Numbas.util.html">util</a></li><li><a href="Numbas.jme.variables.html">variables</a></li><li><a href="Numbas.vectormath.html">vectormath</a></li><li><a href="Numbas.xml.html">xml</a></li></ul></div><h3><a href="global.html">Global variables</a></h3>
 	</nav>
 </div>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.0-dev</a> on Wed Nov 09 2016 13:50:49 GMT+0000 (GMT Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.0-dev</a> on Wed May 03 2017 10:59:24 GMT+0100 (GMT Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

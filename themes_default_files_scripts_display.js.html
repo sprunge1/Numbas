@@ -31,7 +31,7 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/*
-Copyright 2011-14 Newcastle University
+Copyright 2011-16 Newcastle University
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -48,2506 +48,8 @@ Copyright 2011-14 Newcastle University
 
 /** @file Display code. Provides {@link Numbas.display} */
 
-Numbas.queueScript('display',['controls','math','xml','util','timing','jme','jme-display'],function() {
-	var util = Numbas.util;
-	var jme = Numbas.jme;
 
-	var MathJaxQueue = MathJax.Callback.Queue(MathJax.Hub.Register.StartupHook('End',{}));
-
-MathJax.Hub.Register.MessageHook("Math Processing Error",function(message){
-	throw(new Numbas.Error(message[2].message));
-});
-
-	MathJax.Hub.Register.StartupHook("TeX Jax Ready",function () {
-
-		var TEX = MathJax.InputJax.TeX;
-		var currentScope = null;
-
-		TEX.prefilterHooks.Add(function(data) {
-			currentScope = $(data.script).parents('.jme-scope').first().data('jme-scope');
-		});
-
-		TEX.Definitions.Add({macros: {
-			'var': 'JMEvar', 
-			'simplify': 'JMEsimplify'
-		}});
-
-		TEX.Parse.Augment({
-			JMEvar: function(name) {
-				var settings_string = this.GetBrackets(name);
-				var settings = {};
-				if(settings_string!==undefined) {
-					settings_string.split(/\s*,\s*/g).forEach(function(v) {
-						var setting = v.trim().toLowerCase();
-						settings[setting] = true;
-					});
-				}
-				var expr = this.GetArgument(name);
-
-				var scope = currentScope;
-
-				try {
-					var v = jme.evaluate(jme.compile(expr,scope),scope);
-
-					var tex = jme.display.texify({tok: v},settings);
-				}catch(e) {
-					throw(new Numbas.Error('mathjax.math processing error',e.message,expr));
-				}
-				var mml = TEX.Parse(tex,this.stack.env).mml();
-
-				this.Push(mml);
-			},
-
-			JMEsimplify: function(name) {
-				var rules = this.GetBrackets(name);
-				if(rules===undefined) {
-					rules = 'all';
-				}
-				var expr = this.GetArgument(name);
-
-				var scope = currentScope;
-				expr = jme.subvars(expr,scope);
-
-				var tex = jme.display.exprToLaTeX(expr,rules,scope);
-				var mml = TEX.Parse(tex,this.stack.env).mml();
-
-				this.Push(mml);
-			}
-		})
-	});
-
-function resizeF() {
-	var w = $.textMetrics(this).width;
-	$(this).width(Math.max(w+30,60)+'px');
-};
-
-ko.bindingHandlers.horizontalSlideVisible = {
-	init: function(element, valueAccessor) {
-		var containerWidth = $(element).width();
-		ko.utils.domData.set(element,'originalWidth',containerWidth);
-		$(element).css({display:'inline-block', 'overflow-x': 'hidden'});
-
-		var buttonWidth = $(element).children().outerWidth();
-		$(element).children().css({width:buttonWidth});
-	},
-	update: function(element, valueAccessor) {
-		var value = ko.utils.unwrapObservable(valueAccessor());
-		var originalWidth = ko.utils.domData.get(element,'originalWidth');
-
-		$(element).animate({width: value ? originalWidth : 0}, 1000);
-	}
-}
-
-ko.bindingHandlers.niceNumber = {
-	update: function(element,valueAccessor) {
-		var n = ko.utils.unwrapObservable(valueAccessor());
-		$(element).text(Numbas.math.niceNumber(n));
-	}
-}
-
-ko.bindingHandlers.autosize = {
-	init: function(element) {
-		//resize text inputs to just fit their contents
-		$(element).keyup(resizeF).keydown(resizeF).change(resizeF).each(resizeF);
-		resizeF.apply(element);
-	},
-	update: function(element) {
-		resizeF.apply(element);
-	}
-}
-
-ko.bindingHandlers.test = {
-	update: function(element,valueAccessor) {
-		console.log(ko.utils.unwrapObservable(valueAccessor()));
-	}
-}
-ko.bindingHandlers.dom = {
-	update: function(element,valueAccessor) {
-		var html = ko.utils.unwrapObservable(valueAccessor());
-		$(element).children().remove();
-		$(element).append(html);
-	}
-}
-
-ko.bindingHandlers.slideVisible = {
-	init: function(element,valueAccessor) {
-		var v = ko.utils.unwrapObservable(valueAccessor());
-		$(element).toggle(v);
-	},
-		
-	update: function(element,valueAccessor) {
-		var v = ko.utils.unwrapObservable(valueAccessor());
-		if(v)
-			$(element).stop().slideDown('fast');
-		else
-			$(element).stop().slideUp('fast');
-	}
-}
-
-ko.bindingHandlers.fadeVisible = {
-	init: function(element,valueAccessor) {
-		var v = ko.utils.unwrapObservable(valueAccessor());
-		$(element).toggle(v);
-	},
-		
-	update: function(element,valueAccessor) {
-		var v = ko.utils.unwrapObservable(valueAccessor());
-		if(v)
-			$(element).stop().fadeIn();
-		else
-			$(element).stop().fadeOut();
-	}
-}
-
-ko.bindingHandlers.latex = {
-	update: function(element,valueAccessor) {
-		ko.bindingHandlers.html.update.apply(this,arguments);
-		Numbas.display.typeset(element);
-	}
-}
-
-ko.bindingHandlers.maths = {
-	update: function(element,valueAccessor) {
-		var val = ko.utils.unwrapObservable(valueAccessor());
-		$(element).html('&lt;script type="math/tex">'+val+'&lt;/script>');
-		Numbas.display.typeset(element);
-	}
-}
-
-ko.bindingHandlers.typeset = {
-	update: function(element, valueAccessor) {
-		ko.utils.unwrapObservable(valueAccessor());
-		Numbas.display.typeset(element);
-	}
-}
-
-ko.bindingHandlers.pulse = {
-	init: function() {
-	},
-	update: function(element,valueAccessor) {
-		if(valueAccessor()()) {
-			$(element).stop(true).animate({opacity:0},200).animate({opacity:1},200);
-		}
-	}
-};
-
-ko.bindingHandlers.carousel = {
-	update: function() {
-
-	}
-}
-
-ko.bindingHandlers.hover = {
-	init: function(element,valueAccessor) {
-		var val = valueAccessor();
-		val(false);
-		$(element).hover(
-			function() {
-				val(true);
-			},
-			function() {
-				val(false)
-			}
-		);
-	}
-}
-
-ko.bindingHandlers.realVisible = ko.bindingHandlers.visible;
-
-ko.bindingHandlers.visible = {
-	init: function(element,valueAccessor) {
-		$(element).css('display','');
-		ko.utils.domData.set(element,'tabindex',$(element).attr('tabindex'));
-	},
-	update: function(element,valueAccessor) {
-		var val = ko.unwrap(valueAccessor());
-		$(element).toggleClass('invisible',!val);
-		$(element).attr('disabled',!val);
-		if(val) {
-			$(element).attr('tabindex',ko.utils.domData.get(element,'tabindex'));
-		}
-		else {
-			$(element).removeAttr('tabindex');
-		}
-	}
-}
-
-ko.bindingHandlers.visibleIf = {
-	init: function(element,valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-		var val = ko.utils.unwrapObservable(valueAccessor());
-		if(val &amp;&amp; !ko.utils.domData.get(element,'visible-if-happened')) {
-			ko.applyBindingsToDescendants(bindingContext,element);
-			ko.utils.domData.set(element,'visible-if-happened',true);
-		}
-		$(element).toggleClass('invisible',!val);
-		return {controlsDescendantBindings: true};
-	},
-	update:function(element,valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-		var val = ko.utils.unwrapObservable(valueAccessor());
-		if(val &amp;&amp; !ko.utils.domData.get(element,'visible-if-happened')) {
-			ko.applyBindingsToDescendants(bindingContext,element);
-			ko.utils.domData.set(element,'visible-if-happened',true);
-		}
-		$(element).toggleClass('invisible',!val);
-	}
-}
-
-ko.bindingHandlers.stopbinding = {
-	init: function() {
-		return {controlsDescendantBindings: true};
-	}
-}
-
-ko.components.register('matrix-input',{
-	viewModel: function(params) {
-		this.allowResize = params.allowResize ? params.allowResize : ko.observable(false);
-		if(typeof params.rows=='function') {
-			this.numRows = params.rows;
-		} else {
-			this.numRows = ko.observable(params.rows || 2);
-		}
-		if(typeof params.columns=='function') {
-			this.numColumns = params.columns;
-		} else {
-			this.numColumns = ko.observable(params.columns || 2);
-		}
-
-		var v = params.value();
-		this.numRows(v.length || 1);
-		this.numColumns(v.length ? v[0].length : 1);
-		this.value = ko.observableArray(v.map(function(r){return ko.observableArray(r.map(function(c){return {cell:ko.observable(c)}}))}));
-
-		this.disable = params.disable || false;
-
-		this.keydown = function(obj,e) {
-			this.oldPos = e.target.selectionStart;
-			return true;
-		}
-
-
-		this.moveArrow = function(obj,e) {
-			var cell = $(e.target).parent('td');
-			var selectionStart = e.target.selectionStart;
-			switch(e.which) {
-			case 39:
-				if(e.target.selectionStart == this.oldPos &amp;&amp; e.target.selectionStart==e.target.selectionEnd &amp;&amp; e.target.selectionEnd==e.target.value.length) {
-					cell.next().find('input').focus();
-				}
-				break;
-			case 37:
-				if(e.target.selectionStart == this.oldPos &amp;&amp; e.target.selectionStart==e.target.selectionEnd &amp;&amp; e.target.selectionEnd==0) {
-					cell.prev().find('input').focus();
-				}
-				break;
-			case 38:
-				var e = cell.parents('tr').prev().children().eq(cell.index()).find('input');
-				if(e.length) {
-					e.focus();
-					e[0].setSelectionRange(this.oldPos,this.oldPos);
-				}
-				break;
-			case 40:
-				var e = cell.parents('tr').next().children().eq(cell.index()).find('input');
-				if(e.length) {
-					e.focus();
-					e[0].setSelectionRange(this.oldPos,this.oldPos);
-				}
-				break;
-			}
-			return false;
-		}
-		
-		this.update = function() {
-			// update value when number of rows or columns changes
-			var numRows = parseInt(this.numRows());
-			var numColumns = parseInt(this.numColumns());
-			
-			var value = this.value();
-			value.splice(numRows,value.length-numRows);
-			for(var i=0;i&lt;numRows;i++) {
-				var row;
-				if(value.length&lt;=i) {
-					row = [];
-					value.push(ko.observableArray(row));
-				} else {
-					row = value[i]();
-				}
-				row.splice(numColumns,row.length-numColumns);
-				
-				for(var j=0;j&lt;numColumns;j++) {
-					var cell;
-					if(row.length&lt;=j) {
-						cell = ko.observable('');
-						row.push({cell:cell});
-					} else {
-						cell = row[j];
-					}
-				}
-				value[i](row);
-			}
-			this.value(value);
-		}
-
-		ko.computed(this.update,this);
-		
-		// update model with value
-		ko.computed(function() {
-			var v = params.value();
-			var ov = this.value();
-			this.numRows(v.length);
-			this.numColumns(v[0] ? v[0].length : 0);
-			for(var i=0;i&lt;v.length;i++) {
-				var row = v[i];
-				for(var j=0;j&lt;row.length;j++) {
-					var cell = row[j];
-					if(i&lt;ov.length &amp;&amp; j&lt;ov[i]().length) {
-						ov[i]()[j].cell(cell);
-					}
-				}
-			}
-		},this);
-		
-		var firstGo = true;
-		//update value with model
-		ko.computed(function() {
-			var v = this.value().map(function(row,i){
-				return row().map(function(cell,j){return cell.cell()})
-			})
-			if(firstGo) {
-				firstGo = false;
-				return;
-			}
-			params.value(v);
-		},this)
-	},
-	template: 
-	 '&lt;div class="matrix-input">'
-	+'	&lt;!-- ko if: allowResize -->&lt;div class="matrix-size">'
-	+'		&lt;label class="num-rows">Rows: &lt;input type="number" min="1" data-bind="value: numRows, autosize: true, disable: disable"/>&lt;/label>'
-	+'		&lt;label class="num-columns">Columns: &lt;input type="number" min="1" data-bind="value: numColumns, autosize: true, disable: disable"/>&lt;/label>'
-	+'	&lt;/div>&lt;!-- /ko -->'
-	+'	&lt;div class="matrix-wrapper">'
-	+'		&lt;span class="left-bracket">&lt;/span>'
-	+'		&lt;table class="matrix">'
-	+'			&lt;tbody data-bind="foreach: value">'
-	+'				&lt;tr data-bind="foreach: $data">'
-	+'					&lt;td class="cell">&lt;input data-bind="value: cell, valueUpdate: \'afterkeydown\', autosize: true, disable: $parents[1].disable, event: {keydown: $parents[1].keydown, keyup: $parents[1].moveArrow}">&lt;/td>'
-	+'				&lt;/tr>'
-	+'			&lt;/tbody>'
-	+'		&lt;/table>'
-	+'		&lt;span class="right-bracket">&lt;/span>'
-	+'	&lt;/div>'
-	+'&lt;/div>'
-	}
-)
-
-/** @namespace Numbas.display */
-
-var display = Numbas.display = /** @lends Numbas.display */ {
-
-	/** Localise strings in page HTML - for tags with an attribute `data-localise`, run that attribute through R.js to localise it, and replace the tag's HTML with the result
-	 */
-	localisePage: function() {
-		$('[data-localise]').each(function() {
-			var localString = R($(this).data('localise'));
-			$(this).html(localString);
-		})
-	},
-
-	/** Update the progress bar when loading
-	 */
-	showLoadProgress: function()
-	{
-		var p= 100 * Numbas.schedule.completed / Numbas.schedule.total;
-		$('#loading .progress-bar').width(p+'%');
-	},
-
-	/** Initialise the display. Called as soon as the page loads.
-	 */
-	init: function()
-	{
-		//hide the various content-display bits
-		$('.mainDisplay > *').hide();
-		//show the page;
-		$('#loading').hide();
-		$('#everything').show();
-
-		ko.applyBindings(Numbas.exam.display);
-		for(var i=0;i&lt;Numbas.exam.questionList.length;i++) {
-			Numbas.exam.display.applyQuestionBindings(Numbas.exam.questionList[i]);
-		}
-
-		$(document).keydown( function(e)
-		{
-			if(!Numbas.exam.inProgress) { return; }
-
-			if($('input:focus').length || $('#jqibox').is(':visible'))
-				return;
-			
-			switch(e.keyCode)
-			{
-			case 37:
-				Numbas.controls.previousQuestion();
-				break;
-			case 39:
-				Numbas.controls.nextQuestion();
-				break;
-			}
-		});
-		Numbas.exam.display.questions().map(function(q) {
-			q.init();
-		});
-
-		// hide the side nav when you click a question selector
-		$('.question-nav').on('click','#navMenu.in .questionSelector a',function() {
-		});
-
-		// bind buttons in the modals
-		$('.modal button.ok').on('click',function() {
-			display.modal.ok();
-			display.modal.ok = display.modal.cancel = function() {};
-		})
-		$('#confirm-modal,#alert-modal').on('shown.bs.modal',function() {
-			$(this).find('.modal-footer .ok').focus();
-		});
-		$('.modal button.cancel').on('click',function() {
-			display.modal.cancel();
-			display.modal.ok = display.modal.cancel = function() {};
-		})
-	},
-
-	/** Does an input element currently have focus?
-	 * @type {boolean}
-	 */
-	inInput: false,
-
-	//alert / confirm boxes
-	//
-
-	/** Callback functions for the modals
-	 * @type {object}
-	 */
-	modal: {
-		ok: function() {},
-		cancel: function() {}
-	},
-
-	/** Show an alert dialog
-	 * @param {string} msg - message to show the user
-	 * @param {function} fnOK - callback when OK is clicked
-	 */
-	showAlert: function(msg,fnOK) {
-		fnOK = fnOK || function() {};
-		this.modal.ok = fnOK;
-		$('#alert-modal .modal-body').html(msg);
-		$('#alert-modal').modal('show');
-		$('#alert-modal .modal-footer .ok').focus();
-	},
-
-	/** Show a confirmation dialog box
-	 * @param {string} msg - message to show the user
-	 * @param {function} fnOK - callback if OK is clicked
-	 * @param {function} fnCancel - callback if cancelled
-	 */
-	showConfirm: function(msg,fnOK,fnCancel) {
-		this.modal.ok = fnOK || function(){};
-		this.modal.cancel = fnCancel || function(){};
-		$('#confirm-modal .modal-body').html(msg);
-		$('#confirm-modal').modal('show');
-	},
-
-	/** Make MathJax typeset any maths in the selector
-	 * @param {jQuery_selection} [selector] - elements to typeset. If not given, the whole page is typeset
-	 * @param {function} callback - function to call when typesetting is finished
-	 */
-	typeset: function(selector,callback)
-	{
-		try
-		{
-			if(!selector)
-				selector = $('body');
-
-			$(selector).each(function(i,elem) {
-				MathJaxQueue.Push(['Typeset',MathJax.Hub,elem]);
-			});
-			if(callback)
-				MathJaxQueue.Push(callback);
-		}
-		catch(e)
-		{
-			if(MathJax===undefined &amp;&amp; !display.failedMathJax)
-			{
-				display.failedMathJax = true;
-				display.showAlert("Failed to load MathJax. Maths will not be typeset properly.\n\nIf you are the exam author, please check that you are connected to the internet, or modify the theme to load a local copy of MathJax. Instructions for doing this are given in the manual.");
-			}
-			else
-			{
-				Numbas.showError(e);
-			}
-		};
-	},
-
-	/** The Numbas exam has failed so much it can't continue - show an error message and the error
-	 * @param {Error} e
-	 */
-	die: function(e) {
-		var message = (e || e.message)+'';
-		var stack = e.stack.replace(/\n/g,'&lt;br>\n');
-		Numbas.debug(message+' &lt;br> '+stack);
-
-		//hide all the non-error stuff
-		$('.mainDisplay > *,#loading,#everything').hide();
-
-		//show the error stuff
-		$('#die').show();
-
-		$('#die .error .message').html(message);
-		$('#die .error .stack').html(stack);
-	}
-
-};
-
-/** Display properties of the {@link Numbas.Exam} object.
- * @name ExamDisplay
- * @memberof Numbas.display
- * @constructor
- * @param {Numbas.Exam} e - associated exam
- * 
- */
-display.ExamDisplay = function(e) 
-{
-	this.exam=e;
-
-	/** The exam's mode ({@link Numbas.Exam#mode})
-	 * @member {observable|string} mode
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	this.mode = ko.observable(e.mode);
-	
-	/** Is {@link Numbas.store} currently saving?
-	 * @member {observable|boolean} saving
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	this.saving = ko.observable(false);
-
-	/** The name of the currently displayed info page
-	 * @member {observable|string} infoPage
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	this.infoPage = ko.observable(null);
-
-	/** The current question ({@link Numbas.Exam#currentQuestion})
-	 * @member {observable|Numbas.Question} currentQuestion
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	this.currentQuestion = ko.observable(null);
-
-	/** What kind of view are we in at the moment? 'infopage' or 'question'
-	 * @member {observable|string} viewType
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	this.viewType = ko.computed(function() {
-		if(this.infoPage()) {
-			return 'infopage';
-		} else if(this.currentQuestion()) {
-			return 'question';
-		}
-	},this);
-
-	/** The number of the current question
-	 * @member {observable|number} currentQuestionNumber 
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	this.currentQuestionNumber = ko.computed(function() {
-		var q = this.currentQuestion();
-		if(q)
-			return q.question.number;
-		else
-			return null;
-	},this);
-
-	/** All the exam's question display objects
-	 * @member {observable|Numbas.display.QuestionDisplay[]} questions
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	this.questions = ko.observableArray([]);
-
-	/** Can the student go back to the previous question? (False if the current question is the first one
-	 * @member {observable|boolean} canReverse
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	this.canReverse = ko.computed(function() {
-		return this.exam.settings.navigateReverse &amp;&amp; this.currentQuestionNumber()>0;
-	},this);
-	
-	/** Can the student go forward to the next question? (False if the current question is the last one)
-	 * @member {observable|boolean} canAdvance
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	this.canAdvance = ko.computed(function() {
-		return this.currentQuestionNumber()&lt;this.exam.settings.numQuestions-1;
-	},this);
-
-	/** The student's total score ({@link Numbas.Exam#score})
-	 * @member {observable|number} score
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	this.score = ko.observable(e.score);
-
-	/** The total marks available for the exam ({@link Numbas.Exam#mark})
-	 * @member {observable|number} marks
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	this.marks = ko.observable(e.mark);
-
-	/** The percentage score the student needs to achieve to pass ({@link Numbas.Exam#percentPass}), formatted as a string.
-	 * @member {observable|string} percentPass
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	this.percentPass = ko.observable(e.settings.percentPass*100+'%');
-
-	/** String displaying the student's current score, and the total marks available, if allowed
-	 * @member {observable|string} examScoreDisplay
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	this.examScoreDisplay = ko.computed(function() {
-		var niceNumber = Numbas.math.niceNumber;
-		var exam = this.exam;
-		var score = this.score();
-		var marks = this.marks();
-
-		var totalExamScoreDisplay = '';
-		if(exam.settings.showTotalMark)
-			totalExamScoreDisplay = niceNumber(score)+'/'+niceNumber(marks);
-		else
-			totalExamScoreDisplay = niceNumber(score);
-
-		return totalExamScoreDisplay;
-	},this);
-
-	/** The student's total score as a percentage of the total marks available
-	 * @member {observable|number} percentScore
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	this.percentScore = ko.observable(0);
-
-	/** The time left in the exam
-	 * @member {observable|string} displayTime
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	this.displayTime = ko.observable('');
-
-	/** Time the exam started, formatted for display
-	 * @mamber {observable|string} startTime
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	var _startTime = ko.observable();
-	this.startTime = ko.computed({
-		read: function() {
-			var t = _startTime();
-			if(t) {
-				return util.formatTime(new Date(t));
-			} else {
-				return '';
-			}
-		},
-		write: function(v) {
-			return _startTime(v);
-		}
-	});
-
-	/** Time the exam ended, formatted for display
-	 * @mamber {observable|string} endTime
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	var _endTime = ko.observable();
-	this.endTime = ko.computed({
-		read: function() {
-			var t = _endTime();
-			if(t) {
-				return util.formatTime(new Date(t));
-			} else {
-				return '';
-			}
-		},
-		write: function(v) {
-			return _endTime(v);
-		}
-	});
-
-	/** The total time the student has spent in the exam
-	 * @member {observable|string} timeSpent
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	this.timeSpent = ko.observable('');
-
-	/** Is the student allowed to pause the exam?
-	 * @member {boolean} allowPause
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	this.allowPause = e.settings.allowPause;
-
-	/** Total number of questions the student attempted
-	 * @member {observable|number} questionsAttempted
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	this.questionsAttempted = ko.computed(function() {
-		return this.questions().reduce(function(s,q) { 
-			return s + (q.answered() ? 1 : 0); 
-		},0);
-	},this);
-
-	/** Total number of questions the student attempted, formatted as a fraction of the total number of questions
-	 * @member {observable|string} questionsAttemptedDisplay
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	this.questionsAttemptedDisplay = ko.computed(function() {
-		return this.questionsAttempted()+' / '+this.exam.settings.numQuestions;
-	},this);
-
-	/** The result of the exam - passed or failed?
-	 * @member {observable|string} result
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	this.result = ko.observable('');
-
-    /** Did the student pass the exam?
-     * @member {observable|boolean} passed
-     * @memberof Numbas.display.ExamDisplay
-     */
-    this.passed = ko.observable(false);
-
-    /** Message shown to the student based on their total score
-     * @member {observable|string} feedbackMessage
-     * @memberof Numbas.display.ExamDisplay
-     */
-    this.feedbackMessage = ko.observable(null);
-
-	document.title = e.settings.name;
-
-}
-display.ExamDisplay.prototype = /** @lends Numbas.display.ExamDisplay.prototype */
-{
-	/** Reference to the associated exam object
-	 * @type {Numbas.Exam}
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	exam: undefined,
-
-	/** Update the timer 
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	showTiming: function()
-	{
-		this.displayTime(Numbas.timing.secsToDisplayTime(this.exam.timeRemaining));
-		this.timeSpent(Numbas.timing.secsToDisplayTime(this.exam.timeSpent));
-	},
-
-	/** Initialise the question list display 
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	initQuestionList: function() {
-		for(var i=0; i&lt;this.exam.questionList.length; i++) {
-			this.questions.push(this.exam.questionList[i].display);
-		}
-	},
-
-	/** Hide the timer 
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	hideTiming: function()
-	{
-		this.displayTime('');
-	},
-
-	/** Show/update the student's total score 
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	showScore: function()
-	{
-		var exam = this.exam;
-		this.marks(Numbas.math.niceNumber(exam.mark));
-		this.score(Numbas.math.niceNumber(exam.score));
-		this.percentScore(exam.percentScore);
-	},
-
-	/** Update the question list display - typically, scroll so the current question is visible 
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	updateQuestionMenu: function()
-	{
-		var exam = this.exam;
-		//scroll question list to centre on current question
-		if(display.carouselGo)
-			display.carouselGo(exam.currentQuestion.number-1,300);
-	},
-
-	/** Show an info page (one of the front page, pause , results, or exit)
-	 * @param {string} page - name of the page to show
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	showInfoPage: function(page)
-	{
-		window.onbeforeunload = null;
-
-		this.infoPage(page);
-		this.currentQuestion(null);
-
-		var exam = this.exam;
-
-		//scroll back to top of screen
-		scroll(0,0);
-
-		switch(page)
-		{
-		case "frontpage":
-			this.marks(exam.mark);
-
-			break;
-
-		case "result":
-			this.result(exam.result);
-            this.passed(exam.passed);
-            this.feedbackMessage(exam.feedbackMessage);
-			this.startTime(exam.start);
-			this.endTime(exam.stop);
-			
-			break;
-
-		case "suspend":
-			this.showScore();
-
-			break;
-		
-		case "exit":
-			break;
-		}
-		this.hideNavMenu();
-	},
-
-	/** Show the current question 
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	showQuestion: function()
-	{
-		var exam = this.exam;
-
-		this.infoPage(null);
-		this.currentQuestion(exam.currentQuestion.display);
-
-		if(exam.settings.preventLeave &amp;&amp; this.mode() != 'review')
-			window.onbeforeunload = function() { return R('control.confirm leave') };
-		else
-			window.onbeforeunload = null;
-
-		exam.currentQuestion.display.show();
-		if(!this.madeCarousel)
-		{
-			display.carouselGo = makeCarousel($('.questionList'),{step: 2, nextBtn: '.questionMenu .next', prevBtn: '.questionMenu .prev'});
-			this.madeCarousel = true;
-		}
-		this.hideNavMenu();
-	},
-
-	/** Hide the sliding side menu
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	hideNavMenu: function() {
-		if($('#navMenu').data('bs.offcanvas')) {
-			$('#navMenu').offcanvas('hide');
-		}
-	},
-
-	/** Called just before the current question is regenerated 
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	startRegen: function() {
-		$('#questionDisplay').hide();
-		this.exam.currentQuestion.display.html.remove();
-		this.oldQuestion = this.exam.currentQuestion.display;
-	},
-	
-	/** Called after the current question has been regenerated 
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	endRegen: function() {
-		var currentQuestion = this.exam.currentQuestion;
-		this.questions.splice(currentQuestion.number,1,currentQuestion.display);
-		this.applyQuestionBindings(currentQuestion);
-		$('#questionDisplay').fadeIn(200);
-	},
-
-	/** Apply knockout bindings to the given question
-	 * @param {Numbas.Question}
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	applyQuestionBindings: function(question) {
-		ko.applyBindings({exam: this, question: question.display},question.display.html[0]);
-	},
-
-	/** Called when the exam ends 
-	 * @memberof Numbas.display.ExamDisplay
-	 */
-	end: function() {
-		this.mode(this.exam.mode);
-		this.questions().map(function(q) {
-			q.end();
-		});
-	}
-};
-
-/** Display properties of a question object
- * @name QuestionDisplay
- * @memberof Numbas.display
- * @constructor
- * @param {Numbas.Question} q - the associated question object
- */
-display.QuestionDisplay = function(q)
-{
-	this.question = q;
-	var exam = q.exam;
-
-	/** Has the advice been shown?
-	 * @member {observable|boolean} adviceDisplayed
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	this.adviceDisplayed = ko.observable(false);
-
-	/** Get the {@link Numbas.display.PartDisplay} object for the given path.
-	 * @param {partpath} path
-	 * @returns {Numbas.display.PartDisplay}
-	 * @method getPart
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	this.getPart = function(path) {
-		return q.getPart(path).display;
-	}
-
-	/** Text for the "submit all answers" button
-	 * @member {observable|string} submitMessage
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	this.submitMessage = ko.observable('');
-
-	/** The name to display for this question - in default locale, it's "Question {N}"
-	 * @member {observable|string} displayName
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	this.displayName = ko.observable(R('question.header',{'number':q.number+1}));
-
-	/** Has the student looked at this question? ({@link Numbas.Question#visited})
-	 * @member {observable|boolean} visited
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	this.visited = ko.observable(q.visited);
-
-	/** Is this question visible in the list?
-	 * @member {observable|boolean} visible
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	this.visible = ko.computed(function() {
-		var q = this.question;
-		var currentQuestionNumber = exam.display.currentQuestionNumber();
-		return (q.number==currentQuestionNumber
-			|| exam.settings.navigateBrowse 												// is browse navigation enabled?
-			|| this.visited()							// if not, we can still move backwards to questions already seen if reverse navigation is enabled
-			|| (currentQuestionNumber!==null &amp;&amp; q.number>currentQuestionNumber &amp;&amp; exam.display.questions()[q.number-1].visited())	// or you can always move to the next question
-		)
-	},this);
-
-	/** Number of parts in this question
-	 * @member {observable|number} numParts
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	this.numParts = ko.observable(q.parts.length);
-
-	/** Student's current score ({@link Numbas.Question#score})
-	 * @member {observable|number} score
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	this.score = ko.observable(q.score);
-
-	/** Total marks available for this question ({@link Numbas.Question#marks})
-	 * @member {observable|number} marks
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	this.marks = ko.observable(q.marks);
-
-	/** Proportion of available marks awarded to the student
-	 * @member {observable|number} credit
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	this.credit = ko.computed(function() {
-		return this.score()/this.marks();
-	},this);
-
-	/** Does this question do any marking?
-	 * @member {observable|boolean} doesMarking
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	this.doesMarking = ko.computed(function() {
-		return this.marks()>0
-	},this);
-
-	/** Has this question been answered? ({@link Numbas.Question#answered})
-	 * @member {observable|boolean} answered
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	this.answered = ko.observable(q.answered);
-
-	/** Have the correct answers been revealed? ({@link Numbas.Question#revealed})
-	 * @member {observable|boolean} revealed
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	this.revealed = ko.observable(q.revealed);
-
-	/** Have any of this question's parts been answered?
-	 * @member {observable|boolean} anyAnswered
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	this.anyAnswered = ko.observable(false);
-
-	/** Has the student changed any of their answers since submitting?
-	 * @member {observable|boolean} isDirty
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	this.isDirty = ko.observable(false);
-
-	/** Is the student able to reveal the correct answers?
-	 * @member {observable|boolean} canReveal
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	this.canReveal = ko.computed(function() {
-		return exam.settings.allowRevealAnswer &amp;&amp; !this.revealed();
-	},this);
-
-	/** Score feedback string
-	 * @member {{update: function, message: observable|string}} scoreFeedback
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	this.scoreFeedback = showScoreFeedback(this,q.exam.settings);
-
-	/** Show this question in review mode
-	 * @member {function} review
-	 * @method
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	this.review = function() {
-		exam.reviewQuestion(q.number);
-	}
-}
-display.QuestionDisplay.prototype = /** @lends Numbas.display.QuestionDisplay.prototype */
-{
-	/** The associated question object
-	 * @type {Numbas.Question}
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	question: undefined,			//reference back to the main question object
-
-	/** HTML representing the question
-	 * @type {Element}
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	html: '',						//HTML for displaying question
-
-	/** Make the HTML to display the question 
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	makeHTML: function() {
-		var q = this.question;
-		var qd = this;
-		var html = this.html = $($.xsl.transform(Numbas.xml.templates.question, q.xml).string);
-		html.addClass('jme-scope').data('jme-scope',q.scope);
-		html.find('table').wrap('&lt;div class="table-responsive">');	// wrap tables so they have a scrollbar when they overflow
-		$('#questionDisplay').append(html);
-
-		qd.css = document.createElement('style');
-		qd.css.setAttribute('type','text/css');
-		if(qd.css.styleSheet) {
-			qd.css.styleSheet.cssText = q.preamble.css;
-		} else {
-			qd.css.appendChild(document.createTextNode(q.preamble.css));
-		}
-
-		Numbas.schedule.add(function()
-		{
-			html.each(function(e) {
-				Numbas.jme.variables.DOMcontentsubvars(this,q.scope);
-			})
-
-			// trigger a signal that the question HTML is attached
-			// DEPRECATED: use question.onHTMLAttached(fn) instead
-			$('body').trigger('question-html-attached',q,qd);
-			$('body').unbind('question-html-attached');
-
-			// make mathjax process the question text (render the maths)
-			Numbas.display.typeset(qd.html,qd.postTypesetF);
-		});
-	},
-
-	/** Show the question 
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	show: function()
-	{
-		var q = this.question;
-		var qd = this;
-		var exam = q.exam;
-
-		this.html.append(this.css);
-
-		this.visited(q.visited);
-
-		//update the question menu - highlight this question, etc.
-		exam.display.updateQuestionMenu();
-
-		switch(exam.mode) {
-		case 'normal':
-			this.submitMessage( R(q.parts.length&lt;=1 ? 'control.submit answer' : 'control.submit all parts') );
-			break;
-		case 'review':
-			break;
-		}
-
-		//show parts
-		this.postTypesetF = function(){};
-		for(var i=0;i&lt;q.parts.length;i++)
-		{
-			q.parts[i].display.show();
-		}
-
-		//display advice if appropriate
-		this.showAdvice();
-
-		//show correct answers if appropriate
-		this.revealAnswer();
-		
-		//display score if appropriate
-		this.showScore(true);
-		
-		//scroll back to top of page
-		scroll(0,0);
-
-		// make mathjax process the question text (render the maths)
-		Numbas.display.typeset(this.html,this.postTypesetF);
-	},
-
-	/** Called when the student leaves the question 
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	leave: function() {
-		$(this.css).remove();
-	},
-
-	/** Show this question's advice 
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	showAdvice: function( fromButton )
-	{
-		this.adviceDisplayed(this.question.adviceDisplayed);
-	},
-
-	/** Reveal the answers to this question 
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	revealAnswer: function()
-	{
-		this.revealed(this.question.revealed);
-		if(!this.question.revealed)
-			return;
-		scroll(0,0);
-	},
-
-	/** Display question score and answer state 
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	showScore: function(noUpdate)
-	{
-		var q = this.question;
-		var exam = q.exam;
-
-		this.score(q.score);
-		this.marks(q.marks);
-		this.answered(q.answered);
-		if(!noUpdate) {
-			this.scoreFeedback.update(true);
-		}
-
-		var anyAnswered = false;
-		for(var i=0;i&lt;q.parts.length;i++)
-		{
-			anyAnswered |= q.parts[i].answered;
-		}
-		this.anyAnswered(anyAnswered);
-	},
-
-	/** Scroll to the first part submission error 
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	scrollToError: function() {
-		scrollTo($('.warning-icon:visible:first'));
-	},
-
-	/** Initialise this question's display 
-	 * @see Numbas.display.ExamDisplay.init
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	init: function() {
-		var q = this.question;
-		for(var i=0;i&lt;q.parts.length;i++)
-		{
-			q.parts[i].display.init();
-		}
-		this.numParts(q.parts.length);
-	},
-
-	/** Called when the exam ends 
-	 * @memberof Numbas.display.QuestionDisplay
-	 */
-	end: function() {
-		var q = this.question;
-		for(var i=0;i&lt;q.parts.length;i++)
-		{
-			q.parts[i].display.end();
-		}
-	}
-};
-
-var extend = Numbas.util.extend;
-
-/** Display methods for a generic question part
- * @name PartDisplay
- * @memberof Numbas.display
- * @constructor
- * @param {Numbas.parts.Part} p - the associated part object
- */
-display.PartDisplay = function(p)
-{
-
-	var pd = this;
-	/** The associated part object
-	 * @member {Numbas.parts.Part} part
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.part = p;
-
-	/** The question this part belongs to
-	 * @member {Numbas.Question} question
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.question = p.question;
-
-	/** The student's current score ({@link Numbas.parts.Part#score})
-	 * @member {observable|number} score
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.score = ko.observable(p.score);
-
-	/** The total marks available for this part ({@link Numbas.parts.Part#marks})
-	 * @member {observable|number} marks
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.marks = ko.observable(p.marks);
-
-	/** Proportion of available marks awarded to the student - i.e. `score/marks`. Penalties will affect this instead of the raw score, because of things like the steps marking algorithm.
-	 * @member {observable|number} credit
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.credit = ko.observable(p.credit);
-
-	/** Does this part do any marking?
-	 * @member {observable|boolean} doesMarking
-	 * @see {Numbas.Part.doesMarking}
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.doesMarking = ko.observable(p.doesMarking);
-
-	/** Has the student answered this part?
-	 * @member {observable|boolean} answered
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.answered = ko.observable(p.answered);
-
-	/** Has the student changed their answer since the last submission?
-	 * @member {observable|boolean} isDirty
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.isDirty = ko.observable(false);
-
-	/** Warnings based on the student's answer
-	 * @member {observable|Array.&lt;{message:string}>} warnings
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.warnings = ko.observableArray([]);
-
-	/** Are the warnings visible?
-	 * @member {observable|boolean} warningsShown
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.warningsShown = ko.observable(false);
-
-	/** Show the warnings
-	 * @member {function} showWarnings
-	 * @method
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.showWarnings = function() {
-		this.warningsShown(true);
-	}
-
-	/** Hide the warnings
-	 * @member {function} hideWarnings
-	 * @method
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.hideWarnings = function() {
-		this.warningsShown(false);
-	}
-
-	/** Are the marking feedback messages visible?
-	 * @member {observable|boolean} feedbackShown
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.feedbackShown = ko.observable(false);
-
-	/** Text for the button to toggle the display of the feedback messages
-	 * @member {observable|string} toggleFeedbackText
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.toggleFeedbackText = ko.computed(function() {
-		return R(this.feedbackShown() ? 'question.score feedback.hide' : 'question.score feedback.show');
-	},this);
-
-	/** Feedback messages
-	 * @member {observable|string[]} feedbackMessages
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.feedbackMessages = ko.observableArray([]);
-	
-	/** Should the button to toggle feedback messages be shown?
-	 * @member {observable|boolean} showFeedbackToggler
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.showFeedbackToggler = ko.computed(function() {
-		var e = p.question.exam;
-		return (p.question.display.revealed() || e.settings.showAnswerState) &amp;&amp; pd.feedbackMessages().length;
-	});
-
-    /** Are there other parts in line with this one? (Used to decide whether to show the submit button and feedback text)
-     * True if there's more than one part in the question, or this is a step.
-     * @member {observable|boolean} isNotOnlyPart
-     * @memberof Numbas.display.PartDisplay
-     */
-    this.isNotOnlyPart = ko.computed(function() {
-        return this.question.display.numParts()>1 || this.part.isStep;
-    },this);
-
-	/** Show the "submit part" button?
-	 * @member {observable|boolean} showSubmitPart
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.showSubmitPart = ko.computed(function() {
-		return this.isNotOnlyPart() &amp;&amp; !(this.revealed() || !this.isDirty());
-	},this);
-
-	/** Show the marks feedback?
-	 * @member {observable|boolean} showMarks
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.showMarks = ko.computed(function() {
-		return this.isNotOnlyPart() &amp;&amp; this.scoreFeedback.message();
-	}, this);
-
-	/** Should the box containing part marks and the submit and feedback buttons be shown?
-	 * @member {observable|boolean} showFeedbackBox
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.showFeedbackBox = ko.computed(function() {
-		return this.doesMarking() &amp;&amp; (this.showFeedbackToggler() || this.showSubmitPart() || this.showMarks());
-	},this);
-
-	/** Have the steps ever been shown? ({@link Numbas.parts.Part#stepsShown})
-	 * @member {observable|boolean} stepsShown
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.stepsShown = ko.observable(p.stepsShown);
-
-	/** Are the steps currently open? ({@link Numbas.parts.Part#stepsOpen})
-	 * @member {observable|boolean} stepsOpen
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.stepsOpen = ko.observable(p.stepsOpen);
-
-	/** Have the correct answers been revealed?
-	 * @member {observable|boolean} revealed
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.revealed = ko.observable(false);
-
-	/** Text to describe the state of the steps penalty
-	 * @member {observable|string} stepsPenaltyMessage
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.stepsPenaltyMessage = ko.computed(function() {
-		if(this.stepsOpen())
-			return R('question.hide steps no penalty');
-		else if(this.part.settings.stepsPenalty==0 || this.revealed())
-			return R('question.show steps no penalty');
-		else if(this.stepsShown())
-			return R('question.show steps already penalised');
-		else
-			return R('question.show steps penalty',{count:this.part.settings.stepsPenalty});
-	},this);
-
-	/** Should the correct answer be shown? True if revealed and {@link Numbas.parts.Part#settings.showCorrectAnswer}) is true
-	 * @member {observable|boolean} showCorrectAnswer
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.showCorrectAnswer = ko.computed(function() {
-		return p.settings.showCorrectAnswer &amp;&amp; pd.revealed();
-	});
-
-	/** Display of this parts's current score / answered status
-	 * @member {observable|object} scoreFeedback
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.scoreFeedback = showScoreFeedback(this,p.question.exam.settings);
-
-	/** Control functions
-	 * @member {object} controls
-	 * @memberof Numbas.display.PartDisplay
-	 * @property {function} toggleFeedback - Toggle the display of the marking feedback messages
-	 * @property {function} submit - Submit the student's answers for marking
-	 * @property {function} showSteps - Show the steps
-	 * @property {function} hideSteps - Hide the steps
-	 */
-	this.controls = {
-		toggleFeedback: function() {
-			pd.feedbackShown(!pd.feedbackShown());
-		},
-		submit: function() {
-			var np = p;
-			while(np.isGap)
-				np = np.parentPart;
-			np.display.removeWarnings();
-			np.submit();
-			if(!np.answered)
-			{
-				Numbas.display.showAlert(R('question.can not submit'));
-			}
-			Numbas.store.save();
-		},
-		showSteps: function() {
-			p.showSteps();
-		},
-		hideSteps: function() {
-			p.hideSteps();
-		}
-	}
-
-	/** Event bindings
-	 * @member {object} inputEvents
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	this.inputEvents = {
-		keypress: function(context,e) {
-			if(e.which==13) {
-				pd.controls.submit();
-			}
-			else
-				return true;
-		}
-	}
-}
-display.PartDisplay.prototype = /** @lends Numbas.display.PartDisplay.prototype */
-{
-	/** Show a warning message about this part
-	 * @param {string} warning
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	warning: function(warning)
-	{
-		this.warnings.push({message:warning+''});
-	},
-
-	/** Set the list of warnings
-	 * @param {string[]} warnings
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	setWarnings: function(warnings) {
-		this.warnings(warnings.map(function(warning){return {message: warning+''}}));
-	},
-
-	/** Remove all previously displayed warnings 
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	removeWarnings: function()
-	{
-		this.part.removeWarnings();
-	},
-
-	/** Called when the part is displayed (basically when question is changed)
-	 * @see Numbas.display.QuestionDisplay.show
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	show: function()
-	{
-		var p = this.part;
-
-		this.feedbackShown(false);
-
-		this.showScore(this.part.answered,true);
-	},
-
-	/** Show/update the student's score and answer status on this part 
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	showScore: function(valid,noUpdate)
-	{
-		var p = this.part;
-		var exam = p.question.exam;
-
-		this.score(p.score);
-		this.marks(p.marks);
-		this.credit(p.credit);
-		if(!noUpdate) {
-			this.scoreFeedback.update(true);
-		}
-
-		if(valid===undefined)
-			valid = this.part.validate();
-		this.answered(valid);
-
-		if(this.part.markingFeedback.length &amp;&amp; !this.part.question.revealed)
-		{
-			var messages = [];
-			var maxMarks = this.part.marks - (this.part.stepsShown ? this.part.settings.stepsPenalty : 0);
-			var t = 0;
-			for(var i=0;i&lt;this.part.markingFeedback.length;i++)
-			{
-				var action = this.part.markingFeedback[i];
-				var change = 0;
-
-				switch(action.op) {
-				case 'addCredit':
-					change = action.credit*maxMarks;
-					if(action.gap!=undefined)
-						change *= this.part.gaps[action.gap].marks/this.part.marks;
-					t += change;
-					break;
-				}
-
-				var message = action.message || '';
-				if(util.isNonemptyHTML(message))
-				{
-					var marks = Math.abs(change);
-
-					if(change>0)
-						message+='\n\n'+R('feedback.you were awarded',{count:marks});
-					else if(change&lt;0)
-						message+='\n\n'+R('feedback.taken away',{count:marks});
-				}
-				if(util.isNonemptyHTML(message))
-					messages.push(message);
-			}
-			
-			this.feedbackMessages(messages);
-		}
-	},
-
-	/** Called when 'show steps' button is pressed, or coming back to a part after steps shown 
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	showSteps: function()
-	{
-		this.stepsShown(this.part.stepsShown);
-		this.stepsOpen(this.part.stepsOpen);
-
-		for(var i=0;i&lt;this.part.steps.length;i++)
-		{
-			this.part.steps[i].display.show();
-		}
-	},
-
-	/** Hide the steps 
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	hideSteps: function()
-	{
-		this.stepsOpen(this.part.stepsOpen);
-	},
-
-	/** Fill the student's last submitted answer into inputs
-	 * @abstract
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	restoreAnswer: function() 
-	{
-	},
-
-	/** Show the correct answers to this part 
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	revealAnswer: function() 
-	{
-		this.revealed(true);
-		this.removeWarnings();
-		this.showScore();
-	},
-
-	/** Initialise this part's display
-	 * @see Numbas.display.QuestionDisplay.init
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	init: function() {
-		this.part.setDirty(false);
-		for(var i=0;i&lt;this.part.steps.length;i++) {
-			this.part.steps[i].display.init();
-		}
-	},
-
-	/** Called when the exam ends 
-	 * @memberof Numbas.display.PartDisplay
-	 */
-	end: function() {
-		this.restoreAnswer();
-		for(var i=0;i&lt;this.part.steps.length;i++) {
-			this.part.steps[i].display.end();
-		}
-	}
-};
-
-/** Display code for a {@link Numbas.parts.JMEPart}
- * @constructor
- * @augments Numbas.display.PartDisplay
- * @name JMEPartDisplay
- * @memberof Numbas.display
- */
-display.JMEPartDisplay = function()
-{
-	var p = this.part;
-
-	/** The student's current answer (not necessarily submitted)
-	 * @member {observable|JME} studentAnswer
-	 * @memberof Numbas.display.JMEPartDisplay
-	 */
-	this.studentAnswer = ko.observable('');
-
-	/** The correct answer
-	 * @member {observable|JME} correctAnswer
-	 * @memberof Numbas.display.JMEPartDisplay
-	 */
-	this.correctAnswer = p.settings.correctAnswer;
-
-	/** Should the LaTeX rendering of the student's answer be shown?
-	 * @member {boolean} showPreview
-	 * @memberof Numbas.display.JMEPartDisplay
-	 */
-	this.showPreview = p.settings.showPreview;
-
-	/** The correct answer, in LaTeX form
-	 * @member {observable|TeX} correctAnswerLaTeX
-	 * @memberof Numbas.display.JMEPartDisplay
-	 */
-	this.correctAnswerLaTeX = Numbas.jme.display.exprToLaTeX(this.correctAnswer,p.settings.displaySimplification,p.question.scope);
-
-	ko.computed(function() {
-		p.storeAnswer([this.studentAnswer()]);
-	},this);
-
-	/** The student's answer, in LaTeX form
-	 * @member {observable|TeX} studentAnswerLaTeX
-	 * @memberof Numbas.display.JMEPartDisplay
-	 */
-	this.studentAnswerLaTeX = ko.computed(function() {
-		var studentAnswer = this.studentAnswer();
-		if(studentAnswer=='')
-			return '';
-
-		this.removeWarnings();
-
-		try {
-			var tex = Numbas.jme.display.exprToLaTeX(studentAnswer,p.settings.displaySimplification,p.question.scope);
-			if(tex===undefined)
-				throw(new Numbas.Error('display.part.jme.error making maths'));
-
-		}
-		catch(e) {
-			p.giveWarning(e.message);
-			return '';
-		}
-
-		if(p.settings.checkVariableNames) {
-			var tree = Numbas.jme.compile(studentAnswer,p.question.scope);
-			var usedvars = Numbas.jme.findvars(tree);
-			var failExpectedVariableNames = false;
-			var unexpectedVariableName;
-			for(var i=0;i&lt;usedvars.length;i++) {
-				if(!p.settings.expectedVariableNames.contains(usedvars[i])) {
-					failExpectedVariableNames = true;
-					unexpectedVariableName = usedvars[i];
-					break;
-				}
-			}
-			if( failExpectedVariableNames ) {
-				var suggestedNames = unexpectedVariableName.split(Numbas.jme.re.re_short_name);
-				if(suggestedNames.length>3) {
-					var suggestion = [];
-					for(var i=1;i&lt;suggestedNames.length;i+=2) {
-						suggestion.push(suggestedNames[i]);
-					}
-					suggestion = suggestion.join('*');
-					p.giveWarning(R('part.jme.unexpected variable name suggestion',{name:unexpectedVariableName,suggestion:suggestion}));
-				}
-				else
-					p.giveWarning(R('part.jme.unexpected variable name', {name:unexpectedVariableName}));
-			}
-		}
-
-		return tex;
-	},this).extend({throttle:100});
-
-	/** Does the input box have focus?
-	 * @member {observable|boolean} inputHasFocus
-	 * @memberof Numbas.display.JMEPartDisplay
-	 */
-	this.inputHasFocus = ko.observable(false);
-
-	/** Give the input box focus
-	 * @member {function} focusInput
-	 * @method
-	 * @memberof Numbas.display.JMEPartDisplay
-	 */
-	this.focusInput = function() {
-		this.inputHasFocus(true);
-	}
-}
-display.JMEPartDisplay.prototype =
-{
-	restoreAnswer: function()
-	{
-		this.studentAnswer(this.part.studentAnswer);
-	}
-};
-display.JMEPartDisplay = extend(display.PartDisplay,display.JMEPartDisplay,true);
-
-/** Display code for a {@link Numbas.parts.PatternMatchPart}
- * @augments Numbas.display.PartDisplay
- * @constructor
- * @name PatternMatchPartDisplay
- * @memberof Numbas.display
- */
-display.PatternMatchPartDisplay = function()
-{
-	var p = this.part;
-
-	/** The student's current answer (not necessarily submitted)
-	 * @member {observable|string} studentAnswer
-	 * @memberof Numbas.display.PatternMatchPartDisplay
-	 */
-	this.studentAnswer = ko.observable(this.part.studentAnswer);
-
-	/** The correct answer regular expression
-	 * @member {observable|RegExp} correctAnswer
-	 * @memberof Numbas.display.PatternMatchPartDisplay
-	 */
-	this.correctAnswer = ko.observable(p.settings.correctAnswer);
-
-	/** A representative correct answer to display when answers are revealed
-	 * @member {observable|string} displayAnswer
-	 * @memberof Numbas.display.PatternMatchPartDisplay
-	 */
-	this.displayAnswer = ko.observable(p.settings.displayAnswer);
-
-	ko.computed(function() {
-		p.storeAnswer([this.studentAnswer()]);
-	},this);
-}
-display.PatternMatchPartDisplay.prototype = 
-{
-	restoreAnswer: function()
-	{
-		this.studentAnswer(this.part.studentAnswer);
-	}
-};
-display.PatternMatchPartDisplay = extend(display.PartDisplay,display.PatternMatchPartDisplay,true);
-
-/** Display code for a {@link Numbas.parts.NumberEntryPart}
- * @augments Numbas.display.PartDisplay
- * @constructor
- * @name NumberEntryPartDisplay
- * @memberof Numbas.display
- */
-display.NumberEntryPartDisplay = function()
-{
-	var p = this.part;
-
-	/** The student's current (not necessarily submitted) answer
-	 * @member {observable|string} studentAnswer
-	 * @memberof Numbas.display.NumberEntryPartDisplay
-	 */
-	this.studentAnswer = ko.observable(p.studentAnswer);
-
-	/** The correct answer
-	 * @member {observable|number} correctAnswer
-	 * @memberof Numbas.display.NumberEntryPartDisplay
-	 */
-	this.correctAnswer = ko.observable(p.settings.displayAnswer);
-
-	ko.computed(function() {
-		p.storeAnswer([this.studentAnswer()]);
-	},this);
-
-	/** Cleaned-up version of student answer (remove commas and trim whitespace)
-	 * 
-	 * Also check for validity and give warnings
-	 * @member {observable|string} cleanStudentAnswer
-	 * @memberof Numbas.display.NumberEntryPartDisplay
-	 */
-	this.cleanStudentAnswer = ko.computed(function() {
-		var studentAnswer = p.cleanAnswer(this.studentAnswer());
-		this.removeWarnings();
-		if(studentAnswer=='')
-			return '';
-
-		if(p.settings.integerAnswer) {
-			var dp = Numbas.math.countDP(studentAnswer);
-			if(dp>0)
-				p.giveWarning(R('part.numberentry.answer not integer'));
-		}
-		if(!util.isNumber(studentAnswer,p.settings.allowFractions)) {
-			p.giveWarning(R('part.numberentry.answer not integer or decimal'));
-			return '';
-		}
-		var n = parseFloat(studentAnswer);
-		return n+'';
-	},this);
-
-	/** Show a LaTeX rendering of the answer?
-	 * @member {boolean} showPreview
-	 * @memberof Numbas.display.NumberEntryPartDisplay
-	 */
-	this.showPreview = false;
-
-	/** TeX version of student's answer
-	 * @member {observable|TeX} studentAnswerLaTeX
-	 * @memberof Numbas.display.NumberEntryPartDisplay
-	 */
-	this.studentAnswerLaTeX = ko.computed(function() {
-		return this.cleanStudentAnswer();
-	},this);
-
-	/** Does the input box have focus?
-	 * @member {observable|boolean} inputHasFocus
-	 * @memberof Numbas.display.NumberEntryPartDisplay
-	 */
-	this.inputHasFocus = ko.observable(false);
-
-	/** Give the input box focus
-	 * @member {function} focusInput
-	 * @method
-	 * @memberof Numbas.display.NumberEntryPartDisplay
-	 */
-	this.focusInput = function() {
-		this.inputHasFocus(true);
-	}
-
-	/** Some text describing what precision the student should round their answer to
-	 * @member {observable|string} precisionHint
-	 * @memberof Numbas.display.NumberEntryPartDisplay
-	 */
-	this.precisionHint = ko.computed(function() {
-        if(this.part.settings.precisionType=='none') {
-            return '';
-        }
-        var precision = this.part.settings.precision;
-        var precisionType = R('part.numberentry.precision type.'+this.part.settings.precisionType,{count:precision});
-		return R('part.numberentry.give your answer to precision',{count: precision,precisionType: precisionType});
-	},this);
-
-	/** Show the precision restriction hint?
-	 * @member {observable|string} showPrecisionHint
-	 * @memberof Numbas.display.NumberEntryPartDisplay
-	 */
-    this.showPrecisionHint = ko.computed(function() {
-        return this.part.settings.showPrecisionHint &amp;&amp; this.precisionHint();
-    },this);
-}
-display.NumberEntryPartDisplay.prototype =
-{
-	restoreAnswer: function()
-	{
-		this.studentAnswer(this.part.studentAnswer);
-	}
-};
-display.NumberEntryPartDisplay = extend(display.PartDisplay,display.NumberEntryPartDisplay,true);
-
-/** Display code for a {@link Numbas.parts.MatrixEntryPart}
- * @augments Numbas.display.PartDisplay
- * @constructor
- * @name MatrixEntryPartDisplay
- * @memberof Numbas.display
- */
-display.MatrixEntryPartDisplay = function()
-{
-	var p = this.part;
-
-	/** The student's current (not necessarily submitted) answer
-	 * @member {observable|string} studentAnswer
-	 * @memberof Numbas.display.MatrixEntryPartDisplay
-	 */
-	this.studentAnswer = ko.observable(p.studentAnswer);
-
-	/** The correct answer
-	 * @member {observable|number} correctAnswer
-	 * @memberof Numbas.display.MatrixEntryPartDisplay
-	 */
-	this.correctAnswer = ko.observable(p.settings.correctAnswer);
-	this.correctAnswerLaTeX = ko.computed(function() {
-		var correctAnswer = this.correctAnswer();
-		var m = new Numbas.jme.types.TMatrix(correctAnswer);
-		return Numbas.jme.display.texify({tok:m},{fractionnumbers: p.settings.correctAnswerFractions});
-	},this);
-
-	this.studentAnswerRows = ko.observable(p.settings.numRows);
-	this.studentAnswerColumns = ko.observable(p.settings.numColumns);
-	this.allowResize = ko.observable(p.settings.allowResize);
-
-	ko.computed(function() {
-		var stagedAnswer = p.stagedAnswer || [null,null,null];
-		var oldRows = stagedAnswer[0];
-		var oldColumns = stagedAnswer[1];
-		var oldMatrix = stagedAnswer[2];
-		var newRows = this.studentAnswerRows();
-		var newColumns = this.studentAnswerColumns();
-		var newMatrix = this.studentAnswer();
-		if(newRows != oldRows || newColumns != oldColumns || !util.arraysEqual(oldMatrix,newMatrix)) {
-			p.storeAnswer([this.studentAnswerRows(),this.studentAnswerColumns(),this.studentAnswer()]);
-		}
-	},this);
-
-	/** Show a LaTeX rendering of the answer?
-	 * @member {boolean} showPreview
-	 * @memberof Numbas.display.MatrixEntryPartDisplay
-	 */
-	this.showPreview = false;
-
-	/** TeX version of student's answer
-	 * @member {observable|TeX} studentAnswerLaTeX
-	 * @memberof Numbas.display.MatrixEntryPartDisplay
-	 */
-	this.studentAnswerLaTeX = ko.computed(function() {
-		return 'student answer latex';
-	},this);
-}
-display.MatrixEntryPartDisplay.prototype =
-{
-	restoreAnswer: function()
-	{
-		var studentAnswer = this.part.studentAnswer;
-		this.studentAnswerRows(studentAnswer.length || 1);
-		this.studentAnswerColumns(studentAnswer.length ? studentAnswer[0].length : 1);
-		this.studentAnswer(studentAnswer);
-	}
-};
-display.MatrixEntryPartDisplay = extend(display.PartDisplay,display.MatrixEntryPartDisplay,true);
-
-/** Display code for a {@link Numbas.parts.MultipleResponsePart}
- * @augments Numbas.display.PartDisplay
- * @constructor
- * @name MultipleResponsePartDisplay
- * @memberof Numbas.display
- */
-display.MultipleResponsePartDisplay = function()
-{
-	var p = this.part;
-
-	function makeTicker(answer,choice) {
-		var obs = ko.observable(p.ticks[answer][choice]);
-		ko.computed(function() {
-			p.storeAnswer([answer,choice,obs()]);
-		},p);
-		return obs;
-	}
-
-	function makeRadioTicker(choice) {
-		var obs = ko.observable(null);
-		for(var i=0;i&lt;p.numAnswers;i++) {
-			if(p.ticks[i][choice])
-				obs(i);
-		}
-		ko.computed(function() {
-			var answer = parseInt(obs());
-			p.storeAnswer([answer,choice]);
-		},p);
-		return obs;
-	}
-	function makeCheckboxTicker(answer,choice) {
-		var obs = ko.observable(p.ticks[answer][choice]);
-		ko.computed(function() {
-			p.storeAnswer([answer,choice,obs()]);
-		});
-		return obs;
-	}
-
-	this.layout = util.copyarray(p.layout);
-
-	switch(p.type) {
-	case '1_n_2':
-		/** Index of student's current answer choice (not necessarily submitted)
-		 * @member {observable|number} studentAnswer
-		 * @memberof Numbas.display.MultipleResponsePartDisplay
-		 */
-		this.studentAnswer = ko.observable(null);
-		for(var i=0;i&lt;p.numAnswers;i++) {
-			if(p.ticks[i][0])
-				this.studentAnswer(i);
-		}
-
-		var oldAnswer = null;
-		ko.computed(function() {
-			var i = parseInt(this.studentAnswer());
-			if(i!=oldAnswer &amp;&amp; !isNaN(i)) {
-				p.storeAnswer([i,0]);
-				oldAnswer = i;
-			}
-		},this);
-
-		var max = 0, maxi = -1;
-		for(var i=0;i&lt;p.numAnswers;i++) {
-			if(p.settings.matrix[i][0]>max || maxi==-1) {
-				max = p.settings.matrix[i][0];
-				maxi = i;
-			}
-		}
-		/** Index of the answer which gains the most marks
-		 * @member {observable|number} correctAnswer
-		 * @memberof Numbas.display.MultipleResponsePartDisplay
-		 */
-		this.correctAnswer = ko.observable(maxi);
-
-		break;
-	case 'm_n_2':
-		/** For each choice, has the student selected it?
-		 *
-		 * For m_n_2 parts, this is a list of booleans. For m_n_x radiogroup parts, it's a list of indices. For m_n_x checkbox parts, it's a 2d array of booleans.
-		 * @member {observable|boolean[]|number[]|Array.Array.&lt;boolean>} ticks
-		 * @memberof Numbas.display.MultipleResponsePartDisplay
-		 */
-		this.ticks = [];
-
-		/** For each choice, should it be selected to get the most marks?
-		 *
-		 * For m_n_2 parts, this is a list of booleans. For m_n_x radiogroup parts, it's a list of indices. For m_n_x checkbox parts, it's a 2d array of booleans.
-		 * @member {observable|boolean[]|number[]|Array.Array.&lt;boolean>} ticks
-		 * @memberof Numbas.display.MultipleResponsePartDisplay
-		 */
-		this.correctTicks = [];
-		for(var i=0; i&lt;p.numAnswers; i++) {
-			this.ticks[i] = makeTicker(i,0);
-			this.correctTicks[i] = p.settings.matrix[i][0]>0;
-		}
-
-		if(p.settings.warningType!='none') {
-			ko.computed(function() {
-				this.removeWarnings();
-				var ticked = 0;
-				this.ticks.map(function(tick) {
-					ticked += tick() ? 1 : 0;
-				});
-
-				if(ticked&lt;p.settings.minAnswers || ticked>p.settings.maxAnswers) {
-					p.giveWarning(R('part.mcq.wrong number of choices'));
-				};
-			},this);
-		}
-
-		break;
-	case 'm_n_x':
-		switch(p.settings.displayType) {
-		case 'radiogroup':
-			this.ticks = [];
-			this.correctTicks = [];
-			for(var i=0; i&lt;p.numChoices; i++) {
-				this.ticks.push(makeRadioTicker(i));
-				var maxj=-1,max=0;
-				for(var j=0;j&lt;p.numAnswers; j++) {
-					if(maxj==-1 || p.settings.matrix[j][i]>max) {
-						maxj = j;
-						max = p.settings.matrix[j][i];
-					}
-				}
-				this.correctTicks.push(maxj);
-			}
-			break;
-		case 'checkbox':
-			this.ticks = [];
-			this.correctTicks = [];
-			for(var i=0; i&lt;p.numAnswers; i++) {
-				var row = [];
-				this.ticks.push(row);
-				var correctRow = [];
-				this.correctTicks.push(correctRow);
-				for(var j=0; j&lt;p.numChoices; j++) {
-					row.push(makeCheckboxTicker(i,j));
-					correctRow.push(p.settings.matrix[i][j]>0);
-				}
-			}
-
-			if(p.settings.warningType!='none') {
-				ko.computed(function() {
-					this.removeWarnings();
-					var ticked = 0;
-					this.ticks.map(function(row) {
-						row.map(function(tick) {
-							ticked += tick() ? 1 : 0;
-						});
-					});
-
-					if(ticked&lt;p.settings.minAnswers || ticked>p.settings.maxAnswers) {
-						p.giveWarning(R('part.mcq.wrong number of choices'));
-					};
-				},this);
-			}
-
-			break;
-		}
-		break;
-	}
-}
-display.MultipleResponsePartDisplay.prototype =
-{
-	restoreAnswer: function()
-	{
-		var part = this.part;
-		switch(part.type) {
-		case '1_n_2':
-			this.studentAnswer(null);
-			for(var i=0;i&lt;part.numAnswers; i++) {
-				if(part.ticks[i][0])
-					this.studentAnswer(i+'');
-			}
-			break;
-		case 'm_n_2':
-			for(var i=0; i&lt;part.numAnswers; i++) {
-				this.ticks[i](part.ticks[i][0]);
-			}
-			break;
-		case 'm_n_x':
-			switch(part.settings.displayType) {
-			case 'radiogroup':
-				for(var i=0; i&lt;part.numAnswers; i++) {
-					for(var j=0; j&lt;part.numChoices; j++) {
-						if(part.ticks[i][j]) {
-							this.ticks[j](i+'');
-						}
-					}
-				}
-				break;
-			case 'checkbox':
-				for(var i=0; i&lt;part.numAnswers; i++) {
-					for(var j=0; j&lt;part.numChoices; j++) {
-						this.ticks[i][j](part.ticks[i][j]);
-					}
-				}
-				break;
-			}
-			break;
-		}
-	}
-};
-display.MultipleResponsePartDisplay = extend(display.PartDisplay,display.MultipleResponsePartDisplay,true);
-
-
-/** Display code for a {@link Numbas.parts.GapFillPart}
- * @augments Numbas.display.PartDisplay
- * @constructor
- * @name GapFillPartDisplay
- * @memberof Numbas.display
- */
-display.GapFillPartDisplay = function()
-{
-}
-display.GapFillPartDisplay.prototype =
-{
-	show: function()
-	{
-		for(var i=0;i&lt;this.part.gaps.length; i++)
-			this.part.gaps[i].display.show();
-	},
-
-	restoreAnswer: function()
-	{
-		for(var i=0;i&lt;this.part.gaps.length; i++)
-			this.part.gaps[i].display.restoreAnswer();
-	},
-
-	revealAnswer: function()
-	{
-	},
-
-	init: function() {
-		for(var i=0;i&lt;this.part.gaps.length; i++)
-			this.part.gaps[i].display.init();
-	},
-
-	end: function() {
-		for(var i=0;i&lt;this.part.gaps.length; i++)
-			this.part.gaps[i].display.end();
-	}
-};
-display.GapFillPartDisplay = extend(display.PartDisplay,display.GapFillPartDisplay,true);
-
-/** Display code for a {@link Numbas.parts.InformationPart}
- * @augments Numbas.display.PartDisplay
- * @constructor
- * @name InformationPartDisplay
- * @memberof Numbas.display
- */
-display.InformationPartDisplay = function()
-{
-}
-display.InformationPartDisplay = extend(display.PartDisplay,display.InformationPartDisplay,true);
-
-/** Display code for a {@link Numbas.parts.ExtensionPart}
- * @augments Numbas.display.PartDisplay
- * @constructor
- * @name ExtensionPartDisplay
- * @memberof Numbas.display
- */
-display.ExtensionPartDisplay= function()
-{
-}
-display.ExtensionPartDisplay= extend(display.PartDisplay,display.ExtensionPartDisplay,true);
-
-
-//get size of contents of an input
-//from http://stackoverflow.com/questions/118241/calculate-text-width-with-javascript
-$.textMetrics = function(el) {
-	var h = 0, w = 0;
-
-	var div = document.createElement('div');
-	document.body.appendChild(div);
-	$(div).css({
-		position: 'absolute',
-		left: -1000,
-		top: -1000,
-		display: 'none'
-	});
-
-	var val = $(el).val();
-	val = val.replace(/ /g,'&amp;nbsp;');
-	$(div).html(val);
-	var styles = ['font-size','font-style', 'font-weight', 'font-family','line-height', 'text-transform', 'letter-spacing'];
-	$(styles).each(function() {
-		var s = this.toString();
-		$(div).css(s, $(el).css(s));
-	});
-
-	h = $(div).outerHeight();
-	w = $(div).outerWidth();
-
-	$(div).remove();
-
-	var ret = {
-	 height: h,
-	 width: w
-	};
-
-	return ret;
-}
-
-//update a score feedback box
-// obj - object with the following properties representing the score data:
-// 	answered - has the object been answered?
-// 	isDirty - has the student's answer changed?
-// 	score - number of marks awarded
-//  marks - number of marks available
-//  credit - proportion of available marks awarded
-//  doesMarking - does the object do any marking?
-//	revealed - have the correct answers been revealed?
-//
-//settings - object containing the following properties:
-//	showTotalMark
-//	showActualMark
-//	showAnswerState
-function showScoreFeedback(obj,settings)
-{
-	var niceNumber = Numbas.math.niceNumber;
-	var scoreDisplay = '';
-
-	var newScore = ko.observable(false);
-
-	var answered = ko.computed(function() {
-		return !obj.isDirty() &amp;&amp; (obj.answered() || obj.score()>0);
-	});
-
-	var state = ko.computed(function() {
-		var revealed = obj.revealed(), score = obj.score(), marks = obj.marks(), credit = obj.credit();
-
-		if( obj.doesMarking() &amp;&amp; (revealed || (settings.showAnswerState &amp;&amp; answered())) ) {
-			if(credit&lt;=0) {
-				return 'wrong';
-			} else if(credit==1) {
-				return 'correct';
-			} else {
-				return 'partial';
-			}
-		}
-		else {
-			return 'none';
-		}
-	});
-
-	return {
-		update: ko.computed({
-			read: function() {
-				return newScore();
-			},
-			write: function() {
-				newScore(true);
-				newScore(false);
-			}
-		}),
-		message: ko.computed(function() {
-			var revealed = obj.revealed(), score = obj.score(), marks = obj.marks();
-
-			var scoreobj = {
-				marks: marks,
-				score: score,
-				marksString: niceNumber(marks)+' '+R('mark',{count:marks}),
-				scoreString: niceNumber(score)+' '+R('mark',{count:score})
-			};
-			if(revealed &amp;&amp; !answered()) {
-				return R('question.score feedback.unanswered');
-			} else if(answered() &amp;&amp; obj.doesMarking() &amp;&amp; marks>0) {
-				var str = 'question.score feedback.answered'
-							+ (revealed || settings.showTotalMark ? ' total' : '')
-							+ (revealed || settings.showActualMark ? ' actual' : '')
-				return R(str,scoreobj);
-			} else if(revealed || settings.showTotalMark) {
-				return R('question.score feedback.unanswered total',scoreobj);
-			}
-			else
-				return '';
-		}),
-		iconClass: ko.computed(function() {
-			switch(state()) {
-			case 'wrong':
-				return 'icon-remove';
-			case 'correct':
-				return 'icon-ok';
-			case 'partial':
-				return 'icon-ok partial';
-			default:
-				return 'invisible';
-			}
-		}),
-		iconAttr: ko.computed(function() {
-			return {title:R('question.score feedback.'+state())};
-		})
-	}
-};
-
-function scrollTo(el)
-{
-	if(!(el).length)
-		return;
-	var docTop = $(window).scrollTop();
-	var docBottom = docTop + $(window).height();
-	var elemTop = $(el).offset().top;
-	if((elemTop-docTop &lt; 50) || (elemTop>docBottom-50))
-		$('html,body').animate({scrollTop: $(el).offset().top-50 });
-}
-
-/** Make a carousel out of a div containing a list
- * @param {Element} elem - div containing list to turn into a carousel
- * @param {object} options -`prevBtn`, `nextBtn` - selectors of buttons to move up and down, `speed`, `step`
- */
-var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
-	options = $.extend({
-		prevBtn: null,
-		nextBtn: null,
-		speed: 200,
-		step: 1
-	}, options || {});
-
-	var div = $(elem);
-	var current = div.find('li:first');
-	var going = false;
-	var nextScroll = null;
-
-	function scrollTo(i)
-	{
-		nextScroll = i;
-		if(going)
-			return;
-		try {
-			var listOffset = div.find('ul,ol').position().top;
-			var listHeight = div.find('ul,ol').height();
-		} catch(e) {
-			return;
-		}
-
-		var lis = div.find('li');
-		var divHeight = div.height();
-		var maxI = 0;
-		for(var j=0;j&lt;lis.length;j++)
-		{
-			var y = lis.eq(j).position().top - listOffset;
-			if(listHeight - y &lt; divHeight)
-			{
-				maxI = j;
-				break;
-			}
-		}
-		i = Math.max(Math.min(i,maxI),0);
-
-		var ocurrent = current;
-		current = div.find('li').eq(i);
-		var itemOffset = current.position().top - listOffset;
-		if(itemOffset != div.scrollTop() &amp;&amp; ocurrent != current)
-		{
-			going = true;
-			nextScroll = null;
-			div.animate({scrollTop: itemOffset},{
-				duration: options.speed,
-				complete: function() { 
-					going = false;
-					if(nextScroll != null)
-						scrollTo(nextScroll);
-				} 
-			});
-		}
-	}
-
-	function scrollUp() {
-		var i = div.find('li').index(current) || 0;
-		if(nextScroll!==null)
-			i = Math.min(i,nextScroll);
-		i = Math.max(i-options.step, 0);
-		scrollTo(i);
-	}
-	function scrollDown() {
-		var lis = div.find('li');
-		var i = lis.index(current) || 0;
-		if(nextScroll!==null)
-			i = Math.max(i,nextScroll);
-		i = Math.min(i+options.step,lis.length-1);
-		scrollTo(i);
-	}
-
-	$(options.prevBtn).click(scrollUp);
-	$(options.nextBtn).click(scrollDown);
-	div.mousewheel(function(e,d) {
-		d > 0 ? scrollUp() : scrollDown();
-		return false;
-	});
-
-	return scrollTo;
-};
-
-
+Numbas.queueScript('display',['display-base','mathjax-hooks','knockout-handlers','exam-display','question-display','part-display','display/parts/extension','display/parts/gapfill','display/parts/information','display/parts/jme','display/parts/matrix','display/parts/multipleresponse','display/parts/numberentry','display/parts/patternmatch'],function() {
 });
 
 </code></pre>
@@ -2572,15 +74,25 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 		
 			<li class="search-result" data-longname="complex.complexToString"><a href="global.html#complex#.complexToString">complex.complexToString</a></li>
 		
+			<li class="search-result" data-longname="fraction"><a href="global.html#fraction">fraction</a></li>
+		
 			<li class="search-result" data-longname="func_data"><a href="global.html#func_data">func_data</a></li>
 		
 			<li class="search-result" data-longname="JME"><a href="global.html#JME">JME</a></li>
 		
+			<li class="search-result" data-longname="jme_display_settings"><a href="global.html#jme_display_settings">jme_display_settings</a></li>
+		
+			<li class="search-result" data-longname="jme_pattern_match"><a href="global.html#jme_pattern_match">jme_pattern_match</a></li>
+		
 			<li class="search-result" data-longname="matrix"><a href="global.html#matrix">matrix</a></li>
+		
+			<li class="search-result" data-longname="niceNumber_settings"><a href="global.html#niceNumber_settings">niceNumber_settings</a></li>
 		
 			<li class="search-result" data-longname="Numbas"><a href="Numbas.html">Numbas</a></li>
 		
 			<li class="search-result" data-longname="Numbas.addExtension"><a href="Numbas.html#.addExtension">Numbas.addExtension</a></li>
+		
+			<li class="search-result" data-longname="Numbas.checkAllScriptsLoaded"><a href="Numbas.html#.checkAllScriptsLoaded">Numbas.checkAllScriptsLoaded</a></li>
 		
 			<li class="search-result" data-longname="Numbas.controls"><a href="Numbas.controls.html">Numbas.controls</a></li>
 		
@@ -2597,6 +109,8 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 			<li class="search-result" data-longname="Numbas.controls.getAdvice"><a href="Numbas.controls.html#.getAdvice">Numbas.controls.getAdvice</a></li>
 		
 			<li class="search-result" data-longname="Numbas.controls.hideSteps"><a href="Numbas.controls.html#.hideSteps">Numbas.controls.hideSteps</a></li>
+		
+			<li class="search-result" data-longname="Numbas.controls.jumpQuestion"><a href="Numbas.controls.html#.jumpQuestion">Numbas.controls.jumpQuestion</a></li>
 		
 			<li class="search-result" data-longname="Numbas.controls.makeQuestionJumper"><a href="Numbas.controls.html#.makeQuestionJumper">Numbas.controls.makeQuestionJumper</a></li>
 		
@@ -2686,6 +200,8 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 		
 			<li class="search-result" data-longname="Numbas.display.ExamDisplay.showQuestion"><a href="Numbas.display.ExamDisplay.html#.showQuestion">Numbas.display.ExamDisplay.showQuestion</a></li>
 		
+			<li class="search-result" data-longname="Numbas.display.ExamDisplay.showQuestionGroupNames"><a href="Numbas.display.ExamDisplay.html#.showQuestionGroupNames">Numbas.display.ExamDisplay.showQuestionGroupNames</a></li>
+		
 			<li class="search-result" data-longname="Numbas.display.ExamDisplay.showScore"><a href="Numbas.display.ExamDisplay.html#.showScore">Numbas.display.ExamDisplay.showScore</a></li>
 		
 			<li class="search-result" data-longname="Numbas.display.ExamDisplay.showTiming"><a href="Numbas.display.ExamDisplay.html#.showTiming">Numbas.display.ExamDisplay.showTiming</a></li>
@@ -2698,73 +214,19 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 		
 			<li class="search-result" data-longname="Numbas.display.ExamDisplay.viewType"><a href="Numbas.display.ExamDisplay.html#.viewType">Numbas.display.ExamDisplay.viewType</a></li>
 		
-			<li class="search-result" data-longname="Numbas.display.ExtensionPartDisplay"><a href="Numbas.display.ExtensionPartDisplay.html">Numbas.display.ExtensionPartDisplay</a></li>
+			<li class="search-result" data-longname="Numbas.display.feedback_state"><a href="Numbas.display.html#.feedback_state">Numbas.display.feedback_state</a></li>
 		
-			<li class="search-result" data-longname="Numbas.display.GapFillPartDisplay"><a href="Numbas.display.GapFillPartDisplay.html">Numbas.display.GapFillPartDisplay</a></li>
+			<li class="search-result" data-longname="Numbas.display.feedbackable"><a href="Numbas.display.html#.feedbackable">Numbas.display.feedbackable</a></li>
 		
-			<li class="search-result" data-longname="Numbas.display.InformationPartDisplay"><a href="Numbas.display.InformationPartDisplay.html">Numbas.display.InformationPartDisplay</a></li>
+			<li class="search-result" data-longname="Numbas.display.getLocalisedAttribute"><a href="Numbas.display.html#.getLocalisedAttribute">Numbas.display.getLocalisedAttribute</a></li>
 		
 			<li class="search-result" data-longname="Numbas.display.inInput"><a href="Numbas.display.html#.inInput">Numbas.display.inInput</a></li>
 		
 			<li class="search-result" data-longname="Numbas.display.init"><a href="Numbas.display.html#.init">Numbas.display.init</a></li>
 		
-			<li class="search-result" data-longname="Numbas.display.JMEPartDisplay"><a href="Numbas.display.JMEPartDisplay.html">Numbas.display.JMEPartDisplay</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.JMEPartDisplay.correctAnswer"><a href="Numbas.display.JMEPartDisplay.html#.correctAnswer">Numbas.display.JMEPartDisplay.correctAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.JMEPartDisplay.correctAnswerLaTeX"><a href="Numbas.display.JMEPartDisplay.html#.correctAnswerLaTeX">Numbas.display.JMEPartDisplay.correctAnswerLaTeX</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.JMEPartDisplay.focusInput"><a href="Numbas.display.JMEPartDisplay.html#.focusInput">Numbas.display.JMEPartDisplay.focusInput</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.JMEPartDisplay.inputHasFocus"><a href="Numbas.display.JMEPartDisplay.html#.inputHasFocus">Numbas.display.JMEPartDisplay.inputHasFocus</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.JMEPartDisplay.showPreview"><a href="Numbas.display.JMEPartDisplay.html#.showPreview">Numbas.display.JMEPartDisplay.showPreview</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.JMEPartDisplay.studentAnswer"><a href="Numbas.display.JMEPartDisplay.html#.studentAnswer">Numbas.display.JMEPartDisplay.studentAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.JMEPartDisplay.studentAnswerLaTeX"><a href="Numbas.display.JMEPartDisplay.html#.studentAnswerLaTeX">Numbas.display.JMEPartDisplay.studentAnswerLaTeX</a></li>
-		
 			<li class="search-result" data-longname="Numbas.display.localisePage"><a href="Numbas.display.html#.localisePage">Numbas.display.localisePage</a></li>
 		
-			<li class="search-result" data-longname="Numbas.display.MatrixEntryPartDisplay"><a href="Numbas.display.MatrixEntryPartDisplay.html">Numbas.display.MatrixEntryPartDisplay</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.MatrixEntryPartDisplay.correctAnswer"><a href="Numbas.display.MatrixEntryPartDisplay.html#.correctAnswer">Numbas.display.MatrixEntryPartDisplay.correctAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.MatrixEntryPartDisplay.showPreview"><a href="Numbas.display.MatrixEntryPartDisplay.html#.showPreview">Numbas.display.MatrixEntryPartDisplay.showPreview</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.MatrixEntryPartDisplay.studentAnswer"><a href="Numbas.display.MatrixEntryPartDisplay.html#.studentAnswer">Numbas.display.MatrixEntryPartDisplay.studentAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.MatrixEntryPartDisplay.studentAnswerLaTeX"><a href="Numbas.display.MatrixEntryPartDisplay.html#.studentAnswerLaTeX">Numbas.display.MatrixEntryPartDisplay.studentAnswerLaTeX</a></li>
-		
 			<li class="search-result" data-longname="Numbas.display.modal"><a href="Numbas.display.html#.modal">Numbas.display.modal</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.MultipleResponsePartDisplay"><a href="Numbas.display.MultipleResponsePartDisplay.html">Numbas.display.MultipleResponsePartDisplay</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.MultipleResponsePartDisplay.correctAnswer"><a href="Numbas.display.MultipleResponsePartDisplay.html#.correctAnswer">Numbas.display.MultipleResponsePartDisplay.correctAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.MultipleResponsePartDisplay.studentAnswer"><a href="Numbas.display.MultipleResponsePartDisplay.html#.studentAnswer">Numbas.display.MultipleResponsePartDisplay.studentAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.MultipleResponsePartDisplay.ticks"><a href="Numbas.display.MultipleResponsePartDisplay.html#.ticks">Numbas.display.MultipleResponsePartDisplay.ticks</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay"><a href="Numbas.display.NumberEntryPartDisplay.html">Numbas.display.NumberEntryPartDisplay</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.cleanStudentAnswer"><a href="Numbas.display.NumberEntryPartDisplay.html#.cleanStudentAnswer">Numbas.display.NumberEntryPartDisplay.cleanStudentAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.correctAnswer"><a href="Numbas.display.NumberEntryPartDisplay.html#.correctAnswer">Numbas.display.NumberEntryPartDisplay.correctAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.focusInput"><a href="Numbas.display.NumberEntryPartDisplay.html#.focusInput">Numbas.display.NumberEntryPartDisplay.focusInput</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.inputHasFocus"><a href="Numbas.display.NumberEntryPartDisplay.html#.inputHasFocus">Numbas.display.NumberEntryPartDisplay.inputHasFocus</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.precisionHint"><a href="Numbas.display.NumberEntryPartDisplay.html#.precisionHint">Numbas.display.NumberEntryPartDisplay.precisionHint</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.showPrecisionHint"><a href="Numbas.display.NumberEntryPartDisplay.html#.showPrecisionHint">Numbas.display.NumberEntryPartDisplay.showPrecisionHint</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.showPreview"><a href="Numbas.display.NumberEntryPartDisplay.html#.showPreview">Numbas.display.NumberEntryPartDisplay.showPreview</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.studentAnswer"><a href="Numbas.display.NumberEntryPartDisplay.html#.studentAnswer">Numbas.display.NumberEntryPartDisplay.studentAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.studentAnswerLaTeX"><a href="Numbas.display.NumberEntryPartDisplay.html#.studentAnswerLaTeX">Numbas.display.NumberEntryPartDisplay.studentAnswerLaTeX</a></li>
 		
 			<li class="search-result" data-longname="Numbas.display.PartDisplay"><a href="Numbas.display.PartDisplay.html">Numbas.display.PartDisplay</a></li>
 		
@@ -2846,14 +308,6 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 		
 			<li class="search-result" data-longname="Numbas.display.PartDisplay.warningsShown"><a href="Numbas.display.PartDisplay.html#.warningsShown">Numbas.display.PartDisplay.warningsShown</a></li>
 		
-			<li class="search-result" data-longname="Numbas.display.PatternMatchPartDisplay"><a href="Numbas.display.PatternMatchPartDisplay.html">Numbas.display.PatternMatchPartDisplay</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.PatternMatchPartDisplay.correctAnswer"><a href="Numbas.display.PatternMatchPartDisplay.html#.correctAnswer">Numbas.display.PatternMatchPartDisplay.correctAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.PatternMatchPartDisplay.displayAnswer"><a href="Numbas.display.PatternMatchPartDisplay.html#.displayAnswer">Numbas.display.PatternMatchPartDisplay.displayAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.PatternMatchPartDisplay.studentAnswer"><a href="Numbas.display.PatternMatchPartDisplay.html#.studentAnswer">Numbas.display.PatternMatchPartDisplay.studentAnswer</a></li>
-		
 			<li class="search-result" data-longname="Numbas.display.QuestionDisplay"><a href="Numbas.display.QuestionDisplay.html">Numbas.display.QuestionDisplay</a></li>
 		
 			<li class="search-result" data-longname="Numbas.display.QuestionDisplay.adviceDisplayed"><a href="Numbas.display.QuestionDisplay.html#.adviceDisplayed">Numbas.display.QuestionDisplay.adviceDisplayed</a></li>
@@ -2914,11 +368,17 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 		
 			<li class="search-result" data-longname="Numbas.display.QuestionDisplay.visited"><a href="Numbas.display.QuestionDisplay.html#.visited">Numbas.display.QuestionDisplay.visited</a></li>
 		
+			<li class="search-result" data-longname="Numbas.display.scoreFeedback"><a href="Numbas.display.html#.scoreFeedback">Numbas.display.scoreFeedback</a></li>
+		
 			<li class="search-result" data-longname="Numbas.display.showAlert"><a href="Numbas.display.html#.showAlert">Numbas.display.showAlert</a></li>
 		
 			<li class="search-result" data-longname="Numbas.display.showConfirm"><a href="Numbas.display.html#.showConfirm">Numbas.display.showConfirm</a></li>
 		
 			<li class="search-result" data-longname="Numbas.display.showLoadProgress"><a href="Numbas.display.html#.showLoadProgress">Numbas.display.showLoadProgress</a></li>
+		
+			<li class="search-result" data-longname="Numbas.display.showScoreFeedback"><a href="Numbas.display.html#.showScoreFeedback">Numbas.display.showScoreFeedback</a></li>
+		
+			<li class="search-result" data-longname="Numbas.display.showScoreFeedback_settings"><a href="Numbas.display.html#.showScoreFeedback_settings">Numbas.display.showScoreFeedback_settings</a></li>
 		
 			<li class="search-result" data-longname="Numbas.display.typeset"><a href="Numbas.display.html#.typeset">Numbas.display.typeset</a></li>
 		
@@ -2967,6 +427,8 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 			<li class="search-result" data-longname="Numbas.Exam#pause"><a href="Numbas.Exam.html#pause">Numbas.Exam#pause</a></li>
 		
 			<li class="search-result" data-longname="Numbas.Exam#percentScore"><a href="Numbas.Exam.html#percentScore">Numbas.Exam#percentScore</a></li>
+		
+			<li class="search-result" data-longname="Numbas.Exam#question_groups"><a href="Numbas.Exam.html#question_groups">Numbas.Exam#question_groups</a></li>
 		
 			<li class="search-result" data-longname="Numbas.Exam#questionList"><a href="Numbas.Exam.html#questionList">Numbas.Exam#questionList</a></li>
 		
@@ -3028,6 +490,8 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 		
 			<li class="search-result" data-longname="Numbas.jme.builtinScope"><a href="Numbas.jme.html#.builtinScope">Numbas.jme.builtinScope</a></li>
 		
+			<li class="search-result" data-longname="Numbas.jme.checkingFunction"><a href="Numbas.jme.html#.checkingFunction">Numbas.jme.checkingFunction</a></li>
+		
 			<li class="search-result" data-longname="Numbas.jme.checkingFunctions"><a href="Numbas.jme.html#.checkingFunctions">Numbas.jme.checkingFunctions</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.checkingFunctions.absdiff"><a href="Numbas.jme.html#.checkingFunctions#.absdiff">Numbas.jme.checkingFunctions.absdiff</a></li>
@@ -3042,6 +506,8 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 		
 			<li class="search-result" data-longname="Numbas.jme.compare"><a href="Numbas.jme.html#.compare">Numbas.jme.compare</a></li>
 		
+			<li class="search-result" data-longname="Numbas.jme.compare_settings"><a href="Numbas.jme.html#.compare_settings">Numbas.jme.compare_settings</a></li>
+		
 			<li class="search-result" data-longname="Numbas.jme.compile"><a href="Numbas.jme.html#.compile">Numbas.jme.compile</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.compileList"><a href="Numbas.jme.html#.compileList">Numbas.jme.compileList</a></li>
@@ -3051,6 +517,8 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 			<li class="search-result" data-longname="Numbas.jme.contentsubvars"><a href="Numbas.jme.html#.contentsubvars">Numbas.jme.contentsubvars</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.display"><a href="Numbas.jme.display.html">Numbas.jme.display</a></li>
+		
+			<li class="search-result" data-longname="Numbas.jme.display.jmeFunctions"><a href="Numbas.jme.display.html#.jmeFunctions">Numbas.jme.display.jmeFunctions</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.display.matchExpression"><a href="Numbas.jme.display.html#.matchExpression">Numbas.jme.display.matchExpression</a></li>
 		
@@ -3102,11 +570,15 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 		
 			<li class="search-result" data-longname="Numbas.jme.display.typeToJME.boolean"><a href="Numbas.jme.display.html#.typeToJME#.boolean">Numbas.jme.display.typeToJME.boolean</a></li>
 		
+			<li class="search-result" data-longname="Numbas.jme.display.typeToJME.dict"><a href="Numbas.jme.display.html#.typeToJME#.dict">Numbas.jme.display.typeToJME.dict</a></li>
+		
 			<li class="search-result" data-longname="Numbas.jme.display.typeToJME.expression"><a href="Numbas.jme.display.html#.typeToJME#.expression">Numbas.jme.display.typeToJME.expression</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.display.typeToJME.function"><a href="Numbas.jme.display.html#.typeToJME#.function">Numbas.jme.display.typeToJME.function</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.display.typeToJME.html"><a href="Numbas.jme.display.html#.typeToJME#.html">Numbas.jme.display.typeToJME.html</a></li>
+		
+			<li class="search-result" data-longname="Numbas.jme.display.typeToJME.keypair"><a href="Numbas.jme.display.html#.typeToJME#.keypair">Numbas.jme.display.typeToJME.keypair</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.display.typeToJME.list"><a href="Numbas.jme.display.html#.typeToJME#.list">Numbas.jme.display.typeToJME.list</a></li>
 		
@@ -3128,7 +600,11 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 		
 			<li class="search-result" data-longname="Numbas.jme.display.typeToTeX"><a href="Numbas.jme.display.html#.typeToTeX">Numbas.jme.display.typeToTeX</a></li>
 		
+			<li class="search-result" data-longname="Numbas.jme.displayFlags"><a href="Numbas.jme.html#.displayFlags">Numbas.jme.displayFlags</a></li>
+		
 			<li class="search-result" data-longname="Numbas.jme.evaluate"><a href="Numbas.jme.html#.evaluate">Numbas.jme.evaluate</a></li>
+		
+			<li class="search-result" data-longname="Numbas.jme.evaluate_fn"><a href="Numbas.jme.html#.evaluate_fn">Numbas.jme.evaluate_fn</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.findvars"><a href="Numbas.jme.html#.findvars">Numbas.jme.findvars</a></li>
 		
@@ -3151,6 +627,8 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 			<li class="search-result" data-longname="Numbas.jme.funcObj.random"><a href="Numbas.jme.funcObj.html#.random">Numbas.jme.funcObj.random</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.funcObj.typecheck"><a href="Numbas.jme.funcObj.html#.typecheck">Numbas.jme.funcObj.typecheck</a></li>
+		
+			<li class="search-result" data-longname="Numbas.jme.funcObj_options"><a href="Numbas.jme.html#.funcObj_options">Numbas.jme.funcObj_options</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.funcSynonyms"><a href="Numbas.jme.html#.funcSynonyms">Numbas.jme.funcSynonyms</a></li>
 		
@@ -3224,13 +702,19 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 		
 			<li class="search-result" data-longname="Numbas.jme.tree"><a href="Numbas.jme.html#.tree">Numbas.jme.tree</a></li>
 		
+			<li class="search-result" data-longname="Numbas.jme.typecheck_fn"><a href="Numbas.jme.html#.typecheck_fn">Numbas.jme.typecheck_fn</a></li>
+		
 			<li class="search-result" data-longname="Numbas.jme.types"><a href="Numbas.jme.types.html">Numbas.jme.types</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.types.TBool"><a href="Numbas.jme.types.TBool.html">Numbas.jme.types.TBool</a></li>
 		
+			<li class="search-result" data-longname="Numbas.jme.types.TDict"><a href="Numbas.jme.types.TDict.html">Numbas.jme.types.TDict</a></li>
+		
 			<li class="search-result" data-longname="Numbas.jme.types.TFunc"><a href="Numbas.jme.types.TFunc.html">Numbas.jme.types.TFunc</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.types.THTML"><a href="Numbas.jme.types.THTML.html">Numbas.jme.types.THTML</a></li>
+		
+			<li class="search-result" data-longname="Numbas.jme.types.TKeyPair"><a href="Numbas.jme.types.TKeyPair.html">Numbas.jme.types.TKeyPair</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.types.TList"><a href="Numbas.jme.types.TList.html">Numbas.jme.types.TList</a></li>
 		
@@ -3267,6 +751,8 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 			<li class="search-result" data-longname="Numbas.math.abs"><a href="Numbas.math.html#.abs">Numbas.math.abs</a></li>
 		
 			<li class="search-result" data-longname="Numbas.math.add"><a href="Numbas.math.html#.add">Numbas.math.add</a></li>
+		
+			<li class="search-result" data-longname="Numbas.math.addDigits"><a href="Numbas.math.html#.addDigits">Numbas.math.addDigits</a></li>
 		
 			<li class="search-result" data-longname="Numbas.math.arccos"><a href="Numbas.math.html#.arccos">Numbas.math.arccos</a></li>
 		
@@ -3572,6 +1058,8 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 		
 			<li class="search-result" data-longname="Numbas.parts.ExtensionPart#xml"><a href="Numbas.parts.ExtensionPart.html#xml">Numbas.parts.ExtensionPart#xml</a></li>
 		
+			<li class="search-result" data-longname="Numbas.parts.feedbackmessage"><a href="Numbas.parts.html#.feedbackmessage">Numbas.parts.feedbackmessage</a></li>
+		
 			<li class="search-result" data-longname="Numbas.parts.GapFillPart"><a href="Numbas.parts.GapFillPart.html">Numbas.parts.GapFillPart</a></li>
 		
 			<li class="search-result" data-longname="Numbas.parts.GapFillPart#addCredit"><a href="Numbas.parts.GapFillPart.html#addCredit">Numbas.parts.GapFillPart#addCredit</a></li>
@@ -3867,6 +1355,8 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 			<li class="search-result" data-longname="Numbas.parts.JMEPart#warnings"><a href="Numbas.parts.JMEPart.html#warnings">Numbas.parts.JMEPart#warnings</a></li>
 		
 			<li class="search-result" data-longname="Numbas.parts.JMEPart#xml"><a href="Numbas.parts.JMEPart.html#xml">Numbas.parts.JMEPart#xml</a></li>
+		
+			<li class="search-result" data-longname="Numbas.parts.marking_results"><a href="Numbas.parts.html#.marking_results">Numbas.parts.marking_results</a></li>
 		
 			<li class="search-result" data-longname="Numbas.parts.MatrixEntryPart"><a href="Numbas.parts.MatrixEntryPart.html">Numbas.parts.MatrixEntryPart</a></li>
 		
@@ -4166,6 +1656,8 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 		
 			<li class="search-result" data-longname="Numbas.parts.NumberEntryPart#studentAnswer"><a href="Numbas.parts.NumberEntryPart.html#studentAnswer">Numbas.parts.NumberEntryPart#studentAnswer</a></li>
 		
+			<li class="search-result" data-longname="Numbas.parts.NumberEntryPart#studentAnswerAsFloat"><a href="Numbas.parts.NumberEntryPart.html#studentAnswerAsFloat">Numbas.parts.NumberEntryPart#studentAnswerAsFloat</a></li>
+		
 			<li class="search-result" data-longname="Numbas.parts.NumberEntryPart#studentAnswerAsJME"><a href="Numbas.parts.NumberEntryPart.html#studentAnswerAsJME">Numbas.parts.NumberEntryPart#studentAnswerAsJME</a></li>
 		
 			<li class="search-result" data-longname="Numbas.parts.NumberEntryPart#submit"><a href="Numbas.parts.NumberEntryPart.html#submit">Numbas.parts.NumberEntryPart#submit</a></li>
@@ -4424,6 +1916,8 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 		
 			<li class="search-result" data-longname="Numbas.Question#runPreamble"><a href="Numbas.Question.html#runPreamble">Numbas.Question#runPreamble</a></li>
 		
+			<li class="search-result" data-longname="Numbas.Question#scope"><a href="Numbas.Question.html#scope">Numbas.Question#scope</a></li>
+		
 			<li class="search-result" data-longname="Numbas.Question#score"><a href="Numbas.Question.html#score">Numbas.Question#score</a></li>
 		
 			<li class="search-result" data-longname="Numbas.Question#submit"><a href="Numbas.Question.html#submit">Numbas.Question#submit</a></li>
@@ -4439,6 +1933,12 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 			<li class="search-result" data-longname="Numbas.Question#visited"><a href="Numbas.Question.html#visited">Numbas.Question#visited</a></li>
 		
 			<li class="search-result" data-longname="Numbas.Question#xml"><a href="Numbas.Question.html#xml">Numbas.Question#xml</a></li>
+		
+			<li class="search-result" data-longname="Numbas.QuestionGroup"><a href="Numbas.QuestionGroup.html">Numbas.QuestionGroup</a></li>
+		
+			<li class="search-result" data-longname="Numbas.QuestionGroup#chooseQuestionSubset"><a href="Numbas.QuestionGroup.html#chooseQuestionSubset">Numbas.QuestionGroup#chooseQuestionSubset</a></li>
+		
+			<li class="search-result" data-longname="Numbas.QuestionGroup#settings"><a href="Numbas.QuestionGroup.html#settings">Numbas.QuestionGroup#settings</a></li>
 		
 			<li class="search-result" data-longname="Numbas.queueScript"><a href="Numbas.html#.queueScript">Numbas.queueScript</a></li>
 		
@@ -4459,6 +1959,8 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 			<li class="search-result" data-longname="Numbas.schedule.lifts"><a href="Numbas.schedule.html#.lifts">Numbas.schedule.lifts</a></li>
 		
 			<li class="search-result" data-longname="Numbas.schedule.pop"><a href="Numbas.schedule.html#.pop">Numbas.schedule.pop</a></li>
+		
+			<li class="search-result" data-longname="Numbas.schedule.task_object"><a href="Numbas.schedule.html#.task_object">Numbas.schedule.task_object</a></li>
 		
 			<li class="search-result" data-longname="Numbas.schedule.total"><a href="Numbas.schedule.html#.total">Numbas.schedule.total</a></li>
 		
@@ -4660,6 +2162,8 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 		
 			<li class="search-result" data-longname="Numbas.util.capitalise"><a href="Numbas.util.html#.capitalise">Numbas.util.capitalise</a></li>
 		
+			<li class="search-result" data-longname="Numbas.util.cleanNumber"><a href="Numbas.util.html#.cleanNumber">Numbas.util.cleanNumber</a></li>
+		
 			<li class="search-result" data-longname="Numbas.util.combinations"><a href="Numbas.util.html#.combinations">Numbas.util.combinations</a></li>
 		
 			<li class="search-result" data-longname="Numbas.util.combinations_with_replacement"><a href="Numbas.util.html#.combinations_with_replacement">Numbas.util.combinations_with_replacement</a></li>
@@ -4712,7 +2216,11 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 		
 			<li class="search-result" data-longname="Numbas.util.nicePartName"><a href="Numbas.util.html#.nicePartName">Numbas.util.nicePartName</a></li>
 		
+			<li class="search-result" data-longname="Numbas.util.numberNotationStyles"><a href="Numbas.util.html#.numberNotationStyles">Numbas.util.numberNotationStyles</a></li>
+		
 			<li class="search-result" data-longname="Numbas.util.parseBool"><a href="Numbas.util.html#.parseBool">Numbas.util.parseBool</a></li>
+		
+			<li class="search-result" data-longname="Numbas.util.parseFraction"><a href="Numbas.util.html#.parseFraction">Numbas.util.parseFraction</a></li>
 		
 			<li class="search-result" data-longname="Numbas.util.parseNumber"><a href="Numbas.util.html#.parseNumber">Numbas.util.parseNumber</a></li>
 		
@@ -4727,6 +2235,8 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 			<li class="search-result" data-longname="Numbas.util.sortBy"><a href="Numbas.util.html#.sortBy">Numbas.util.sortBy</a></li>
 		
 			<li class="search-result" data-longname="Numbas.util.splitbrackets"><a href="Numbas.util.html#.splitbrackets">Numbas.util.splitbrackets</a></li>
+		
+			<li class="search-result" data-longname="Numbas.util.standardNumberFormatter"><a href="Numbas.util.html#.standardNumberFormatter">Numbas.util.standardNumberFormatter</a></li>
 		
 			<li class="search-result" data-longname="Numbas.util.unPercent"><a href="Numbas.util.html#.unPercent">Numbas.util.unPercent</a></li>
 		
@@ -4796,6 +2306,8 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 		
 			<li class="search-result" data-longname="Numbas.xml.tryGetAttribute"><a href="Numbas.xml.html#.tryGetAttribute">Numbas.xml.tryGetAttribute</a></li>
 		
+			<li class="search-result" data-longname="Numbas.xml.tryGetAttribute_options"><a href="Numbas.xml.html#.tryGetAttribute_options">Numbas.xml.tryGetAttribute_options</a></li>
+		
 			<li class="search-result" data-longname="package:undefined"><a href="global.html#package:">package:undefined</a></li>
 		
 			<li class="search-result" data-longname="partpath"><a href="global.html#partpath">partpath</a></li>
@@ -4803,6 +2315,8 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 			<li class="search-result" data-longname="range"><a href="global.html#range">range</a></li>
 		
 			<li class="search-result" data-longname="RequireScript"><a href="RequireScript.html">RequireScript</a></li>
+		
+			<li class="search-result" data-longname="ruleset_flags"><a href="global.html#ruleset_flags">ruleset_flags</a></li>
 		
 			<li class="search-result" data-longname="runtime/scripts/controls.js"><a href="global.html#runtime/scripts/controls.js">runtime/scripts/controls.js</a></li>
 		
@@ -4852,7 +2366,11 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 		
 			<li class="search-result" data-longname="runtime/scripts/xml.js"><a href="global.html#runtime/scripts/xml.js">runtime/scripts/xml.js</a></li>
 		
+			<li class="search-result" data-longname="set"><a href="global.html#set">set</a></li>
+		
 			<li class="search-result" data-longname="TeX"><a href="global.html#TeX">TeX</a></li>
+		
+			<li class="search-result" data-longname="texify_settings"><a href="global.html#texify_settings">texify_settings</a></li>
 		
 			<li class="search-result" data-longname="themes/default/files/scripts/display.js"><a href="global.html#themes/default/files/scripts/display.js">themes/default/files/scripts/display.js</a></li>
 		
@@ -4860,16 +2378,42 @@ var makeCarousel = Numbas.display.makeCarousel = function(elem,options) {
 		
 			<li class="search-result" data-longname="vector"><a href="global.html#vector">vector</a></li>
 		
+			<li class="search-result" data-longname="Number"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></li>
+		
+			<li class="search-result" data-longname="String"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></li>
+		
+			<li class="search-result" data-longname="RegExp"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp">RegExp</a></li>
+		
+			<li class="search-result" data-longname="Date"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date">Date</a></li>
+		
+			<li class="search-result" data-longname="Element"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element">Element</a></li>
+		
+			<li class="search-result" data-longname="observable"><a href="http://knockoutjs.com/documentation/observables.html">observable</a></li>
+		
+			<li class="search-result" data-longname="jQuery"><a href="http://api.jquery.com/Types/#jQuery">jQuery</a></li>
+		
+			<li class="search-result" data-longname="Error"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a></li>
+		
+			<li class="search-result" data-longname="Boolean"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></li>
+		
+			<li class="search-result" data-longname="Array"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></li>
+		
+			<li class="search-result" data-longname="function"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">function</a></li>
+		
+			<li class="search-result" data-longname="XMLDocument"><a href="https://developer.mozilla.org/en/docs/Web/API/XMLDocument">XMLDocument</a></li>
+		
+			<li class="search-result" data-longname="Object"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></li>
+		
 	</ul>
 </div>
-<div class="main-nav-item"><h3>Classes</h3><ul><li><a href="Numbas.storage.BlankStorage.html">BlankStorage</a></li><li><a href="Numbas.Error.html">Error</a></li><li><a href="Numbas.Exam.html">Exam</a></li><li><a href="Numbas.display.ExamDisplay.html">ExamDisplay</a></li><li><a href="Numbas.ExamEvent.html">ExamEvent</a></li><li><a href="Numbas.parts.ExtensionPart.html">ExtensionPart</a></li><li><a href="Numbas.display.ExtensionPartDisplay.html">ExtensionPartDisplay</a></li><li><a href="Numbas.jme.funcObj.html">funcObj</a></li><li><a href="Numbas.parts.GapFillPart.html">GapFillPart</a></li><li><a href="Numbas.display.GapFillPartDisplay.html">GapFillPartDisplay</a></li><li><a href="Numbas.parts.InformationPart.html">InformationPart</a></li><li><a href="Numbas.display.InformationPartDisplay.html">InformationPartDisplay</a></li><li><a href="Numbas.parts.JMEPart.html">JMEPart</a></li><li><a href="Numbas.display.JMEPartDisplay.html">JMEPartDisplay</a></li><li><a href="Numbas.parts.MatrixEntryPart.html">MatrixEntryPart</a></li><li><a href="Numbas.display.MatrixEntryPartDisplay.html">MatrixEntryPartDisplay</a></li><li><a href="Numbas.parts.MultipleResponsePart.html">MultipleResponsePart</a></li><li><a href="Numbas.display.MultipleResponsePartDisplay.html">MultipleResponsePartDisplay</a></li><li><a href="Numbas.parts.NumberEntryPart.html">NumberEntryPart</a></li><li><a href="Numbas.display.NumberEntryPartDisplay.html">NumberEntryPartDisplay</a></li><li><a href="Numbas.parts.Part.html">Part</a></li><li><a href="Numbas.display.PartDisplay.html">PartDisplay</a></li><li><a href="Numbas.parts.PatternMatchPart.html">PatternMatchPart</a></li><li><a href="Numbas.display.PatternMatchPartDisplay.html">PatternMatchPartDisplay</a></li><li><a href="Numbas.Question.html">Question</a></li><li><a href="Numbas.display.QuestionDisplay.html">QuestionDisplay</a></li><li><a href="RequireScript.html">RequireScript</a></li><li><a href="Numbas.jme.display.Rule.html">Rule</a></li><li><a href="Numbas.jme.Ruleset.html">Ruleset</a></li><li><a href="Numbas.jme.Scope.html">Scope</a></li><li><a href="Numbas.storage.SCORMStorage.html">SCORMStorage</a></li><li><a href="Numbas.jme.types.TBool.html">TBool</a></li><li><a href="Numbas.jme.types.TFunc.html">TFunc</a></li><li><a href="Numbas.jme.types.THTML.html">THTML</a></li><li><a href="Numbas.jme.types.TList.html">TList</a></li><li><a href="Numbas.jme.types.TMatrix.html">TMatrix</a></li><li><a href="Numbas.jme.types.TName.html">TName</a></li><li><a href="Numbas.jme.types.TNum.html">TNum</a></li><li><a href="Numbas.jme.types.TOp.html">TOp</a></li><li><a href="Numbas.jme.types.TPunc.html">TPunc</a></li><li><a href="Numbas.jme.types.TRange.html">TRange</a></li><li><a href="Numbas.jme.types.TSet.html">TSet</a></li><li><a href="Numbas.jme.types.TString.html">TString</a></li><li><a href="Numbas.jme.types.TVector.html">TVector</a></li></ul></div><div class="main-nav-item"><h3>Namespaces</h3><ul><li><a href="Numbas.controls.html">controls</a></li><li><a href="Numbas.display.html">display</a></li><li><a href="Numbas.jme.display.html">display</a></li><li><a href="Numbas.jme.html">jme</a></li><li><a href="Numbas.math.html">math</a></li><li><a href="Numbas.matrixmath.html">matrixmath</a></li><li><a href="Numbas.html">Numbas</a></li><li><a href="Numbas.parts.html">parts</a></li><li><a href="Numbas.schedule.html">schedule</a></li><li><a href="Numbas.setmath.html">setmath</a></li><li><a href="Numbas.storage.html">storage</a></li><li><a href="Numbas.timing.html">timing</a></li><li><a href="Numbas.jme.types.html">types</a></li><li><a href="Numbas.util.html">util</a></li><li><a href="Numbas.jme.variables.html">variables</a></li><li><a href="Numbas.vectormath.html">vectormath</a></li><li><a href="Numbas.xml.html">xml</a></li></ul></div><h3><a href="global.html">Global variables</a></h3>
+<div class="main-nav-item"><h3>Classes</h3><ul><li><a href="Numbas.storage.BlankStorage.html">BlankStorage</a></li><li><a href="Numbas.Error.html">Error</a></li><li><a href="Numbas.Exam.html">Exam</a></li><li><a href="Numbas.display.ExamDisplay.html">ExamDisplay</a></li><li><a href="Numbas.ExamEvent.html">ExamEvent</a></li><li><a href="Numbas.parts.ExtensionPart.html">ExtensionPart</a></li><li><a href="Numbas.jme.funcObj.html">funcObj</a></li><li><a href="Numbas.parts.GapFillPart.html">GapFillPart</a></li><li><a href="Numbas.parts.InformationPart.html">InformationPart</a></li><li><a href="Numbas.parts.JMEPart.html">JMEPart</a></li><li><a href="Numbas.parts.MatrixEntryPart.html">MatrixEntryPart</a></li><li><a href="Numbas.parts.MultipleResponsePart.html">MultipleResponsePart</a></li><li><a href="Numbas.parts.NumberEntryPart.html">NumberEntryPart</a></li><li><a href="Numbas.parts.Part.html">Part</a></li><li><a href="Numbas.display.PartDisplay.html">PartDisplay</a></li><li><a href="Numbas.parts.PatternMatchPart.html">PatternMatchPart</a></li><li><a href="Numbas.Question.html">Question</a></li><li><a href="Numbas.display.QuestionDisplay.html">QuestionDisplay</a></li><li><a href="Numbas.QuestionGroup.html">QuestionGroup</a></li><li><a href="RequireScript.html">RequireScript</a></li><li><a href="Numbas.jme.display.Rule.html">Rule</a></li><li><a href="Numbas.jme.Ruleset.html">Ruleset</a></li><li><a href="Numbas.jme.Scope.html">Scope</a></li><li><a href="Numbas.storage.SCORMStorage.html">SCORMStorage</a></li><li><a href="Numbas.jme.types.TBool.html">TBool</a></li><li><a href="Numbas.jme.types.TDict.html">TDict</a></li><li><a href="Numbas.jme.types.TFunc.html">TFunc</a></li><li><a href="Numbas.jme.types.THTML.html">THTML</a></li><li><a href="Numbas.jme.types.TKeyPair.html">TKeyPair</a></li><li><a href="Numbas.jme.types.TList.html">TList</a></li><li><a href="Numbas.jme.types.TMatrix.html">TMatrix</a></li><li><a href="Numbas.jme.types.TName.html">TName</a></li><li><a href="Numbas.jme.types.TNum.html">TNum</a></li><li><a href="Numbas.jme.types.TOp.html">TOp</a></li><li><a href="Numbas.jme.types.TPunc.html">TPunc</a></li><li><a href="Numbas.jme.types.TRange.html">TRange</a></li><li><a href="Numbas.jme.types.TSet.html">TSet</a></li><li><a href="Numbas.jme.types.TString.html">TString</a></li><li><a href="Numbas.jme.types.TVector.html">TVector</a></li></ul></div><div class="main-nav-item"><h3>Namespaces</h3><ul><li><a href="Numbas.controls.html">controls</a></li><li><a href="Numbas.display.html">display</a></li><li><a href="Numbas.jme.display.html">display</a></li><li><a href="Numbas.jme.html">jme</a></li><li><a href="Numbas.math.html">math</a></li><li><a href="Numbas.matrixmath.html">matrixmath</a></li><li><a href="Numbas.html">Numbas</a></li><li><a href="Numbas.parts.html">parts</a></li><li><a href="Numbas.schedule.html">schedule</a></li><li><a href="Numbas.setmath.html">setmath</a></li><li><a href="Numbas.storage.html">storage</a></li><li><a href="Numbas.timing.html">timing</a></li><li><a href="Numbas.jme.types.html">types</a></li><li><a href="Numbas.util.html">util</a></li><li><a href="Numbas.jme.variables.html">variables</a></li><li><a href="Numbas.vectormath.html">vectormath</a></li><li><a href="Numbas.xml.html">xml</a></li></ul></div><h3><a href="global.html">Global variables</a></h3>
 	</nav>
 </div>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.0-dev</a> on Wed Nov 09 2016 13:50:49 GMT+0000 (GMT Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.0-dev</a> on Wed May 03 2017 10:59:25 GMT+0100 (GMT Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

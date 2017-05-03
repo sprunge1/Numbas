@@ -59,8 +59,8 @@ var util = Numbas.util;
 var math = Numbas.math;
 
 /** @typedef Numbas.jme.tree
-  * @type {object}
-  * @property {tree[]} args - the token's arguments (if it's an op or function)
+  * @type {Object}
+  * @property {Array.&lt;Numbas.jme.tree>} args - the token's arguments (if it's an op or function)
   * @property {Numbas.jme.token} tok - the token at this node
   */
 
@@ -83,13 +83,14 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 		re_name: /^{?((?:(?:[a-zA-Z]+):)*)((?:\$?[a-zA-Z_][a-zA-Z0-9_]*'*)|\?\??)}?/i,
 		re_op: /^(\.\.|#|&lt;=|>=|&lt;>|&amp;&amp;|\|\||[\|*+\-\/\^&lt;>=!&amp;;]|(?:(not|and|or|xor|implies|isa|except|in|divides)([^a-zA-Z0-9_']|$)))/i,
 		re_punctuation: /^([\(\),\[\]])/,
-		re_string: /^(['"])((?:[^\1\\]|\\.)*?)\1/,
-		re_comment: /^\/\/.*(?:\n|$)/
+		re_string: /^("""|'''|['"])((?:[^\1\\]|\\.)*?)\1/,
+		re_comment: /^\/\/.*(?:\n|$)/,
+        re_keypair: /^:/
 	},
 
 	/** Convert given expression string to a list of tokens. Does some tidying, e.g. inserts implied multiplication symbols.
 	 * @param {JME} expr 
-	 * @returns {token[]}
+	 * @returns {Array.&lt;Numbas.jme.token>}
 	 * @see Numbas.jme.compile
 	 */
 	tokenise: function(expr)
@@ -143,7 +144,7 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
                 if(token in opSynonyms) {
                     token = opSynonyms[token];
                 }
-				if( tokens.length==0 || (nt=tokens[tokens.length-1].type)=='(' || nt==',' || nt=='[' || (nt=='op' &amp;&amp; !tokens[tokens.length-1].postfix) )
+				if( tokens.length==0 || (nt=tokens[tokens.length-1].type)=='(' || nt==',' || nt=='[' || (nt=='op' &amp;&amp; !tokens[tokens.length-1].postfix) || nt=='keypair' )
 				{
 					if(token in prefixForm) {
 						token = prefixForm[token];
@@ -218,6 +219,12 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 
 				token = new TString(estr);
 			}
+            else if(result = expr.match(jme.re.re_keypair)) {
+                if(tokens.length==0 || tokens[tokens.length-1].type!='string') {
+                    throw(new Numbas.Error('jme.tokenise.keypair key not a string',{type: tokens[tokens.length-1].type}));
+                }
+                token = new TKeyPair(tokens.pop().value);
+            }
 			else if(expr.length)
 			{
 				//invalid character or not able to match a token
@@ -235,7 +242,7 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 	},
 
 	/** Shunt list of tokens into a syntax tree. Uses the shunting yard algorithm (wikipedia has a good description)
-	 * @param {token[]} tokens
+	 * @param {Array.&lt;Numbas.jme.token>} tokens
 	 * @returns {Numbas.jme.tree}
 	 * @see Numbas.jme.tokenise
 	 * @see Numbas.jme.compile
@@ -254,9 +261,23 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 				if(output.length&lt;tok.vars)
 					throw(new Numbas.Error('jme.shunt.not enough arguments',{op:tok.name || tok.type}));
 
-				var thing = {tok: tok,
-							 args: output.slice(output.length-tok.vars)};
-				output = output.slice(0,output.length-tok.vars);
+				var thing = {
+                    tok: tok,
+                    args: output.splice(output.length-tok.vars,tok.vars)
+                };
+                if(tok.type=='list') {
+                    var mode = null;
+                    for(var i=0;i&lt;thing.args.length;i++) {
+                        var argmode = thing.args[i].tok.type=='keypair' ? 'dictionary' : 'list';
+                        if(i>0 &amp;&amp; argmode!=mode) {
+                            throw(new Numbas.Error('jme.shunt.list mixed argument types',{mode: mode, argmode: argmode}));
+                        }
+                        mode = argmode;
+                    }
+                    if(mode=='dictionary') {
+                        thing.tok = new TDict();
+                    }
+                }
 				output.push(thing);
 			}
 			else
@@ -328,7 +349,7 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 				break;
 
 			case '[':
-				if(i==0 || tokens[i-1].type=='(' || tokens[i-1].type=='[' || tokens[i-1].type==',' || tokens[i-1].type=='op')	//define list
+				if(i==0 || tokens[i-1].type=='(' || tokens[i-1].type=='[' || tokens[i-1].type==',' || tokens[i-1].type=='op' || tokens[i-1].type=='keypair')	//define list
 				{
 					listmode.push('new');
 				}
@@ -405,6 +426,8 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 					}
 				}
 				break;
+            case 'keypair':
+                stack.push(tok);
 			}
 		}
 
@@ -434,7 +457,7 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 	/** Substitute variables defined in `scope` into the given syntax tree (in place).
 	 * @param {Numbas.jme.tree} tree
 	 * @param {Numbas.jme.Scope} scope
-	 * @param {boolean} [allowUnbound=false] - allow unbound variables to remain in the returned tree
+	 * @param {Boolean} [allowUnbound=false] - allow unbound variables to remain in the returned tree
 	 * @returns {Numbas.jme.tree}
 	 */
 	substituteTree: function(tree,scope,allowUnbound)
@@ -487,9 +510,9 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 	},
 
 	/** Evaluate a syntax tree (or string, which is compiled to a syntax tree), with respect to the given scope.
-	 * @param {tree|string} tree
+	 * @param {Numbas.jme.tree|String} tree
 	 * @param {Numbas.jme.Scope} scope
-	 * @returns {jme.type}
+	 * @returns {Numbas.jme.token}
 	 */
 	evaluate: function(tree,scope)
 	{
@@ -520,13 +543,26 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 				tok = new TList(value);
 			}
 			return tok;
+        case 'dict':
+            if(tok.value===undefined) {
+                var value = {};
+                for(var i=0;i&lt;tree.args.length;i++) {
+                    var kp = tree.args[i];
+                    value[kp.tok.key] = jme.evaluate(kp.args[0],scope);
+                }
+                tok = new TDict(value);
+            }
+            return tok;
 		case 'string':
 			var value = tok.value;
-			if(value.contains('{'))
+			if(!tok.safe &amp;&amp; value.contains('{')) {
 				value = jme.contentsubvars(value,scope)
-			var t = new TString(value);
-			t.latex = tok.latex;
-			return t;
+                var t = new TString(value);
+                t.latex = tok.latex
+                return t;
+            } else {
+                return tok;
+            }
 		case 'name':
 			if(tok.name.toLowerCase() in scope.variables)
 				return scope.variables[tok.name.toLowerCase()];
@@ -667,12 +703,22 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 		return trees;
 	},
 
+    /** Settings for {@link Numbas.jme.compare}
+     * @typedef {Object} Numbas.jme.compare_settings
+     * @property {String} checkingType - The name of the method to determine if two results are equal. See {@link Numbas.jme.checkingFunctions}.
+     * @property {Number} vsetRangeStart - The lower bound of the range to pick variable values from.
+     * @property {Number} vsetRangeEnd - The upper bound of the range to pick variable values from.
+     * @property {Number} vsetRangePoints - The number of values to pick for each variable.
+     * @property {Number} checkingAccuracy - A parameter for the checking function to determine if two results are equal. See {@link Numbas.jme.checkingFunctions}.
+     * @property {Number} failureRate - The number of times the comparison must fail to declare that the expressions are unequal.
+     */
+
 	/** Compare two expressions over some randomly selected points in the space of variables, to decide if they're equal.
 	 * @param {JME} expr1
 	 * @param {JME} expr2
-	 * @param {object} settings
+	 * @param {Numbas.jme.compare_settings} settings
 	 * @param {Numbas.jme.Scope} scope
-	 * @returns {boolean}
+	 * @returns {Boolean}
 	 */
 	compare: function(expr1,expr2,settings,scope) {
 		expr1 += '';
@@ -736,9 +782,9 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 	},
 
 	/** Substitute variables into content. To substitute variables, use {@link Numbas.jme.variables.DOMcontentsubvars}.
-	 * @param {string} str
+	 * @param {String} str
 	 * @param {Numbas.jme.Scope} scope
-	 * @returns {string}
+	 * @returns {String}
 	 */
 	contentsubvars: function(str, scope)
 	{
@@ -752,8 +798,8 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 
 	/** Split up a TeX expression, finding the \var and \simplify commands.
 	 * Returns an array [normal tex,var or simplify,options,argument,normal tex,...]a
-	 * @param {string} s
-	 * @returns {string[]}
+	 * @param {String} s
+	 * @returns {Array.&lt;String>}
 	 */
 	texsplit: function(s)
 	{
@@ -830,7 +876,7 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 	/** Produce a string representation of the given token, for display
 	 * @param {Numbas.jme.token} v
 	 * @see Numbas.jme.typeToDisplayString
-	 * @returns {string}
+	 * @returns {String}
 	 */
 	tokenToDisplayString: function(v) {
 		if(v.type in jme.typeToDisplayString) {
@@ -841,9 +887,9 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 	},
 
 	/** Substitute variables into a text string (not maths).
-	 * @param {string} str
+	 * @param {String} str
 	 * @param {Numbas.jme.Scope} scope
-	 * @param {boolean} [display=false] - Is this string going to be displayed to the user? If so, avoid unnecessary brackets and quotes.
+	 * @param {Boolean} [display=false] - Is this string going to be displayed to the user? If so, avoid unnecessary brackets and quotes.
 	 */
 	subvars: function(str, scope,display)
 	{
@@ -882,18 +928,26 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 
 	/** Unwrap a {@link Numbas.jme.token} into a plain JavaScript value
 	 * @param {Numbas.jme.token} v
-	 * @returns {object}
+	 * @returns {Object}
 	 */
 	unwrapValue: function(v) {
-		if(v.type=='list')
-			return v.value.map(jme.unwrapValue);
-		else
-			return v.value;
+        switch(v.type) {
+            case 'list':
+                return v.value.map(jme.unwrapValue);
+            case 'dict':
+                var o = {};
+                Object.keys(v.value).forEach(function(key) {
+                    o[key] = jme.unwrapValue(v.value[key]);
+                });
+                return o;
+		    default:
+    			return v.value;
+        }
 	},
 	
 	/** Wrap up a plain JavaScript value (number, string, bool or array) as a {@link Numbas.jme.token}.
-	 * @param {object} v
-	 * @param {string} typeHint - name of the expected type (to differentiate between, for example, matrices, vectors and lists
+	 * @param {Object} v
+	 * @param {String} typeHint - name of the expected type (to differentiate between, for example, matrices, vectors and lists
 	 * @returns {Numbas.jme.token}
 	 */
 	wrapValue: function(v,typeHint) {
@@ -901,28 +955,43 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 		case 'number':
 			return new jme.types.TNum(v);
 		case 'string':
-			return new jme.types.TString(v);
+            var s = new jme.types.TString(v);
+            s.safe = true;
+            return s;
 		case 'boolean':
 			return new jme.types.TBool(v);
 		default:
-			if($.isArray(v)) {
-				// it would be nice to abstract this, but some types need the arguments to be wrapped, while others don't
-				switch(typeHint) {
-				case 'matrix':
-					return new jme.types.TMatrix(v);
-				case 'vector':
-					return new jme.types.TVector(v);
-				case 'range':
-					return new jme.types.TRange(v);
-				case 'set':
-					v = v.map(jme.wrapValue);
-					return new jme.types.TSet(v);
-				default:
-					v = v.map(jme.wrapValue);
-					return new jme.types.TList(v);
-				}
-			}
-			return v;
+            switch(typeHint) {
+                case 'html':
+                    return v;
+                default:
+                    if($.isArray(v)) {
+                        // it would be nice to abstract this, but some types need the arguments to be wrapped, while others don't
+                        switch(typeHint) {
+                        case 'matrix':
+                            return new jme.types.TMatrix(v);
+                        case 'vector':
+                            return new jme.types.TVector(v);
+                        case 'range':
+                            return new jme.types.TRange(v);
+                        case 'set':
+                            v = v.map(jme.wrapValue);
+                            return new jme.types.TSet(v);
+                        default:
+                            v = v.map(jme.wrapValue);
+                            return new jme.types.TList(v);
+                        }
+                    } else if(v===null || v===undefined) { // CONTROVERSIAL! Cast null to the empty string, because we don't have a null type.
+                        return new jme.types.TString('');
+                    } else if(v!==null &amp;&amp; typeof v=='object' &amp;&amp; v.type===undefined) {
+                        var o = {};
+                        Object.keys(v).forEach(function(key) {
+                            o[key] = jme.wrapValue(v[key]);
+                        });
+                        return new jme.types.TDict(o);
+                    }
+                    return v;
+            }
 		}
 	},
 
@@ -930,7 +999,7 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 	 *
 	 * @param {Numbas.jme.token} 
 	 * 
-	 * @returns {boolean}
+	 * @returns {Boolean}
 	 */
 	isOp: function(tok,op) {
 		return tok.type=='op' &amp;&amp; tok.name==op;
@@ -940,7 +1009,7 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 	 *
 	 * @param {Numbas.jme.token} 
 	 * 
-	 * @returns {boolean}
+	 * @returns {Boolean}
 	 */
 	isName: function(tok,name) {
 		return tok.type=='name' &amp;&amp; tok.name==name;
@@ -950,7 +1019,7 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 	 *
 	 * @param {Numbas.jme.token} 
 	 * 
-	 * @returns {boolean}
+	 * @returns {Boolean}
 	 */
 	isFunction: function(tok,name) {
 		return tok.type=='function' &amp;&amp; tok.name==name;
@@ -961,7 +1030,7 @@ var jme = Numbas.jme = /** @lends Numbas.jme */ {
 	 *  
 	 *  @param {JME} expr
 	 *  @param {Numbas.jme.Scope} scope
-	 *  @returns {boolean}
+	 *  @returns {Boolean}
 	 */
 	isRandom: function(expr,scope) {
 		switch(expr.tok.type) {
@@ -1000,18 +1069,30 @@ jme.re.re_whitespace = '(?:[\\s \\f\\n\\r\\t\\v\\u00A0\\u2028\\u2029]|(?:\&amp;n
 jme.re.re_strip_whitespace = new RegExp('^'+jme.re.re_whitespace+'+|'+jme.re.re_whitespace+'+$','g');
 
 
-var displayFlags = {
+/** Flags used to control the behaviour of JME display functions.
+ * Values are `undefined` so they can be overridden
+ * @memberof Numbas.jme
+ */
+var displayFlags = jme.displayFlags = {
 	fractionnumbers: undefined,
 	rowvector: undefined
 };
 
 var ruleSort = util.sortBy(['patternString','resultString','conditionStrings']);
 
+/** Flags used in JME simplification rulesets
+ * @type Object.&lt;Boolean>
+ * @typedef ruleset_flags
+ * @property {Boolean} fractionnumbers - Show all numbers as fractions?
+ * @property {Boolean} rowvector - Display vectors as a horizontal list of components?
+ * @see Numbas.jme.Ruleset
+ */
+
 /** Set of simplification rules
  * @constructor
  * @memberof Numbas.jme
- * @param {rule[]} rules
- * @param {object} flags
+ * @param {Array.&lt;Numbas.jme.display.Rule>} rules
+ * @param {ruleset_flags} flags
  */
 var Ruleset = jme.Ruleset = function(rules,flags) {
 	this.rules = rules;
@@ -1117,10 +1198,10 @@ var fnSort = util.sortBy('id');
  * JME evaluation environment.
  * @memberof Numbas.jme
  * @constructor
- * @property {object} variables - dictionary of {@link Numbas.jme.token} objects
- * @property {object} functions - dictionary of arrays of {@link Numbas.jme.funcObj} objects. There can be more than one function for each name because of signature overloading.
- * @property {objects} rulesets - dictionary of {@link Numbas.jme.Ruleset} objects
- * @property {Numbas.Question} question - the question this scope belongs to
+ * @property {Object.&lt;Numbas.jme.token>} variables - Dictionary of variables defined in this scope.
+ * @property {Object.&lt;Array.&lt;Numbas.jme.funcObj>>} functions - Dictionary of functions defined in this scope. Function names map to lists of functions: there can be more than one function for each name because of signature overloading. When trying to evaluate a function, the first function in the list which can be evaluated on the given arguments is used.
+ * @property {Object.&lt;Numbas.jme.Ruleset>} rulesets - Dictionary of rulesets defined in this scope.
+ * @property {Numbas.Question} [question] - The question this scope belongs to.
  *
  * @param {Numbas.jme.Scope[]} scopes - List of scopes to combine into this one. Scopes appearing later in the list override ones appearing earlier, in case variable/ruleset names conflict.
  */
@@ -1165,7 +1246,7 @@ var Scope = jme.Scope = function(scopes) {
 }
 Scope.prototype = /** @lends Numbas.jme.Scope.prototype */ {
 	/** Add a JME function to the scope.
-	 * @param {jme.funcObj} fn - function to add
+	 * @param {Numbas.jme.funcObj} fn - function to add
 	 */
 	addFunction: function(fn) {
 		if(!(fn.name in this.functions))
@@ -1176,8 +1257,8 @@ Scope.prototype = /** @lends Numbas.jme.Scope.prototype */ {
 
 	/** Evaluate an expression in this scope - equivalent to `Numbas.jme.evaluate(expr,this)`
 	 * @param {JME} expr
-	 * @param {object} [variables] - dictionary of variables to sub into expression. Values are automatically wrapped up as JME types, so you can pass raw JavaScript values.
-	 * @returns {token}
+	 * @param {Object.&lt;Numbas.jme.token|Object>} [variables] - dictionary of variables to sub into expression. Values are automatically wrapped up as JME types, so you can pass raw JavaScript values.
+	 * @returns {Numbas.jme.token}
 	 */
 	evaluate: function(expr,variables) {
 		var scope = this;
@@ -1192,9 +1273,8 @@ Scope.prototype = /** @lends Numbas.jme.Scope.prototype */ {
 };
 
 
-/** @typedef Numbas.jme.token
- * @type {object}
- * @property {string} type
+/** @typedef {Object} Numbas.jme.token
+ * @property {String} type
  * @see Numbas.jme.types
  */
 
@@ -1206,19 +1286,39 @@ var types = jme.types = {}
 /** Number type.
  * @memberof Numbas.jme.types
  * @augments Numbas.jme.token
- * @property {number} value
+ * @property {Number} value
+ * @property {String|Number|complex} originalValue - the value used to construct the token - either a string, a number, or a complex number object
  * @property type "number"
  * @constructor
- * @param {number} num
+ * @param {Number} num
  */
 var TNum = types.TNum = types.number = function(num)
 {
-	if(num===undefined) 
+	if(num===undefined)
 		return;
+
+    this.originalValue = num;
+
+    switch(typeof(num)) {
+        case 'object':
+            if(num.complex) {
+                this.value = num;
+            } else {
+                throw(new Numbas.Error("jme.tokenise.number.object not complex"));
+            }
+            break;
+        case "number":
+            this.value = num;
+            break;
+        case "string":
+            this.value = parseFloat(num);
+            break;
+    }
 
 	this.value = num.complex ? num : parseFloat(num);
 }
 TNum.prototype.type = 'number';
+
 TNum.doc = {
 	name: 'number',
 	usage: ['0','1','0.234','i','e','pi'],
@@ -1228,10 +1328,12 @@ TNum.doc = {
 /** String type.
  * @memberof Numbas.jme.types
  * @augments Numbas.jme.token
- * @property {string} value
- * @property type "string"
+ * @property {String} value
+ * @property {Boolean} latex - is this string LaTeX code? If so, it's displayed as-is in math mode
+ * @property {Boolean} safe - if true, don't run {@link Numbas.jme.subvars} on this token when it's evaluated
+ * @property {String} type "string"
  * @constructor
- * @param {string} s
+ * @param {String} s
  */
 var TString = types.TString = types.string = function(s)
 {
@@ -1247,10 +1349,10 @@ TString.doc = {
 /** Boolean type
  * @memberof Numbas.jme.types
  * @augments Numbas.jme.token
- * @property {boolean} value
+ * @property {Boolean} value
  * @property type "boolean"
  * @constructor
- * @param {boolean} b
+ * @param {Boolean} b
  */
 var TBool = types.TBool = types.boolean = function(b)
 {
@@ -1266,10 +1368,10 @@ TBool.doc = {
 /** HTML DOM element
  * @memberof Numbas.jme.types
  * @augments Numbas.jme.token
- * @property {element} value
+ * @property {Element} value
  * @property type "html"
  * @constructor
- * @param {element} html
+ * @param {Element} html
  */
 var THTML = types.THTML = types.html = function(html) {
     if(html.ownerDocument===undefined &amp;&amp; !html.jquery) {
@@ -1288,11 +1390,11 @@ THTML.doc = {
 /** List of elements of any data type
  * @memberof Numbas.jme.types
  * @augments Numbas.jme.token
- * @property {number} vars - Length of list
- * @property {object[]} value - Values (may not be filled in if the list was created empty)
+ * @property {Number} vars - Length of list
+ * @property {Array.&lt;Numbas.jme.token>} value - Values (may not be filled in if the list was created empty)
  * @property type "html"
  * @constructor
- * @param {number|object} value - Either the size of the list, or an array of values
+ * @param {Number|Array.&lt;Numbas.jme.token>} value - Either the size of the list, or an array of values
  */
 var TList = types.TList = types.list = function(value)
 {
@@ -1316,13 +1418,44 @@ TList.doc = {
 	description: "A list of elements of any data type."
 };
 
-/** Set type
+
+/** Key-value pair assignment
  * @memberof Numbas.jme.types
  * @augments Numbas.jme.token
- * @property {object[]} value - Array of elements. Constructor assumes all elements are distinct
+ * @property {String} key
+ * @constructor
+ * @param {String} key
+ */
+var TKeyPair = types.TKeyPair = types.keypair = function(key) {
+    this.key = key;
+}
+TKeyPair.prototype = {
+    type: 'keypair',
+    vars: 1
+}
+
+/** Dictionary: map strings to values
+ * @memberof Numbas.jme.types
+ * @augments Numbas.jme.token
+ * @property {Object.&lt;Numbas.jme.token>} value - Map strings to tokens. Undefined until this token is evaluated.
+ * @property type "dict"
+ * @constructor
+ * @param {Object.&lt;Numbas.jme.token>} value
+ */
+var TDict = types.TDict = types.dict = function(value) {
+    this.value = value;
+}
+TDict.prototype = {
+    type: 'dict'
+}
+
+/** Set type: a collection of elements, with no duplicates
+ * @memberof Numbas.jme.types
+ * @augments Numbas.jme.token
+ * @property {Array.&lt;Numbas.jme.token>} value - Array of elements. Constructor assumes all elements are distinct
  * @property type "set"
  * @constructor
- * @param {object[]} value
+ * @param {Array.&lt;Numbas.jme.token>} value
  */
 var TSet = types.TSet = types.set = function(value) {
 	this.value = value;
@@ -1332,10 +1465,10 @@ TSet.prototype.type = 'set';
 /** Vector type
  * @memberof Numbas.jme.types
  * @augments Numbas.jme.token
- * @property {number[]} value - Array of components
+ * @property {Array.&lt;Number>} value - Array of components
  * @property type "vector"
  * @constructor
- * @param {number[]} value
+ * @param {Array.&lt;Number>} value
  */
 var TVector = types.TVector = types.vector = function(value)
 {
@@ -1378,11 +1511,11 @@ TMatrix.doc = {
 /** A range of numerical values - either discrete or continuous
  * @memberof Numbas.jme.types
  * @augments Numbas.jme.token
- * @property {number[]} value - `[start,end,step]` and then, if the range is discrete, all the values included in the range.
- * @property {number} size - the number of values in the range (if it's discrete, `undefined` otherwise)
+ * @property {Array.&lt;Number>} value - `[start,end,step]` and then, if the range is discrete, all the values included in the range.
+ * @property {Number} size - the number of values in the range (if it's discrete, `undefined` otherwise)
  * @property type "range"
  * @constructor
- * @param {number[]} range - `[start,end,step]`
+ * @param {Array.&lt;Number>} range - `[start,end,step]`
  */
 var TRange = types.TRange = types.range = function(range)
 {
@@ -1413,13 +1546,13 @@ TRange.doc = {
 /** Variable name token
  * @memberof Numbas.jme.types
  * @augments Numbas.jme.token
- * @property {string} name
- * @property {string} value - Same as `name`
- * @property {string[]} annotation - List of annotations (used to modify display)
+ * @property {String} name
+ * @property {String} value - Same as `name`
+ * @property {Array.&lt;String>} annotation - List of annotations (used to modify display)
  * @property type "name"
  * @constructor
- * @param {string} name
- * @param {string[]} annotation
+ * @param {String} name
+ * @param {Array.&lt;String>} annotation
  */
 var TName = types.TName = types.name = function(name,annotation)
 {
@@ -1451,13 +1584,13 @@ Any other annotation is taken to be a LaTeX command. For example, a name @vec:x@
 /** JME function token
  * @memberof Numbas.jme.types
  * @augments Numbas.jme.token
- * @property {string} name
- * @property {string[]} annotation - List of annotations (used to modify display)
- * @property {number} vars - Arity of the function
+ * @property {String} name
+ * @property {Array.&lt;String>} annotation - List of annotations (used to modify display)
+ * @property {Number} vars - Arity of the function
  * @property type "function"
  * @constructor
- * @param {string} name
- * @param {string[]} annotation
+ * @param {String} name
+ * @param {Array.&lt;String>} annotation
  */
 var TFunc = types.TFunc = types['function'] = function(name,annotation)
 {
@@ -1470,15 +1603,15 @@ TFunc.prototype.vars = 0;
 /** Unary/binary operation token
  * @memberof Numbas.jme.types
  * @augments Numbas.jme.token
- * @property {string} name
- * @property {number} vars - Arity of the operation
- * @property {boolean} postfix
- * @property {boolean} prefix
+ * @property {String} name
+ * @property {Number} vars - Arity of the operation
+ * @property {Boolean} postfix
+ * @property {Boolean} prefix
  * @properrty type "op"
  * @constructor
- * @param {string} op - Name of the operation
- * @param {boolean} postfix
- * @param {boolean} prefix
+ * @param {String} op - Name of the operation
+ * @param {Boolean} postfix
+ * @param {Boolean} prefix
  */
 var TOp = types.TOp = types.op = function(op,postfix,prefix)
 {
@@ -1496,9 +1629,9 @@ TOp.prototype.type = 'op';
 /** Punctuation token
  * @memberof Numbas.jme.types
  * @augments Numbas.jme.token
- * @property {string} type - The punctuation character
+ * @property {String} type - The punctuation character
  * @constructor
- * @param {string} kind - The punctuation character
+ * @param {String} kind - The punctuation character
  */
 var TPunc = types.TPunc = function(kind)
 {
@@ -1519,7 +1652,7 @@ TExpression.prototype = {
 /** Arities of built-in operations
  * @readonly
  * @memberof Numbas.jme
- * @enum {number} */
+ * @enum {Number} */
 var arity = jme.arity = {
 	'!': 1,
 	'not': 1,
@@ -1531,7 +1664,7 @@ var arity = jme.arity = {
 /** Some names represent different operations when used as prefix. This dictionary translates them.
  * @readonly
  * @memberof Numbas.jme
- * @enum {string}
+ * @enum {String}
  */
 var prefixForm = {
 	'+': '+u',
@@ -1541,14 +1674,14 @@ var prefixForm = {
 /** Some names represent different operations when used as prefix. This dictionary translates them.
  * @readonly
  * @memberof Numbas.jme
- * @enum {string}
+ * @enum {String}
  */
 var postfixForm = {
 	'!': 'fact'
 }
 
 /** Operator precedence
- * @enum {number}
+ * @enum {Number}
  * @memberof Numbas.jme
  * @readonly
  */
@@ -1578,11 +1711,12 @@ var precedence = jme.precedence = {
 	'and': 11,
 	'or': 12,
 	'xor': 13,
-	'implies': 14
+	'implies': 14,
+    ':': 100
 };
 
 /** Synonyms of operator names - keys in this dictionary are translated to their corresponding values
- * @enum {string}
+ * @enum {String}
  * @memberof Numbas.jme
  * @readonly
  */
@@ -1593,7 +1727,7 @@ var opSynonyms = jme.opSynonyms = {
 	'||':'or'
 }
 /** Synonyms of function names - keys in this dictionary are translated to their corresponding values 
- * @enum {string}
+ * @enum {String}
  * @memberof Numbas.jme
  * @readonly
  */
@@ -1609,7 +1743,7 @@ var funcSynonyms = jme.funcSynonyms = {
 /** Operations which evaluate lazily - they don't need to evaluate all of their arguments 
  * @memberof Numbas.jme
  */
-var lazyOps = jme.lazyOps = ['if','switch','repeat','map','let','isa','satisfy','filter','isset'];
+var lazyOps = jme.lazyOps = ['if','switch','repeat','map','let','isa','satisfy','filter','isset','dict','safe'];
 
 var rightAssociative = {
 	'^': true,
@@ -1625,7 +1759,7 @@ function leftAssociative(op)
 };
 
 /** Operations which commute.
- * @enum {boolean}
+ * @enum {Boolean}
  * @memberof Numbas.jme
  * @readonly
  */
@@ -1637,31 +1771,44 @@ var commutative = jme.commutative =
 	'=': true
 };
 
+/** A function which checks whether a {@link Numbas.jme.funcObj} can be applied to the given arguments.
+ * @callback Numbas.jme.typecheck_fn
+ * @param {Array.&lt;Numbas.jme.token>} variables
+ * @returns {Boolean}
+ */
+
+/** Evaluate a JME function on a list of arguments and in a given scope.
+ * @callback Numbas.jme.evaluate_fn
+ * @param {Array.&lt;Numbas.jme.tree|Numbas.jme.token|Object>} args - Arguments of the function. If the function is {@link Numbas.jme.lazyOps|lazy}, syntax trees are passed, otherwise arguments are evaluated to JME tokens first. If the {@link Numbas.jme.funcObj_options|unwrapValues} option is set, the arguments are unwrapped to raw JavaScript values.
+ * @param {Numbas.jme.Scope} scope - Scope in which the function is evaluated.
+ * @returns {Numbas.jme.token|Object} If {@link Numbas.jme.funcObj_options|unwrapValues} is set, 
+ */
+
+/** Options for the {@link Numbas.jme.funcObj} constructor
+ * @typedef {Object} Numbas.jme.funcObj_options
+ * @property {Numbas.jme.typecheck_fn} typecheck - Check that this function can be evaluated on the given arguments.
+ * @property {Numbas.jme.evaluate_fn} evaluate - Evaluate the function on a list of arguments and in a given scope.
+ * @property {Boolean} unwrapValues - Unwrap list elements in arguments into javascript primitives before passing to the evaluate function?
+ */
 
 var funcObjAcc = 0;	//accumulator for ids for funcObjs, so they can be sorted
 /**
- * Function object - for doing type checking away from the evaluator.
+ * A JME function. Capable of confirming that it can be evaluated on a given list of arguments, and returning the result of its evaluation on a list of arguments inside a given scope.
  * 
- * `options` can contain any of
- *
- * - `typecheck`: a function which checks whether the funcObj can be applied to the given arguments 
- * - `evaluate`: a function which performs the funcObj on given arguments and variables. Arguments are passed as expression trees, i.e. unevaluated
- * - `unwrapValues`: unwrap list elements in arguments into javascript primitives before passing to the evaluate function
- *
  * @memberof Numbas.jme
  * @constructor
- * @param {string} name
- * @param {function[]|string[]} intype - A list of data type constructors for the function's paramters' types. Use the string '?' to match any type. Or, give the type's name with a '*' in front to match any number of that type.
+ * @param {String} name
+ * @param {Array.&lt;function|String>} intype - A list of data type constructors for the function's paramters' types. Use the string '?' to match any type. Or, give the type's name with a '*' in front to match any number of that type. If `null`, then `options.typecheck` is used.
  * @param {function} outcons - The constructor for the output value of the function
- * @param {function} fn - JavaScript code which evaluates the function.
- * @param {object} options
+ * @param {Numbas.jme.evaluate_fn} fn - JavaScript code which evaluates the function.
+ * @param {Numbas.jme.funcObj_options} options
  *
  */
 var funcObj = jme.funcObj = function(name,intype,outcons,fn,options)
 {
 	/** Globally unique ID of this function object
 	 * @name id
-	 * @member {number} 
+	 * @member {Number} 
 	 * @memberof Numbas.jme.funcObj 
 	 */
 	this.id = funcObjAcc++;
@@ -1686,7 +1833,7 @@ var funcObj = jme.funcObj = function(name,intype,outcons,fn,options)
 
 	/** Name 
 	 * @name name
-	 * @member {string}
+	 * @member {String}
 	 * @memberof Numbas.jme.funcObj
 	 */
 	this.name=name;
@@ -1694,14 +1841,14 @@ var funcObj = jme.funcObj = function(name,intype,outcons,fn,options)
 	/** Calling signature of this function. A list of types - either token constructors; '?', representing any type; a type name. A type name or '?' followed by '*' means any number of arguments matching that type.
 	 *
 	 * @name intype
-	 * @member {list}
+	 * @member {Array.&lt;Numbas.jme.token|String>}
 	 * @memberof Numbas.jme.funcObj
 	 */
 	this.intype = intype;
 
 	/** The return type of this function. Either a Numbas.jme.token constructor function, or the string '?', meaning unknown type.
 	 * @name outtype
-	 * @member {function|string}
+	 * @member {function|String}
 	 * @memberof Numbas.jme.funcObj
 	 */
 	if(typeof(outcons)=='function')
@@ -1720,7 +1867,7 @@ var funcObj = jme.funcObj = function(name,intype,outcons,fn,options)
 	/** Can this function be called with the given list of arguments?
 	 * @function typecheck
 	 * @param {Numbas.jme.token[]} variables
-	 * @returns {boolean}
+	 * @returns {Boolean}
 	 * @memberof Numbas.jme.funcObj
 	 */
 	this.typecheck = options.typecheck || function(variables)
@@ -1794,7 +1941,7 @@ var funcObj = jme.funcObj = function(name,intype,outcons,fn,options)
 
 	/** Does this function behave randomly?
 	 * @name random
-	 * @member {boolean} 
+	 * @member {Boolean} 
 	 * @memberof Numbas.jme.funcObj 
 	 */
 	this.random = options.random;
@@ -1830,14 +1977,22 @@ function varnamesAgree(array1, array2) {
 	return true;
 };
 
+/** Decide if two numbers are close enough to count as equal.
+ * @callback Numbas.jme.checkingFunction
+ * @param {Number} r1
+ * @param {Number} r2
+ * @param {Number} tolerance - A measure of how close the results need to be to count as equal. What this means depends on the checking function.
+ * @returns {Boolean} - True if `r1` and `r2` are close enough to be equal.
+ */
+
 /** 
  * Numerical comparison functions
- * @enum {function}
+ * @enum {Numbas.jme.checkingFunction}
  * @memberof Numbas.jme 
  */
 var checkingFunctions = 
 {
-	/** Absolute difference between variables - fail if bigger than tolerance */
+	/** Absolute difference between variables - fail if `Math.abs(r1-r2)` is bigger than `tolerance` */
 	absdiff: function(r1,r2,tolerance) 
 	{
 		if(r1===Infinity || r1===-Infinity)
@@ -1846,7 +2001,7 @@ var checkingFunctions =
 		return math.leq(math.abs(math.sub(r1,r2)), Math.abs(tolerance));
 	},
 
-	/** Relative (proportional) difference between variables - fail if `r1/r2 - 1` is bigger than tolerance */
+	/** Relative (proportional) difference between variables - fail if `r1/r2 - 1` is bigger than `tolerance` */
 	reldiff: function(r1,r2,tolerance) {
 		if(r1===Infinity || r1===-Infinity)
 			return r1===r2;
@@ -1859,7 +2014,7 @@ var checkingFunctions =
 		}
 	},
 
-	/** Round both values to given number of decimal places, and fail if unequal. */
+	/** Round both values to `tolerance` decimal places, and fail if unequal. */
 	dp: function(r1,r2,tolerance) {
 		if(r1===Infinity || r1===-Infinity)
 			return r1===r2;
@@ -1868,7 +2023,7 @@ var checkingFunctions =
 		return math.eq( math.precround(r1,tolerance), math.precround(r2,tolerance) );
 	},
 
-	/** Round both values to given number of significant figures, and fail if unequal. */
+	/** Round both values to `tolerance` significant figures, and fail if unequal. */
 	sigfig: function(r1,r2,tolerance) {
 		if(r1===Infinity || r1===-Infinity)
 			return r1===r2;
@@ -1883,19 +2038,15 @@ var checkingFunctions =
  * Functions have the signature &lt;tree with function call at the top, scope, allowUnbound>
  *
  * @memberof Numbas.jme
- * @enum {function}
+ * @enum {Numbas.jme.substituteTree}
  * @see Numbas.jme.substituteTree
  */
 var substituteTreeOps = jme.substituteTreeOps = {};
 
 /** Custom findvars behaviour for specific functions - for a given usage of a function, work out which variables it depends on.
  * 
- * Functions have the signature &lt;tree with function call at top, list of bound variable names, scope>.
- *
- * tree.args is a list of the function's arguments.
- *
  * @memberof Numbas.jme
- * @enum {function}
+ * @enum {Numbas.jme.findvars}
  * @see Numbas.jme.findvars
  */
 var findvarsOps = jme.findvarsOps = {}
@@ -1904,9 +2055,9 @@ var findvarsOps = jme.findvarsOps = {}
  * @memberof Numbas.jme
  * @method
  * @param {Numbas.jme.tree} tree
- * @param {string[]} boundvars - variables to be considered as bound (don't include them)
+ * @param {Array.&lt;String>} boundvars - variables to be considered as bound (don't include them)
  * @param {Numbas.jme.Scope} scope
- * @returns {string[]}
+ * @returns {Array.&lt;String>}
  */
 var findvars = jme.findvars = function(tree,boundvars,scope)
 {
@@ -1931,6 +2082,9 @@ var findvars = jme.findvars = function(tree,boundvars,scope)
 				return [];
 			break;
 		case 'string':
+            if(tree.tok.safe) {
+                return [];
+            }
 			var bits = util.contentsplitbrackets(tree.tok.value);
 			var out = [];
 			for(var i=0;i&lt;bits.length;i+=4)
@@ -1986,8 +2140,8 @@ var findvars = jme.findvars = function(tree,boundvars,scope)
  * @param {Numbas.jme.token} r1
  * @param {Numbas.jme.token} r2
  * @param {function} checkingFunction - one of {@link Numbas.jme.checkingFunctions}
- * @param {number} checkingAccuracy
- * @returns {boolean}
+ * @param {Number} checkingAccuracy
+ * @returns {Boolean}
  */
 function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 {	// first checks both expressions are of same type, then uses given checking type to compare results
@@ -2074,15 +2228,25 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 		
 			<li class="search-result" data-longname="complex.complexToString"><a href="global.html#complex#.complexToString">complex.complexToString</a></li>
 		
+			<li class="search-result" data-longname="fraction"><a href="global.html#fraction">fraction</a></li>
+		
 			<li class="search-result" data-longname="func_data"><a href="global.html#func_data">func_data</a></li>
 		
 			<li class="search-result" data-longname="JME"><a href="global.html#JME">JME</a></li>
 		
+			<li class="search-result" data-longname="jme_display_settings"><a href="global.html#jme_display_settings">jme_display_settings</a></li>
+		
+			<li class="search-result" data-longname="jme_pattern_match"><a href="global.html#jme_pattern_match">jme_pattern_match</a></li>
+		
 			<li class="search-result" data-longname="matrix"><a href="global.html#matrix">matrix</a></li>
+		
+			<li class="search-result" data-longname="niceNumber_settings"><a href="global.html#niceNumber_settings">niceNumber_settings</a></li>
 		
 			<li class="search-result" data-longname="Numbas"><a href="Numbas.html">Numbas</a></li>
 		
 			<li class="search-result" data-longname="Numbas.addExtension"><a href="Numbas.html#.addExtension">Numbas.addExtension</a></li>
+		
+			<li class="search-result" data-longname="Numbas.checkAllScriptsLoaded"><a href="Numbas.html#.checkAllScriptsLoaded">Numbas.checkAllScriptsLoaded</a></li>
 		
 			<li class="search-result" data-longname="Numbas.controls"><a href="Numbas.controls.html">Numbas.controls</a></li>
 		
@@ -2099,6 +2263,8 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 			<li class="search-result" data-longname="Numbas.controls.getAdvice"><a href="Numbas.controls.html#.getAdvice">Numbas.controls.getAdvice</a></li>
 		
 			<li class="search-result" data-longname="Numbas.controls.hideSteps"><a href="Numbas.controls.html#.hideSteps">Numbas.controls.hideSteps</a></li>
+		
+			<li class="search-result" data-longname="Numbas.controls.jumpQuestion"><a href="Numbas.controls.html#.jumpQuestion">Numbas.controls.jumpQuestion</a></li>
 		
 			<li class="search-result" data-longname="Numbas.controls.makeQuestionJumper"><a href="Numbas.controls.html#.makeQuestionJumper">Numbas.controls.makeQuestionJumper</a></li>
 		
@@ -2188,6 +2354,8 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 		
 			<li class="search-result" data-longname="Numbas.display.ExamDisplay.showQuestion"><a href="Numbas.display.ExamDisplay.html#.showQuestion">Numbas.display.ExamDisplay.showQuestion</a></li>
 		
+			<li class="search-result" data-longname="Numbas.display.ExamDisplay.showQuestionGroupNames"><a href="Numbas.display.ExamDisplay.html#.showQuestionGroupNames">Numbas.display.ExamDisplay.showQuestionGroupNames</a></li>
+		
 			<li class="search-result" data-longname="Numbas.display.ExamDisplay.showScore"><a href="Numbas.display.ExamDisplay.html#.showScore">Numbas.display.ExamDisplay.showScore</a></li>
 		
 			<li class="search-result" data-longname="Numbas.display.ExamDisplay.showTiming"><a href="Numbas.display.ExamDisplay.html#.showTiming">Numbas.display.ExamDisplay.showTiming</a></li>
@@ -2200,73 +2368,19 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 		
 			<li class="search-result" data-longname="Numbas.display.ExamDisplay.viewType"><a href="Numbas.display.ExamDisplay.html#.viewType">Numbas.display.ExamDisplay.viewType</a></li>
 		
-			<li class="search-result" data-longname="Numbas.display.ExtensionPartDisplay"><a href="Numbas.display.ExtensionPartDisplay.html">Numbas.display.ExtensionPartDisplay</a></li>
+			<li class="search-result" data-longname="Numbas.display.feedback_state"><a href="Numbas.display.html#.feedback_state">Numbas.display.feedback_state</a></li>
 		
-			<li class="search-result" data-longname="Numbas.display.GapFillPartDisplay"><a href="Numbas.display.GapFillPartDisplay.html">Numbas.display.GapFillPartDisplay</a></li>
+			<li class="search-result" data-longname="Numbas.display.feedbackable"><a href="Numbas.display.html#.feedbackable">Numbas.display.feedbackable</a></li>
 		
-			<li class="search-result" data-longname="Numbas.display.InformationPartDisplay"><a href="Numbas.display.InformationPartDisplay.html">Numbas.display.InformationPartDisplay</a></li>
+			<li class="search-result" data-longname="Numbas.display.getLocalisedAttribute"><a href="Numbas.display.html#.getLocalisedAttribute">Numbas.display.getLocalisedAttribute</a></li>
 		
 			<li class="search-result" data-longname="Numbas.display.inInput"><a href="Numbas.display.html#.inInput">Numbas.display.inInput</a></li>
 		
 			<li class="search-result" data-longname="Numbas.display.init"><a href="Numbas.display.html#.init">Numbas.display.init</a></li>
 		
-			<li class="search-result" data-longname="Numbas.display.JMEPartDisplay"><a href="Numbas.display.JMEPartDisplay.html">Numbas.display.JMEPartDisplay</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.JMEPartDisplay.correctAnswer"><a href="Numbas.display.JMEPartDisplay.html#.correctAnswer">Numbas.display.JMEPartDisplay.correctAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.JMEPartDisplay.correctAnswerLaTeX"><a href="Numbas.display.JMEPartDisplay.html#.correctAnswerLaTeX">Numbas.display.JMEPartDisplay.correctAnswerLaTeX</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.JMEPartDisplay.focusInput"><a href="Numbas.display.JMEPartDisplay.html#.focusInput">Numbas.display.JMEPartDisplay.focusInput</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.JMEPartDisplay.inputHasFocus"><a href="Numbas.display.JMEPartDisplay.html#.inputHasFocus">Numbas.display.JMEPartDisplay.inputHasFocus</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.JMEPartDisplay.showPreview"><a href="Numbas.display.JMEPartDisplay.html#.showPreview">Numbas.display.JMEPartDisplay.showPreview</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.JMEPartDisplay.studentAnswer"><a href="Numbas.display.JMEPartDisplay.html#.studentAnswer">Numbas.display.JMEPartDisplay.studentAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.JMEPartDisplay.studentAnswerLaTeX"><a href="Numbas.display.JMEPartDisplay.html#.studentAnswerLaTeX">Numbas.display.JMEPartDisplay.studentAnswerLaTeX</a></li>
-		
 			<li class="search-result" data-longname="Numbas.display.localisePage"><a href="Numbas.display.html#.localisePage">Numbas.display.localisePage</a></li>
 		
-			<li class="search-result" data-longname="Numbas.display.MatrixEntryPartDisplay"><a href="Numbas.display.MatrixEntryPartDisplay.html">Numbas.display.MatrixEntryPartDisplay</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.MatrixEntryPartDisplay.correctAnswer"><a href="Numbas.display.MatrixEntryPartDisplay.html#.correctAnswer">Numbas.display.MatrixEntryPartDisplay.correctAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.MatrixEntryPartDisplay.showPreview"><a href="Numbas.display.MatrixEntryPartDisplay.html#.showPreview">Numbas.display.MatrixEntryPartDisplay.showPreview</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.MatrixEntryPartDisplay.studentAnswer"><a href="Numbas.display.MatrixEntryPartDisplay.html#.studentAnswer">Numbas.display.MatrixEntryPartDisplay.studentAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.MatrixEntryPartDisplay.studentAnswerLaTeX"><a href="Numbas.display.MatrixEntryPartDisplay.html#.studentAnswerLaTeX">Numbas.display.MatrixEntryPartDisplay.studentAnswerLaTeX</a></li>
-		
 			<li class="search-result" data-longname="Numbas.display.modal"><a href="Numbas.display.html#.modal">Numbas.display.modal</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.MultipleResponsePartDisplay"><a href="Numbas.display.MultipleResponsePartDisplay.html">Numbas.display.MultipleResponsePartDisplay</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.MultipleResponsePartDisplay.correctAnswer"><a href="Numbas.display.MultipleResponsePartDisplay.html#.correctAnswer">Numbas.display.MultipleResponsePartDisplay.correctAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.MultipleResponsePartDisplay.studentAnswer"><a href="Numbas.display.MultipleResponsePartDisplay.html#.studentAnswer">Numbas.display.MultipleResponsePartDisplay.studentAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.MultipleResponsePartDisplay.ticks"><a href="Numbas.display.MultipleResponsePartDisplay.html#.ticks">Numbas.display.MultipleResponsePartDisplay.ticks</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay"><a href="Numbas.display.NumberEntryPartDisplay.html">Numbas.display.NumberEntryPartDisplay</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.cleanStudentAnswer"><a href="Numbas.display.NumberEntryPartDisplay.html#.cleanStudentAnswer">Numbas.display.NumberEntryPartDisplay.cleanStudentAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.correctAnswer"><a href="Numbas.display.NumberEntryPartDisplay.html#.correctAnswer">Numbas.display.NumberEntryPartDisplay.correctAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.focusInput"><a href="Numbas.display.NumberEntryPartDisplay.html#.focusInput">Numbas.display.NumberEntryPartDisplay.focusInput</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.inputHasFocus"><a href="Numbas.display.NumberEntryPartDisplay.html#.inputHasFocus">Numbas.display.NumberEntryPartDisplay.inputHasFocus</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.precisionHint"><a href="Numbas.display.NumberEntryPartDisplay.html#.precisionHint">Numbas.display.NumberEntryPartDisplay.precisionHint</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.showPrecisionHint"><a href="Numbas.display.NumberEntryPartDisplay.html#.showPrecisionHint">Numbas.display.NumberEntryPartDisplay.showPrecisionHint</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.showPreview"><a href="Numbas.display.NumberEntryPartDisplay.html#.showPreview">Numbas.display.NumberEntryPartDisplay.showPreview</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.studentAnswer"><a href="Numbas.display.NumberEntryPartDisplay.html#.studentAnswer">Numbas.display.NumberEntryPartDisplay.studentAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.NumberEntryPartDisplay.studentAnswerLaTeX"><a href="Numbas.display.NumberEntryPartDisplay.html#.studentAnswerLaTeX">Numbas.display.NumberEntryPartDisplay.studentAnswerLaTeX</a></li>
 		
 			<li class="search-result" data-longname="Numbas.display.PartDisplay"><a href="Numbas.display.PartDisplay.html">Numbas.display.PartDisplay</a></li>
 		
@@ -2348,14 +2462,6 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 		
 			<li class="search-result" data-longname="Numbas.display.PartDisplay.warningsShown"><a href="Numbas.display.PartDisplay.html#.warningsShown">Numbas.display.PartDisplay.warningsShown</a></li>
 		
-			<li class="search-result" data-longname="Numbas.display.PatternMatchPartDisplay"><a href="Numbas.display.PatternMatchPartDisplay.html">Numbas.display.PatternMatchPartDisplay</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.PatternMatchPartDisplay.correctAnswer"><a href="Numbas.display.PatternMatchPartDisplay.html#.correctAnswer">Numbas.display.PatternMatchPartDisplay.correctAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.PatternMatchPartDisplay.displayAnswer"><a href="Numbas.display.PatternMatchPartDisplay.html#.displayAnswer">Numbas.display.PatternMatchPartDisplay.displayAnswer</a></li>
-		
-			<li class="search-result" data-longname="Numbas.display.PatternMatchPartDisplay.studentAnswer"><a href="Numbas.display.PatternMatchPartDisplay.html#.studentAnswer">Numbas.display.PatternMatchPartDisplay.studentAnswer</a></li>
-		
 			<li class="search-result" data-longname="Numbas.display.QuestionDisplay"><a href="Numbas.display.QuestionDisplay.html">Numbas.display.QuestionDisplay</a></li>
 		
 			<li class="search-result" data-longname="Numbas.display.QuestionDisplay.adviceDisplayed"><a href="Numbas.display.QuestionDisplay.html#.adviceDisplayed">Numbas.display.QuestionDisplay.adviceDisplayed</a></li>
@@ -2416,11 +2522,17 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 		
 			<li class="search-result" data-longname="Numbas.display.QuestionDisplay.visited"><a href="Numbas.display.QuestionDisplay.html#.visited">Numbas.display.QuestionDisplay.visited</a></li>
 		
+			<li class="search-result" data-longname="Numbas.display.scoreFeedback"><a href="Numbas.display.html#.scoreFeedback">Numbas.display.scoreFeedback</a></li>
+		
 			<li class="search-result" data-longname="Numbas.display.showAlert"><a href="Numbas.display.html#.showAlert">Numbas.display.showAlert</a></li>
 		
 			<li class="search-result" data-longname="Numbas.display.showConfirm"><a href="Numbas.display.html#.showConfirm">Numbas.display.showConfirm</a></li>
 		
 			<li class="search-result" data-longname="Numbas.display.showLoadProgress"><a href="Numbas.display.html#.showLoadProgress">Numbas.display.showLoadProgress</a></li>
+		
+			<li class="search-result" data-longname="Numbas.display.showScoreFeedback"><a href="Numbas.display.html#.showScoreFeedback">Numbas.display.showScoreFeedback</a></li>
+		
+			<li class="search-result" data-longname="Numbas.display.showScoreFeedback_settings"><a href="Numbas.display.html#.showScoreFeedback_settings">Numbas.display.showScoreFeedback_settings</a></li>
 		
 			<li class="search-result" data-longname="Numbas.display.typeset"><a href="Numbas.display.html#.typeset">Numbas.display.typeset</a></li>
 		
@@ -2469,6 +2581,8 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 			<li class="search-result" data-longname="Numbas.Exam#pause"><a href="Numbas.Exam.html#pause">Numbas.Exam#pause</a></li>
 		
 			<li class="search-result" data-longname="Numbas.Exam#percentScore"><a href="Numbas.Exam.html#percentScore">Numbas.Exam#percentScore</a></li>
+		
+			<li class="search-result" data-longname="Numbas.Exam#question_groups"><a href="Numbas.Exam.html#question_groups">Numbas.Exam#question_groups</a></li>
 		
 			<li class="search-result" data-longname="Numbas.Exam#questionList"><a href="Numbas.Exam.html#questionList">Numbas.Exam#questionList</a></li>
 		
@@ -2530,6 +2644,8 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 		
 			<li class="search-result" data-longname="Numbas.jme.builtinScope"><a href="Numbas.jme.html#.builtinScope">Numbas.jme.builtinScope</a></li>
 		
+			<li class="search-result" data-longname="Numbas.jme.checkingFunction"><a href="Numbas.jme.html#.checkingFunction">Numbas.jme.checkingFunction</a></li>
+		
 			<li class="search-result" data-longname="Numbas.jme.checkingFunctions"><a href="Numbas.jme.html#.checkingFunctions">Numbas.jme.checkingFunctions</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.checkingFunctions.absdiff"><a href="Numbas.jme.html#.checkingFunctions#.absdiff">Numbas.jme.checkingFunctions.absdiff</a></li>
@@ -2544,6 +2660,8 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 		
 			<li class="search-result" data-longname="Numbas.jme.compare"><a href="Numbas.jme.html#.compare">Numbas.jme.compare</a></li>
 		
+			<li class="search-result" data-longname="Numbas.jme.compare_settings"><a href="Numbas.jme.html#.compare_settings">Numbas.jme.compare_settings</a></li>
+		
 			<li class="search-result" data-longname="Numbas.jme.compile"><a href="Numbas.jme.html#.compile">Numbas.jme.compile</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.compileList"><a href="Numbas.jme.html#.compileList">Numbas.jme.compileList</a></li>
@@ -2553,6 +2671,8 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 			<li class="search-result" data-longname="Numbas.jme.contentsubvars"><a href="Numbas.jme.html#.contentsubvars">Numbas.jme.contentsubvars</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.display"><a href="Numbas.jme.display.html">Numbas.jme.display</a></li>
+		
+			<li class="search-result" data-longname="Numbas.jme.display.jmeFunctions"><a href="Numbas.jme.display.html#.jmeFunctions">Numbas.jme.display.jmeFunctions</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.display.matchExpression"><a href="Numbas.jme.display.html#.matchExpression">Numbas.jme.display.matchExpression</a></li>
 		
@@ -2604,11 +2724,15 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 		
 			<li class="search-result" data-longname="Numbas.jme.display.typeToJME.boolean"><a href="Numbas.jme.display.html#.typeToJME#.boolean">Numbas.jme.display.typeToJME.boolean</a></li>
 		
+			<li class="search-result" data-longname="Numbas.jme.display.typeToJME.dict"><a href="Numbas.jme.display.html#.typeToJME#.dict">Numbas.jme.display.typeToJME.dict</a></li>
+		
 			<li class="search-result" data-longname="Numbas.jme.display.typeToJME.expression"><a href="Numbas.jme.display.html#.typeToJME#.expression">Numbas.jme.display.typeToJME.expression</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.display.typeToJME.function"><a href="Numbas.jme.display.html#.typeToJME#.function">Numbas.jme.display.typeToJME.function</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.display.typeToJME.html"><a href="Numbas.jme.display.html#.typeToJME#.html">Numbas.jme.display.typeToJME.html</a></li>
+		
+			<li class="search-result" data-longname="Numbas.jme.display.typeToJME.keypair"><a href="Numbas.jme.display.html#.typeToJME#.keypair">Numbas.jme.display.typeToJME.keypair</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.display.typeToJME.list"><a href="Numbas.jme.display.html#.typeToJME#.list">Numbas.jme.display.typeToJME.list</a></li>
 		
@@ -2630,7 +2754,11 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 		
 			<li class="search-result" data-longname="Numbas.jme.display.typeToTeX"><a href="Numbas.jme.display.html#.typeToTeX">Numbas.jme.display.typeToTeX</a></li>
 		
+			<li class="search-result" data-longname="Numbas.jme.displayFlags"><a href="Numbas.jme.html#.displayFlags">Numbas.jme.displayFlags</a></li>
+		
 			<li class="search-result" data-longname="Numbas.jme.evaluate"><a href="Numbas.jme.html#.evaluate">Numbas.jme.evaluate</a></li>
+		
+			<li class="search-result" data-longname="Numbas.jme.evaluate_fn"><a href="Numbas.jme.html#.evaluate_fn">Numbas.jme.evaluate_fn</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.findvars"><a href="Numbas.jme.html#.findvars">Numbas.jme.findvars</a></li>
 		
@@ -2653,6 +2781,8 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 			<li class="search-result" data-longname="Numbas.jme.funcObj.random"><a href="Numbas.jme.funcObj.html#.random">Numbas.jme.funcObj.random</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.funcObj.typecheck"><a href="Numbas.jme.funcObj.html#.typecheck">Numbas.jme.funcObj.typecheck</a></li>
+		
+			<li class="search-result" data-longname="Numbas.jme.funcObj_options"><a href="Numbas.jme.html#.funcObj_options">Numbas.jme.funcObj_options</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.funcSynonyms"><a href="Numbas.jme.html#.funcSynonyms">Numbas.jme.funcSynonyms</a></li>
 		
@@ -2726,13 +2856,19 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 		
 			<li class="search-result" data-longname="Numbas.jme.tree"><a href="Numbas.jme.html#.tree">Numbas.jme.tree</a></li>
 		
+			<li class="search-result" data-longname="Numbas.jme.typecheck_fn"><a href="Numbas.jme.html#.typecheck_fn">Numbas.jme.typecheck_fn</a></li>
+		
 			<li class="search-result" data-longname="Numbas.jme.types"><a href="Numbas.jme.types.html">Numbas.jme.types</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.types.TBool"><a href="Numbas.jme.types.TBool.html">Numbas.jme.types.TBool</a></li>
 		
+			<li class="search-result" data-longname="Numbas.jme.types.TDict"><a href="Numbas.jme.types.TDict.html">Numbas.jme.types.TDict</a></li>
+		
 			<li class="search-result" data-longname="Numbas.jme.types.TFunc"><a href="Numbas.jme.types.TFunc.html">Numbas.jme.types.TFunc</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.types.THTML"><a href="Numbas.jme.types.THTML.html">Numbas.jme.types.THTML</a></li>
+		
+			<li class="search-result" data-longname="Numbas.jme.types.TKeyPair"><a href="Numbas.jme.types.TKeyPair.html">Numbas.jme.types.TKeyPair</a></li>
 		
 			<li class="search-result" data-longname="Numbas.jme.types.TList"><a href="Numbas.jme.types.TList.html">Numbas.jme.types.TList</a></li>
 		
@@ -2769,6 +2905,8 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 			<li class="search-result" data-longname="Numbas.math.abs"><a href="Numbas.math.html#.abs">Numbas.math.abs</a></li>
 		
 			<li class="search-result" data-longname="Numbas.math.add"><a href="Numbas.math.html#.add">Numbas.math.add</a></li>
+		
+			<li class="search-result" data-longname="Numbas.math.addDigits"><a href="Numbas.math.html#.addDigits">Numbas.math.addDigits</a></li>
 		
 			<li class="search-result" data-longname="Numbas.math.arccos"><a href="Numbas.math.html#.arccos">Numbas.math.arccos</a></li>
 		
@@ -3074,6 +3212,8 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 		
 			<li class="search-result" data-longname="Numbas.parts.ExtensionPart#xml"><a href="Numbas.parts.ExtensionPart.html#xml">Numbas.parts.ExtensionPart#xml</a></li>
 		
+			<li class="search-result" data-longname="Numbas.parts.feedbackmessage"><a href="Numbas.parts.html#.feedbackmessage">Numbas.parts.feedbackmessage</a></li>
+		
 			<li class="search-result" data-longname="Numbas.parts.GapFillPart"><a href="Numbas.parts.GapFillPart.html">Numbas.parts.GapFillPart</a></li>
 		
 			<li class="search-result" data-longname="Numbas.parts.GapFillPart#addCredit"><a href="Numbas.parts.GapFillPart.html#addCredit">Numbas.parts.GapFillPart#addCredit</a></li>
@@ -3369,6 +3509,8 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 			<li class="search-result" data-longname="Numbas.parts.JMEPart#warnings"><a href="Numbas.parts.JMEPart.html#warnings">Numbas.parts.JMEPart#warnings</a></li>
 		
 			<li class="search-result" data-longname="Numbas.parts.JMEPart#xml"><a href="Numbas.parts.JMEPart.html#xml">Numbas.parts.JMEPart#xml</a></li>
+		
+			<li class="search-result" data-longname="Numbas.parts.marking_results"><a href="Numbas.parts.html#.marking_results">Numbas.parts.marking_results</a></li>
 		
 			<li class="search-result" data-longname="Numbas.parts.MatrixEntryPart"><a href="Numbas.parts.MatrixEntryPart.html">Numbas.parts.MatrixEntryPart</a></li>
 		
@@ -3668,6 +3810,8 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 		
 			<li class="search-result" data-longname="Numbas.parts.NumberEntryPart#studentAnswer"><a href="Numbas.parts.NumberEntryPart.html#studentAnswer">Numbas.parts.NumberEntryPart#studentAnswer</a></li>
 		
+			<li class="search-result" data-longname="Numbas.parts.NumberEntryPart#studentAnswerAsFloat"><a href="Numbas.parts.NumberEntryPart.html#studentAnswerAsFloat">Numbas.parts.NumberEntryPart#studentAnswerAsFloat</a></li>
+		
 			<li class="search-result" data-longname="Numbas.parts.NumberEntryPart#studentAnswerAsJME"><a href="Numbas.parts.NumberEntryPart.html#studentAnswerAsJME">Numbas.parts.NumberEntryPart#studentAnswerAsJME</a></li>
 		
 			<li class="search-result" data-longname="Numbas.parts.NumberEntryPart#submit"><a href="Numbas.parts.NumberEntryPart.html#submit">Numbas.parts.NumberEntryPart#submit</a></li>
@@ -3926,6 +4070,8 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 		
 			<li class="search-result" data-longname="Numbas.Question#runPreamble"><a href="Numbas.Question.html#runPreamble">Numbas.Question#runPreamble</a></li>
 		
+			<li class="search-result" data-longname="Numbas.Question#scope"><a href="Numbas.Question.html#scope">Numbas.Question#scope</a></li>
+		
 			<li class="search-result" data-longname="Numbas.Question#score"><a href="Numbas.Question.html#score">Numbas.Question#score</a></li>
 		
 			<li class="search-result" data-longname="Numbas.Question#submit"><a href="Numbas.Question.html#submit">Numbas.Question#submit</a></li>
@@ -3941,6 +4087,12 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 			<li class="search-result" data-longname="Numbas.Question#visited"><a href="Numbas.Question.html#visited">Numbas.Question#visited</a></li>
 		
 			<li class="search-result" data-longname="Numbas.Question#xml"><a href="Numbas.Question.html#xml">Numbas.Question#xml</a></li>
+		
+			<li class="search-result" data-longname="Numbas.QuestionGroup"><a href="Numbas.QuestionGroup.html">Numbas.QuestionGroup</a></li>
+		
+			<li class="search-result" data-longname="Numbas.QuestionGroup#chooseQuestionSubset"><a href="Numbas.QuestionGroup.html#chooseQuestionSubset">Numbas.QuestionGroup#chooseQuestionSubset</a></li>
+		
+			<li class="search-result" data-longname="Numbas.QuestionGroup#settings"><a href="Numbas.QuestionGroup.html#settings">Numbas.QuestionGroup#settings</a></li>
 		
 			<li class="search-result" data-longname="Numbas.queueScript"><a href="Numbas.html#.queueScript">Numbas.queueScript</a></li>
 		
@@ -3961,6 +4113,8 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 			<li class="search-result" data-longname="Numbas.schedule.lifts"><a href="Numbas.schedule.html#.lifts">Numbas.schedule.lifts</a></li>
 		
 			<li class="search-result" data-longname="Numbas.schedule.pop"><a href="Numbas.schedule.html#.pop">Numbas.schedule.pop</a></li>
+		
+			<li class="search-result" data-longname="Numbas.schedule.task_object"><a href="Numbas.schedule.html#.task_object">Numbas.schedule.task_object</a></li>
 		
 			<li class="search-result" data-longname="Numbas.schedule.total"><a href="Numbas.schedule.html#.total">Numbas.schedule.total</a></li>
 		
@@ -4162,6 +4316,8 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 		
 			<li class="search-result" data-longname="Numbas.util.capitalise"><a href="Numbas.util.html#.capitalise">Numbas.util.capitalise</a></li>
 		
+			<li class="search-result" data-longname="Numbas.util.cleanNumber"><a href="Numbas.util.html#.cleanNumber">Numbas.util.cleanNumber</a></li>
+		
 			<li class="search-result" data-longname="Numbas.util.combinations"><a href="Numbas.util.html#.combinations">Numbas.util.combinations</a></li>
 		
 			<li class="search-result" data-longname="Numbas.util.combinations_with_replacement"><a href="Numbas.util.html#.combinations_with_replacement">Numbas.util.combinations_with_replacement</a></li>
@@ -4214,7 +4370,11 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 		
 			<li class="search-result" data-longname="Numbas.util.nicePartName"><a href="Numbas.util.html#.nicePartName">Numbas.util.nicePartName</a></li>
 		
+			<li class="search-result" data-longname="Numbas.util.numberNotationStyles"><a href="Numbas.util.html#.numberNotationStyles">Numbas.util.numberNotationStyles</a></li>
+		
 			<li class="search-result" data-longname="Numbas.util.parseBool"><a href="Numbas.util.html#.parseBool">Numbas.util.parseBool</a></li>
+		
+			<li class="search-result" data-longname="Numbas.util.parseFraction"><a href="Numbas.util.html#.parseFraction">Numbas.util.parseFraction</a></li>
 		
 			<li class="search-result" data-longname="Numbas.util.parseNumber"><a href="Numbas.util.html#.parseNumber">Numbas.util.parseNumber</a></li>
 		
@@ -4229,6 +4389,8 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 			<li class="search-result" data-longname="Numbas.util.sortBy"><a href="Numbas.util.html#.sortBy">Numbas.util.sortBy</a></li>
 		
 			<li class="search-result" data-longname="Numbas.util.splitbrackets"><a href="Numbas.util.html#.splitbrackets">Numbas.util.splitbrackets</a></li>
+		
+			<li class="search-result" data-longname="Numbas.util.standardNumberFormatter"><a href="Numbas.util.html#.standardNumberFormatter">Numbas.util.standardNumberFormatter</a></li>
 		
 			<li class="search-result" data-longname="Numbas.util.unPercent"><a href="Numbas.util.html#.unPercent">Numbas.util.unPercent</a></li>
 		
@@ -4298,6 +4460,8 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 		
 			<li class="search-result" data-longname="Numbas.xml.tryGetAttribute"><a href="Numbas.xml.html#.tryGetAttribute">Numbas.xml.tryGetAttribute</a></li>
 		
+			<li class="search-result" data-longname="Numbas.xml.tryGetAttribute_options"><a href="Numbas.xml.html#.tryGetAttribute_options">Numbas.xml.tryGetAttribute_options</a></li>
+		
 			<li class="search-result" data-longname="package:undefined"><a href="global.html#package:">package:undefined</a></li>
 		
 			<li class="search-result" data-longname="partpath"><a href="global.html#partpath">partpath</a></li>
@@ -4305,6 +4469,8 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 			<li class="search-result" data-longname="range"><a href="global.html#range">range</a></li>
 		
 			<li class="search-result" data-longname="RequireScript"><a href="RequireScript.html">RequireScript</a></li>
+		
+			<li class="search-result" data-longname="ruleset_flags"><a href="global.html#ruleset_flags">ruleset_flags</a></li>
 		
 			<li class="search-result" data-longname="runtime/scripts/controls.js"><a href="global.html#runtime/scripts/controls.js">runtime/scripts/controls.js</a></li>
 		
@@ -4354,7 +4520,11 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 		
 			<li class="search-result" data-longname="runtime/scripts/xml.js"><a href="global.html#runtime/scripts/xml.js">runtime/scripts/xml.js</a></li>
 		
+			<li class="search-result" data-longname="set"><a href="global.html#set">set</a></li>
+		
 			<li class="search-result" data-longname="TeX"><a href="global.html#TeX">TeX</a></li>
+		
+			<li class="search-result" data-longname="texify_settings"><a href="global.html#texify_settings">texify_settings</a></li>
 		
 			<li class="search-result" data-longname="themes/default/files/scripts/display.js"><a href="global.html#themes/default/files/scripts/display.js">themes/default/files/scripts/display.js</a></li>
 		
@@ -4362,16 +4532,42 @@ function resultsEqual(r1,r2,checkingFunction,checkingAccuracy)
 		
 			<li class="search-result" data-longname="vector"><a href="global.html#vector">vector</a></li>
 		
+			<li class="search-result" data-longname="Number"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></li>
+		
+			<li class="search-result" data-longname="String"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></li>
+		
+			<li class="search-result" data-longname="RegExp"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp">RegExp</a></li>
+		
+			<li class="search-result" data-longname="Date"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date">Date</a></li>
+		
+			<li class="search-result" data-longname="Element"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element">Element</a></li>
+		
+			<li class="search-result" data-longname="observable"><a href="http://knockoutjs.com/documentation/observables.html">observable</a></li>
+		
+			<li class="search-result" data-longname="jQuery"><a href="http://api.jquery.com/Types/#jQuery">jQuery</a></li>
+		
+			<li class="search-result" data-longname="Error"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a></li>
+		
+			<li class="search-result" data-longname="Boolean"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></li>
+		
+			<li class="search-result" data-longname="Array"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></li>
+		
+			<li class="search-result" data-longname="function"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">function</a></li>
+		
+			<li class="search-result" data-longname="XMLDocument"><a href="https://developer.mozilla.org/en/docs/Web/API/XMLDocument">XMLDocument</a></li>
+		
+			<li class="search-result" data-longname="Object"><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></li>
+		
 	</ul>
 </div>
-<div class="main-nav-item"><h3>Classes</h3><ul><li><a href="Numbas.storage.BlankStorage.html">BlankStorage</a></li><li><a href="Numbas.Error.html">Error</a></li><li><a href="Numbas.Exam.html">Exam</a></li><li><a href="Numbas.display.ExamDisplay.html">ExamDisplay</a></li><li><a href="Numbas.ExamEvent.html">ExamEvent</a></li><li><a href="Numbas.parts.ExtensionPart.html">ExtensionPart</a></li><li><a href="Numbas.display.ExtensionPartDisplay.html">ExtensionPartDisplay</a></li><li><a href="Numbas.jme.funcObj.html">funcObj</a></li><li><a href="Numbas.parts.GapFillPart.html">GapFillPart</a></li><li><a href="Numbas.display.GapFillPartDisplay.html">GapFillPartDisplay</a></li><li><a href="Numbas.parts.InformationPart.html">InformationPart</a></li><li><a href="Numbas.display.InformationPartDisplay.html">InformationPartDisplay</a></li><li><a href="Numbas.parts.JMEPart.html">JMEPart</a></li><li><a href="Numbas.display.JMEPartDisplay.html">JMEPartDisplay</a></li><li><a href="Numbas.parts.MatrixEntryPart.html">MatrixEntryPart</a></li><li><a href="Numbas.display.MatrixEntryPartDisplay.html">MatrixEntryPartDisplay</a></li><li><a href="Numbas.parts.MultipleResponsePart.html">MultipleResponsePart</a></li><li><a href="Numbas.display.MultipleResponsePartDisplay.html">MultipleResponsePartDisplay</a></li><li><a href="Numbas.parts.NumberEntryPart.html">NumberEntryPart</a></li><li><a href="Numbas.display.NumberEntryPartDisplay.html">NumberEntryPartDisplay</a></li><li><a href="Numbas.parts.Part.html">Part</a></li><li><a href="Numbas.display.PartDisplay.html">PartDisplay</a></li><li><a href="Numbas.parts.PatternMatchPart.html">PatternMatchPart</a></li><li><a href="Numbas.display.PatternMatchPartDisplay.html">PatternMatchPartDisplay</a></li><li><a href="Numbas.Question.html">Question</a></li><li><a href="Numbas.display.QuestionDisplay.html">QuestionDisplay</a></li><li><a href="RequireScript.html">RequireScript</a></li><li><a href="Numbas.jme.display.Rule.html">Rule</a></li><li><a href="Numbas.jme.Ruleset.html">Ruleset</a></li><li><a href="Numbas.jme.Scope.html">Scope</a></li><li><a href="Numbas.storage.SCORMStorage.html">SCORMStorage</a></li><li><a href="Numbas.jme.types.TBool.html">TBool</a></li><li><a href="Numbas.jme.types.TFunc.html">TFunc</a></li><li><a href="Numbas.jme.types.THTML.html">THTML</a></li><li><a href="Numbas.jme.types.TList.html">TList</a></li><li><a href="Numbas.jme.types.TMatrix.html">TMatrix</a></li><li><a href="Numbas.jme.types.TName.html">TName</a></li><li><a href="Numbas.jme.types.TNum.html">TNum</a></li><li><a href="Numbas.jme.types.TOp.html">TOp</a></li><li><a href="Numbas.jme.types.TPunc.html">TPunc</a></li><li><a href="Numbas.jme.types.TRange.html">TRange</a></li><li><a href="Numbas.jme.types.TSet.html">TSet</a></li><li><a href="Numbas.jme.types.TString.html">TString</a></li><li><a href="Numbas.jme.types.TVector.html">TVector</a></li></ul></div><div class="main-nav-item"><h3>Namespaces</h3><ul><li><a href="Numbas.controls.html">controls</a></li><li><a href="Numbas.display.html">display</a></li><li><a href="Numbas.jme.display.html">display</a></li><li><a href="Numbas.jme.html">jme</a></li><li><a href="Numbas.math.html">math</a></li><li><a href="Numbas.matrixmath.html">matrixmath</a></li><li><a href="Numbas.html">Numbas</a></li><li><a href="Numbas.parts.html">parts</a></li><li><a href="Numbas.schedule.html">schedule</a></li><li><a href="Numbas.setmath.html">setmath</a></li><li><a href="Numbas.storage.html">storage</a></li><li><a href="Numbas.timing.html">timing</a></li><li><a href="Numbas.jme.types.html">types</a></li><li><a href="Numbas.util.html">util</a></li><li><a href="Numbas.jme.variables.html">variables</a></li><li><a href="Numbas.vectormath.html">vectormath</a></li><li><a href="Numbas.xml.html">xml</a></li></ul></div><h3><a href="global.html">Global variables</a></h3>
+<div class="main-nav-item"><h3>Classes</h3><ul><li><a href="Numbas.storage.BlankStorage.html">BlankStorage</a></li><li><a href="Numbas.Error.html">Error</a></li><li><a href="Numbas.Exam.html">Exam</a></li><li><a href="Numbas.display.ExamDisplay.html">ExamDisplay</a></li><li><a href="Numbas.ExamEvent.html">ExamEvent</a></li><li><a href="Numbas.parts.ExtensionPart.html">ExtensionPart</a></li><li><a href="Numbas.jme.funcObj.html">funcObj</a></li><li><a href="Numbas.parts.GapFillPart.html">GapFillPart</a></li><li><a href="Numbas.parts.InformationPart.html">InformationPart</a></li><li><a href="Numbas.parts.JMEPart.html">JMEPart</a></li><li><a href="Numbas.parts.MatrixEntryPart.html">MatrixEntryPart</a></li><li><a href="Numbas.parts.MultipleResponsePart.html">MultipleResponsePart</a></li><li><a href="Numbas.parts.NumberEntryPart.html">NumberEntryPart</a></li><li><a href="Numbas.parts.Part.html">Part</a></li><li><a href="Numbas.display.PartDisplay.html">PartDisplay</a></li><li><a href="Numbas.parts.PatternMatchPart.html">PatternMatchPart</a></li><li><a href="Numbas.Question.html">Question</a></li><li><a href="Numbas.display.QuestionDisplay.html">QuestionDisplay</a></li><li><a href="Numbas.QuestionGroup.html">QuestionGroup</a></li><li><a href="RequireScript.html">RequireScript</a></li><li><a href="Numbas.jme.display.Rule.html">Rule</a></li><li><a href="Numbas.jme.Ruleset.html">Ruleset</a></li><li><a href="Numbas.jme.Scope.html">Scope</a></li><li><a href="Numbas.storage.SCORMStorage.html">SCORMStorage</a></li><li><a href="Numbas.jme.types.TBool.html">TBool</a></li><li><a href="Numbas.jme.types.TDict.html">TDict</a></li><li><a href="Numbas.jme.types.TFunc.html">TFunc</a></li><li><a href="Numbas.jme.types.THTML.html">THTML</a></li><li><a href="Numbas.jme.types.TKeyPair.html">TKeyPair</a></li><li><a href="Numbas.jme.types.TList.html">TList</a></li><li><a href="Numbas.jme.types.TMatrix.html">TMatrix</a></li><li><a href="Numbas.jme.types.TName.html">TName</a></li><li><a href="Numbas.jme.types.TNum.html">TNum</a></li><li><a href="Numbas.jme.types.TOp.html">TOp</a></li><li><a href="Numbas.jme.types.TPunc.html">TPunc</a></li><li><a href="Numbas.jme.types.TRange.html">TRange</a></li><li><a href="Numbas.jme.types.TSet.html">TSet</a></li><li><a href="Numbas.jme.types.TString.html">TString</a></li><li><a href="Numbas.jme.types.TVector.html">TVector</a></li></ul></div><div class="main-nav-item"><h3>Namespaces</h3><ul><li><a href="Numbas.controls.html">controls</a></li><li><a href="Numbas.display.html">display</a></li><li><a href="Numbas.jme.display.html">display</a></li><li><a href="Numbas.jme.html">jme</a></li><li><a href="Numbas.math.html">math</a></li><li><a href="Numbas.matrixmath.html">matrixmath</a></li><li><a href="Numbas.html">Numbas</a></li><li><a href="Numbas.parts.html">parts</a></li><li><a href="Numbas.schedule.html">schedule</a></li><li><a href="Numbas.setmath.html">setmath</a></li><li><a href="Numbas.storage.html">storage</a></li><li><a href="Numbas.timing.html">timing</a></li><li><a href="Numbas.jme.types.html">types</a></li><li><a href="Numbas.util.html">util</a></li><li><a href="Numbas.jme.variables.html">variables</a></li><li><a href="Numbas.vectormath.html">vectormath</a></li><li><a href="Numbas.xml.html">xml</a></li></ul></div><h3><a href="global.html">Global variables</a></h3>
 	</nav>
 </div>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.0-dev</a> on Wed Nov 09 2016 13:50:49 GMT+0000 (GMT Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.0-dev</a> on Wed May 03 2017 10:59:24 GMT+0100 (GMT Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>
